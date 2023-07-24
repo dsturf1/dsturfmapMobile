@@ -1,25 +1,13 @@
-import logo from './logo.svg';
-import './App.css';
+import { Map } from 'react-kakao-maps-sdk';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
-}
+const App = () => {
+	return (
+      <Map 
+        center={{ lat: 33.5563, lng: 126.79581 }}   // 지도의 중심 좌표
+        style={{ width: '800px', height: '600px' }} // 지도 크기
+        level={3}                                   // 지도 확대 레벨
+      >
+      </Map>);
+};
 
 export default App;
