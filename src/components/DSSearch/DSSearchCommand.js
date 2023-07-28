@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 
 import { BaseContext, SInfoContext} from "../../context"
-import { COURSEBLANK } from '../../constant/urlconstants';
+import { COURSEBLANK , MAPBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 export default function DSSearchCommand() {
@@ -18,7 +18,7 @@ export default function DSSearchCommand() {
   useEffect(() => {
     if (Object.keys(baseinfo).length === 0) return
 
-    console.log(baseinfo.course_info)
+    console.log(baseinfo)
 
   },[baseinfo]);
 
@@ -33,9 +33,14 @@ export default function DSSearchCommand() {
     };
 
     let new_course_info = [...baseinfo.course_info,add_info]
-    // console.log({...baseinfo, course_info:new_course_info});
+    let new_area_def = [...baseinfo.area_def]
+    // console.log({area_info:baseinfo.area_def, course_info:new_course_info});
 
-    PostBaseInfo({...baseinfo, course_info:new_course_info}).then(setBaseInfo({...baseinfo, course_info:new_course_info}));
+    PostBaseInfo({area_def:new_area_def, course_info:new_course_info}).then(setBaseInfo({...baseinfo, course_info:new_course_info}));
+
+    let map_info = {...JSON.parse(JSON.stringify(MAPBLANK))}
+
+    PostMapInfo(map_info, "MGC"+(maxid+1).toString().padStart(3, '0'))
 
 
 
@@ -44,7 +49,7 @@ export default function DSSearchCommand() {
   const PostBaseInfo = async function (baseinfo_) 
 {
 
-    const url_ = BASEURL + '/baseinfo?'+  new URLSearchParams({user: baseinfo_.user.username });
+    const url_ = BASEURL + '/baseinfo?'+  new URLSearchParams({user: baseinfo.user.username });
     const myInit = {
       method: 'POST',
       body: JSON.stringify( baseinfo_),
@@ -64,13 +69,36 @@ export default function DSSearchCommand() {
         } catch (err) { console.log('Workinfo Saving Error', err, url_); return err; }
  
 }
+
+const PostMapInfo = async function (mapinfo_, id_) 
+{
+
+  const url_ = BASEURL + '/geojson/'+baseinfo.user.username +'?'+  new URLSearchParams({courseid: id_.toString() });
+  const myInit = {
+    method: 'POST',
+    body: JSON.stringify( mapinfo_),
+    headers: {
+      Authorization: `Bearer ${(await Auth.currentSession())
+        .getIdToken()
+        .getJwtToken()}`,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  };
+
+  try {
+      const fetchData = await fetch(url_, myInit).then((response) => response.json())
+      console.log('At Post Map', fetchData)
+      return fetchData
+      } catch (err) { console.log('Workinfo Saving Error', err, url_); return err; }
  
+}
   return (
     <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }} >
       <TextField
         id="ds-search-word"
         label="검색골프장"
-        value={inputword}
+        // value={inputword}
         onChange={(event) => {
           setInpuWord(event.target.value);
         }}

@@ -8,7 +8,7 @@ export const BaseContext = createContext();
 export const BaseProvider = (props) => {
 
     const [baseinfo, setBaseInfo] = useState({});
-    const [selected_course, setCourse] = useState('GC000');
+    const [selected_course, setCourse] = useState('MGC000');
     const [edited, setEdited] = useState(false);
     const [loginuser, setLoginUser] = useState("");
     const [selected_mode, setMode] = useState('Plan');
@@ -24,7 +24,7 @@ export const BaseProvider = (props) => {
             try {
                 const fetchData = await fetch(url).then((response) => response.json())
                 setBaseInfo({'user':props.user,...fetchData.body})
-                setCourse('MGC000')
+                setCourse('MGC002')
                 } catch (err) { console.log('Baseinfo Fetching Error', err) }
         }
 

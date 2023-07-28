@@ -34,3 +34,34 @@
         'ne': []}
     };
 
+
+    export const MAPBLANK ={
+      "type": "FeatureCollection",
+      "crs": {
+        "type": "name",
+        "properties": {
+          "name": "urn:ogc:def:crs:OGC:1.3:CRS84"
+        }
+      },
+      "features": [
+        {
+          "type": "Feature",
+          "properties": {
+            "Name": "Contour_",
+            "Client": "",
+            "Course": "",
+            "Hole": "",
+            "Type": "",
+            "TypeId": 0,
+            "DSZindex": 1,
+            "Color": "#00a0e9",
+            "Area": 0,
+            "Centroid": []
+          },
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": []
+          }
+        }
+      ]
+    }

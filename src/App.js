@@ -7,6 +7,7 @@ import { Routes, Route } from "react-router-dom";
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BaseProvider} from "./context/BaseData.js"
+import { MapQProvider} from "./context/DSMapData.js"
 
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -30,21 +31,23 @@ const App = () => {
       {({ signOut, user }) => (
       <Fragment>
         < BaseProvider user = {user}>
-        {/* <ThemeProvider theme={DSTheme}> */}
-          <CssBaseline />
-          <ResponsiveAppBar signOut = {signOut} user = {user.username}/>
-          <Routes>
-            <Route path="/" element={    <DSSearchMain/>}></Route>
-            <Route path="dssearch" element={    <DSSearchMain/>}></Route>
-            <Route path="dsnaver" element={<DSNaverMain />}></Route>
-            {/* <Route path="dsschedule" element={<DSPlanMain/>}></Route> */}
-            {/* <Route path="dscalendar" element={<DSPlanCalendarMain/>}></Route>
-            <Route path="dssetting" element={<DSBaseChemMain />}></Route> */}
-            {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>
-            <Route path="dshuman" element={<DSBaseHumanMain />}></Route>
-            <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}
-          </Routes>
-        {/* </ThemeProvider> */}
+          <MapQProvider>
+          {/* <ThemeProvider theme={DSTheme}> */}
+            <CssBaseline />
+            <ResponsiveAppBar signOut = {signOut} user = {user.username}/>
+            <Routes>
+              <Route path="/" element={    <DSSearchMain/>}></Route>
+              <Route path="dssearch" element={    <DSSearchMain/>}></Route>
+              <Route path="dsnaver" element={<DSNaverMain />}></Route>
+              {/* <Route path="dsschedule" element={<DSPlanMain/>}></Route> */}
+              {/* <Route path="dscalendar" element={<DSPlanCalendarMain/>}></Route>
+              <Route path="dssetting" element={<DSBaseChemMain />}></Route> */}
+              {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>
+              <Route path="dshuman" element={<DSBaseHumanMain />}></Route>
+              <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}
+            </Routes>
+          {/* </ThemeProvider> */}
+          </MapQProvider>
         </BaseProvider>
       </Fragment>
       )}
