@@ -6,6 +6,7 @@ import React, { Fragment} from 'react';
 import { Routes, Route } from "react-router-dom";
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { BaseProvider} from "./context/BaseData.js"
 
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -28,6 +29,7 @@ const App = () => {
     <Authenticator hideSignUp={true}>
       {({ signOut, user }) => (
       <Fragment>
+        < BaseProvider user = {user}>
         {/* <ThemeProvider theme={DSTheme}> */}
           <CssBaseline />
           <ResponsiveAppBar signOut = {signOut} user = {user.username}/>
@@ -43,6 +45,7 @@ const App = () => {
             <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}
           </Routes>
         {/* </ThemeProvider> */}
+        </BaseProvider>
       </Fragment>
       )}
     </Authenticator>
