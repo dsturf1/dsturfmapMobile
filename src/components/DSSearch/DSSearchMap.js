@@ -5,11 +5,12 @@ import html2canvas from "html2canvas";
 import saveAs from "file-saver";
 import "./styles.css";
 
-import { SInfoContext} from "../../context/DSSearchData.js"
+import { BaseContext, SInfoContext} from "../../context"
 
 const DSSearchMap = () => {
 
-  const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord} = useContext(SInfoContext);
+  const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord,zoomlevel, setZoomLevel} = useContext(SInfoContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapBound, setMapBound} = useContext(BaseContext);
 
   const [info, setInfo] = useState()
   const [markers, setMarkers] = useState([])
@@ -50,13 +51,25 @@ const DSSearchMap = () => {
         bounds.extend(new kakao.maps.LatLng(searchinfo[i].y,searchinfo[i].x))
       }
       setMarkers(markers)
+      // setMapBound()
+
 
       // 검색된 장소 위치를 기준으로 지도 범위를 재설정합니다
       map.setBounds(bounds)
       
+      
     
   }, [searchinfo])
 
+  useEffect(() => {
+
+    let map = mapRef.current;
+    if (!map) return
+
+    console.log(mapBound, zoomlevel)
+      
+    
+  }, [mapBound])
 
   useEffect(() => {
 
@@ -80,6 +93,13 @@ const DSSearchMap = () => {
     setInfo(marker);
     map.setCenter(new kakao.maps.LatLng(selected_info.y, selected_info.x));
     map.setLevel(4);
+
+    // setMapBound({
+    //   sw: [map.getBounds().getSouthWest().getLng(), map.getBounds().getSouthWest().getLat()],
+    //   ne: [map.getBounds().getNorthEast().getLng(), map.getBounds().getNorthEast().getLat()]
+    // })
+
+    
     setMarkers([marker])
     // setState(
     //   {...state,center: { lat: selected_info.y, lng: selected_info.x}, zooom:6 }
@@ -115,6 +135,11 @@ const DSSearchMap = () => {
         }}
         level={state.zoom}
         ref={mapRef}
+        onZoomChanged={(map) => { setZoomLevel(map.getLevel())}}
+        onBoundsChanged={(map) => setMapBound({
+          sw: [map.getBounds().getSouthWest().getLng(), map.getBounds().getSouthWest().getLat()],
+          ne: [map.getBounds().getNorthEast().getLng(), map.getBounds().getNorthEast().getLat()]
+        })}
       >
         {markers.map((marker) => (
           <MapMarker

@@ -10,7 +10,8 @@ export const SInfoProvider = (props) => {
     const [searchinfo, setSearchInfo] = useState([]);
     const [selected_info, setSelectedInfo] = useState(null);
     const [search_word, setSearchWord] = useState('골프장');
-    const [addedToDB, setAddedToDB] =useState(false)
+    const [addToDB, setAddToDB] =useState(false)
+    const [zoomlevel, setZoomLevel] = useState(4);
 
     useEffect(() => {
 
@@ -33,7 +34,7 @@ export const SInfoProvider = (props) => {
 
     return(
 
-    <SInfoContext.Provider  value={{searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord, addedToDB, setAddedToDB}}>
+    <SInfoContext.Provider  value={{searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord, addToDB, setAddToDB, zoomlevel, setZoomLevel}}>
         {props.children}
     </SInfoContext.Provider >
     

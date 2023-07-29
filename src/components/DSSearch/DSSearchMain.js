@@ -5,7 +5,7 @@ import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormCont
 import { SInfoProvider} from "../../context/DSSearchData.js"
 import DSSearchCommand from "./DSSearchCommand.js"
 import DSSearchPicker from './DSSearchPicker.js';
-import DSSearchEdit from './DSSearchEdit.js';
+
 import DSSearchMap from './DSSearchMap.js';
 
 export default function DSWorkUpdateMain() {
@@ -25,7 +25,7 @@ export default function DSWorkUpdateMain() {
             <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
               <DSSearchCommand/>
             </Stack>
-            <DSSearchEdit/>
+            <DSSearchPicker/>
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>

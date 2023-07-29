@@ -5,7 +5,7 @@ import DSMapCommand from "./DSMapCommand.js"
 import DSCoursePicker from './DSCoursePicker.js';
 import DSMapEdit from './DSMapEdit.js';
 
-export default function DSWorkUpdateMain() {
+export default function DSMapMain() {
 
   useEffect(() => {
 
@@ -19,9 +19,9 @@ export default function DSWorkUpdateMain() {
       <Grid container spacing={0}>
         <Grid Grid item xs={12} md={2}>
           <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
-            <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
+            {/* <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
               <DSMapCommand/>
-            </Stack>
+            </Stack> */}
             <DSCoursePicker/>
           </Box>
         </Grid>

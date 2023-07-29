@@ -31,7 +31,9 @@
       'level': 2,
       'bounds': {
         'sw': [],
-        'ne': []}
+        'ne': []},
+      'numHole':9,
+      'course_names':''
     };
 
 

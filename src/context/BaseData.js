@@ -13,6 +13,7 @@ export const BaseProvider = (props) => {
     const [loginuser, setLoginUser] = useState("");
     const [selected_mode, setMode] = useState('Plan');
     const [maxid, setMaxId] = useState();
+    const [mapBound, setMapBound] = useState({'sw': [],'ne': []});
     
   
     const url = BASEURL + '/baseinfo?'+  new URLSearchParams({user: props.user.username });
@@ -24,7 +25,8 @@ export const BaseProvider = (props) => {
             try {
                 const fetchData = await fetch(url).then((response) => response.json())
                 setBaseInfo({'user':props.user,...fetchData.body})
-                setCourse('MGC002')
+                setCourse('MGC000')
+                setMapBound(fetchData.body.bounds)
                 } catch (err) { console.log('Baseinfo Fetching Error', err) }
         }
 
@@ -52,7 +54,7 @@ export const BaseProvider = (props) => {
 
     return(
 
-    <BaseContext.Provider  value={{baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId}}>
+    <BaseContext.Provider  value={{baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapBound, setMapBound}}>
         {props.children}
     </BaseContext.Provider >
     
