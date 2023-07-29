@@ -12,7 +12,7 @@ import { BASEURL } from '../../constant/urlconstants.js';
 export default function DSSearchCommand() {
 
   const [inputword, setInpuWord] = useState();
-  const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord, addedToDB, setAddedToDB} = useContext(SInfoContext);
+  const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord} = useContext(SInfoContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId} = useContext(BaseContext);
 
   useEffect(() => {
@@ -23,7 +23,6 @@ export default function DSSearchCommand() {
   },[baseinfo]);
 
   const handleAdd = () => { 
-
     if(selected_info === null) return
     if(baseinfo.course_info.filter((x)=> x.name === selected_info.place_name).length>0) {
       alert("중복된골프장이 있어요")
@@ -45,9 +44,7 @@ export default function DSSearchCommand() {
 
     let map_info = {...JSON.parse(JSON.stringify(MAPBLANK))}
 
-    PostMapInfo(map_info, "MGC"+(maxid+1).toString().padStart(3, '0'));
-
-    setAddedToDB(true)
+    PostMapInfo(map_info, "MGC"+(maxid+1).toString().padStart(3, '0'))
 
 
 
