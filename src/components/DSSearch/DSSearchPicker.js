@@ -1,6 +1,6 @@
 import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
 
-import { ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Paper, List, Typography } from '@mui/material';
+import { ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Paper, List, Typography, Box} from '@mui/material';
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 import DSSearchEdit from './DSSearchEdit.js';
@@ -20,10 +20,10 @@ export default function DSSearchPicker() {
         <ListItemButton selected={selectedIndex === index} onClick={() => {setSelectedInfo(course_); setSelectedIndex(index);}}    
             sx={{
               "&.Mui-selected": {
-                backgroundColor: "#03045e"
+                backgroundColor: "#035efc"
               },
               "&.Mui-focusVisible": {
-                backgroundColor: "caf0f8"
+                backgroundColor: "#035efc"
               },
               ":hover": {
                 backgroundColor: "0077b6"
@@ -48,10 +48,10 @@ export default function DSSearchPicker() {
   },[]);
  
   return (
-    <Paper style={{height: '100%', overflow: 'auto'}}>
+    <Box sx={{ p: 1, border: '1px solid gray',gap: 1, borderRadius: 0 , flexDirection: 'column', overflow:"auto"}}>
       <List dense={true}>
         {addToDB === true? <DSSearchEdit/>: (searchinfo.length === 0?  null : <DSList courses_ = {searchinfo}/>)}
       </List>
-    </Paper>
+    </Box>
   );
 }

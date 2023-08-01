@@ -8,8 +8,8 @@ import { BaseContext, SInfoContext, MapQContext} from "../../context"
 
 export default function DSCoursePicker() {
 
-  const {mapinfo, setMapInfo, isLoading, setIsLoading} = useContext(MapQContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId} = useContext(BaseContext);
+  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
   const DSList = ({ courses_ }) => {
@@ -17,7 +17,11 @@ export default function DSCoursePicker() {
     const list = courses_.map((course_, index) => 
 
       <ListItem key = {course_.id} divider={true}>
-        <ListItemButton selected={selectedIndex === index} onClick={() => {setCourse(course_); setSelectedIndex(index);}}    
+        <ListItemButton selected={selectedIndex === index} onClick={() => {
+          setCourse(course_.id);
+          setMode("MAPEdit");
+          setSelectedIndex(index);
+        }}    
           sx={{
             "&.Mui-selected": {
               backgroundColor: "#035efc"
@@ -34,8 +38,8 @@ export default function DSCoursePicker() {
           disableTypography
           primary={
             <Stack direction="row" justifyContent="space-between"  alignItems="center" >
-              <Typography variant="body2" style={{ fontWeight: 'bold' ,color: selectedIndex === index? '#ffffff':'#000000'}} > {"["+(course_.numHole?course_.numHole:0)+"]"+ course_.name}</Typography>
-              <Typography variant="caption" style={{color: selectedIndex === index? '#ffffff':'#000000'}}> {course_.center[0].toFixed(2)}, {course_.center[1].toFixed(2)}</Typography>
+              <Typography variant="body2" style={{ fontWeight: 'bold' ,color: selectedIndex === index? '#ffffff':'#000000'}} > {"["+(index + 1)+"]"+ course_.name}</Typography>
+              <Typography variant="caption" style={{color: selectedIndex === index? '#ffffff':'#000000'}}> {course_.map_info.center[0].toFixed(2)}, {course_.map_info.center[1].toFixed(2)}</Typography>
             </Stack>
           }
         />

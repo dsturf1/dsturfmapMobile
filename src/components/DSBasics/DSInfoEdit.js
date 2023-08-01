@@ -5,29 +5,28 @@ import { FormControl, InputLabel, Stack, Select, MenuItem, TextField, Avatar, Pa
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 
-import { BaseContext, SInfoContext} from "../../context"
+import { BaseContext, SInfoContext, MapQContext} from "../../context"
 import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 
-export default function DSSearchEdit() {
+export default function DSInfoEdit() {
 
-  const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord,addToDB, setAddToDB, zoomlevel, setZoomLevel} = useContext(SInfoContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo} = useContext(BaseContext);
-  const [selectedIndex, setSelectedIndex] = React.useState(-1);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
   const [numHole, setNumHole] = React.useState(9);
   const Textrefs = useRef([]);
 
   const DSList = () => {
 
-    let list = Array.from({length: parseInt(numHole/9)}, (_, i) => i + 1);
+    let list = Array.from({length: parseInt(selected_course_info.numHole/9)}, (_, i) => i + 1);
     Textrefs.current = list.map(() => createRef());
 
 
     let Tlist = list.map((x, index) =>
         <Stack direction="row" spacing={1}   justifyContent="space-between"  alignItems="center" mt = {1}>
           <Typography variant="caption"> 제 {x} 코스명</Typography>
-          <Input id={"ds-course-name" + x}  size="small" label={"코스명" + x} variant="filled" inputRef={Textrefs.current[index]} Ref={Textrefs.current[index]}
+          <Input id={"ds-course-name" + x}  size="small" value ={selected_course_info=== null? "코스명" + x:selected_course_info.course_names[index]} variant="filled" inputRef={Textrefs.current[index]} Ref={Textrefs.current[index]}
            onKeyPress= {(e) => {
             if (e.key === 'Enter') {
               if (Textrefs.current[index+1]) Textrefs.current[index+1].current.focus(); 
@@ -42,30 +41,19 @@ export default function DSSearchEdit() {
 
   const handleAdd = () => { 
 
-    if(selected_info === null) return
-    if(baseinfo.course_info.filter((x)=> x.name === selected_info.place_name).length>0) {
-      alert("중복된골프장이 있어요")
-      return
-    }
+    if(selected_course_info === null) return
 
-    let add_info = {...JSON.parse(JSON.stringify(COURSEBLANK)),
-    id:"MGC"+(maxid+1).toString().padStart(3, '0'),
-    name:selected_info.place_name    ,
-    address:selected_info.address_name,
-    numHole:numHole,
-    course_names:Textrefs.current.map((x)=>x.current.value),
-    map_info:{...mapinfo}
-    };
-
-    let new_course_info = [...baseinfo.course_info,add_info]
+    let new_course_info = [...baseinfo.course_info.filter((x)=> x.id !== selected_course_info.id),{...selected_course_info, map_info:mapinfo}]
     let new_area_def = [...baseinfo.area_def]
-    // console.log({area_info:baseinfo.area_def, course_info:new_course_info});
 
     PostBaseInfo({area_def:new_area_def, course_info:new_course_info}).then(setBaseInfo({...baseinfo, course_info:new_course_info}));
 
-    let geojson_info = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
+    let geojsoninfo_ = {};
 
-    PostMapInfo(geojson_info, "MGC"+(maxid+1).toString().padStart(3, '0'));
+    if(selected_mode === "NewAddtoDB") geojsoninfo_ = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
+    else geojsoninfo_ = {...JSON.parse(JSON.stringify(geojsoninfo))}
+
+    PostGeoJsonInfo(geojsoninfo_, selected_course_info.id);
 
 
   }
@@ -94,7 +82,7 @@ export default function DSSearchEdit() {
    
   }
   
-  const PostMapInfo = async function (mapinfo_, id_) 
+  const PostGeoJsonInfo = async function (mapinfo_, id_) 
   {
   
     const url_ = BASEURL + '/geojson/'+baseinfo.user.username +'?'+  new URLSearchParams({courseid: id_.toString() });
@@ -118,19 +106,11 @@ export default function DSSearchEdit() {
    
   }
 
-  useEffect(() => {
-
-    console.log(Textrefs)
-
-  },[numHole]);
-
-  const getAllCourseName = ()=>{
-    console.log(Textrefs.current.map((x)=>x.current.value))
-  }
  
   return (
     <>
-
+    {selected_course_info === null? null:
+    <Fragment>
       {/* <Stack direction="column" spacing={0} alignItems="center" mt = {1}> */}
         <Stack direction="row" spacing={2}   justifyContent="space-between"  alignItems="center" mt = {0}>
           <Typography variant="body2" style={{ fontWeight: 'bold'}} > Zoom Level </Typography>
@@ -143,11 +123,11 @@ export default function DSSearchEdit() {
         <Typography variant="body2" style={{ fontWeight: 'bold'}} > Boundary </Typography>
         <Stack direction="row" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {1}>
           <Typography variant="body2" > SW(Lng,Lat) </Typography>
-          <Typography variant="caption" > {mapinfo.bounds.sw[0].toFixed(8)}, {mapinfo.bounds.sw[1].toFixed(8)}</Typography>          
+          <Typography variant="caption" > {mapinfo.bounds.sw === []? null:mapinfo.bounds.sw[0].toFixed(8)}, {mapinfo.bounds.sw === []? null:mapinfo.bounds.sw[1].toFixed(8)}</Typography>          
         </Stack>
         <Stack direction="row" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {1}>
           <Typography variant="body2" > NE(Lng,Lat) </Typography>
-          <Typography variant="caption" > {mapinfo.bounds.ne[0].toFixed(8)}, {mapinfo.bounds.ne[1].toFixed(8)}</Typography>      
+          <Typography variant="caption" > {mapinfo.bounds.ne === []? null:mapinfo.bounds.ne[0].toFixed(8)}, {mapinfo.bounds.ne === []? null:mapinfo.bounds.ne[1].toFixed(8)}</Typography>      
         </Stack>
       {/* </Stack> */}
       <Stack direction="column" spacing={0} alignItems="center" mt = {1}>
@@ -158,10 +138,10 @@ export default function DSSearchEdit() {
             <Select
               labelId="ds-numhole-select-label"
               id="ds-numhole-select"
-              value={numHole}
+              value={selected_course_info.numHole}
               label="홀수"
               size="small"
-              onChange={(event) => {setNumHole(event.target.value)}}
+              onChange={(event) => {setSelectedCourseInfo({...selected_course_info, numHole:event.target.value})}}
             >
               {[9,18,27,36,45,54,63,72,81].map((x) =>  <MenuItem key={'Numhole'+x} value={x}>{x}</MenuItem>)}
             </Select>
@@ -171,9 +151,12 @@ export default function DSSearchEdit() {
         <DSList/>
       </Stack>
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
-        <Button variant="outlined"  onClick={() => {handleAdd();setAddToDB(false)}}> Save</Button>
-        <Button variant="outlined"  onClick={() => {setAddToDB(false)}}> Cancel</Button>
+        <Button variant="outlined"  onClick={() => {handleAdd();setMode("MAPEdit")}}> Save</Button>
+        <Button variant="outlined"  onClick={() => {setMode("MAPEdit")}}> Cancel</Button>
+        <Button variant="outlined"  onClick={() => {setMode("MAPSelect");setCourse("MGC000")}}> Back</Button>
       </ButtonGroup>
+      </Fragment>
+      }
     </>
   );
 }

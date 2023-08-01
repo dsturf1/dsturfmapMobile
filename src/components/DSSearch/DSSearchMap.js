@@ -9,22 +9,12 @@ import { BaseContext, SInfoContext} from "../../context"
 
 const DSSearchMap = () => {
 
-  const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord,zoomlevel, setZoomLevel} = useContext(SInfoContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapBound, setMapBound} = useContext(BaseContext);
+  const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord} = useContext(SInfoContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo} = useContext(BaseContext);
 
   const [info, setInfo] = useState()
   const [markers, setMarkers] = useState([])
-  // const [map, setMap] = useState()
   const mapRef = useRef()
-  const divRef = useRef(null)
-
-  const [state, setState] = useState({
-    // 지도의 초기 위치
-    center: { lat: 36.520, lng: 128.110 },
-    // 지도 위치 변경시 panto를 이용할지에 대해서 정의
-    isPanto: true,
-    zoom:12
-  })
 
   const { kakao } = window;
 
@@ -66,10 +56,10 @@ const DSSearchMap = () => {
     let map = mapRef.current;
     if (!map) return
 
-    console.log(mapBound, zoomlevel)
+    console.log('MapInfo Chnaged @ DSSearchMap',mapinfo)
       
     
-  }, [mapBound])
+  }, [mapinfo])
 
   useEffect(() => {
 
@@ -93,53 +83,33 @@ const DSSearchMap = () => {
     setInfo(marker);
     map.setCenter(new kakao.maps.LatLng(selected_info.y, selected_info.x));
     map.setLevel(4);
-
-    // setMapBound({
-    //   sw: [map.getBounds().getSouthWest().getLng(), map.getBounds().getSouthWest().getLat()],
-    //   ne: [map.getBounds().getNorthEast().getLng(), map.getBounds().getNorthEast().getLat()]
-    // })
-
-    
     setMarkers([marker])
-    // setState(
-    //   {...state,center: { lat: selected_info.y, lng: selected_info.x}, zooom:6 }
-    // )
-      
     
   }, [selected_info])
-
-  
-  // const handleDownload = async () => {
-  //   if (!divRef.current) return;
-  //     try {
-  //       const div = divRef.current;
-  //       const canvas = await html2canvas(div, { scale: 2 });
-  //       canvas.toBlob((blob) => {
-  //         if (blob !== null) {
-  //           saveAs(blob, "result.png");
-  //         }
-  //       });
-  //     } catch (error) {
-  //       console.error("Error converting div to image:", error);
-  //     }
-
-  //   }
 
   return (
     <Fragment>
       <Map 
-        center={state.center}
+        center={{lat:mapinfo.center[1], lng:mapinfo.center[0]}}
+
         style={{
           width: "100%",
           height: "100%",
         }}
-        level={state.zoom}
+        level={mapinfo.level}
         ref={mapRef}
-        onZoomChanged={(map) => { setZoomLevel(map.getLevel())}}
-        onBoundsChanged={(map) => setMapBound({
-          sw: [map.getBounds().getSouthWest().getLng(), map.getBounds().getSouthWest().getLat()],
-          ne: [map.getBounds().getNorthEast().getLng(), map.getBounds().getNorthEast().getLat()]
-        })}
+        // onZoomChanged={(map) => { 
+        //   setMapInfo({...mapinfo,level:map.getLevel()})
+        //   // console.log(map.getLevel())
+        //   }
+        // }
+        onBoundsChanged={(map) => setMapInfo({center: [map.getCenter().getLng(),map.getCenter().getLat()],level:map.getLevel(),
+          bounds:{
+            sw: [map.getBounds().getSouthWest().getLng(), map.getBounds().getSouthWest().getLat()],
+            ne: [map.getBounds().getNorthEast().getLng(), map.getBounds().getNorthEast().getLat()]
+          }
+        })
+      }
       >
         {markers.map((marker) => (
           <MapMarker

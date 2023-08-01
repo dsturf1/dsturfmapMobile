@@ -1,5 +1,10 @@
 import React, { createContext, useState, useEffect} from 'react';
-import { BASEURL } from '../constant/urlconstants';
+import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK} from '../constant/urlconstants';
+
+
+const mapinfo_ini = JSON.parse(JSON.stringify(MAPINFO_INI));
+const course_info_ini = JSON.parse(JSON.stringify(COURSEBLANK));
+
 
 
 
@@ -11,9 +16,10 @@ export const BaseProvider = (props) => {
     const [selected_course, setCourse] = useState('MGC000');
     const [edited, setEdited] = useState(false);
     const [loginuser, setLoginUser] = useState("");
-    const [selected_mode, setMode] = useState('Plan');
+    const [selected_mode, setMode] = useState('Search');
     const [maxid, setMaxId] = useState();
-    const [mapBound, setMapBound] = useState({'sw': [],'ne': []});
+    const [mapinfo, setMapInfo] = useState(mapinfo_ini);
+    const [selected_course_info, setSelectedCourseInfo] = useState(null);
     
   
     const url = BASEURL + '/baseinfo?'+  new URLSearchParams({user: props.user.username });
@@ -26,19 +32,34 @@ export const BaseProvider = (props) => {
                 const fetchData = await fetch(url).then((response) => response.json())
                 setBaseInfo({'user':props.user,...fetchData.body})
                 setCourse('MGC000')
-                setMapBound(fetchData.body.bounds)
+                setMapInfo({...mapinfo_ini})
                 } catch (err) { console.log('Baseinfo Fetching Error', err) }
         }
 
         fetchBaseInfo();
+        console.log(mapinfo)
         
 
 
       },[]);
 
-    // useEffect(() => {
-    //     console.log('Selection Changed !:', selected_course, selected_date, selected_org, selected_year, selected_mode, selected_month);
-    //   },[selected_course, selected_date, selected_org, selected_year, selected_mode, selected_month]);
+    useEffect(() => {
+
+      if (selected_course === "MGC000") {
+        setSelectedCourseInfo(null);
+        setMapInfo(mapinfo_ini)
+        return
+
+      }
+      if (Object.keys(baseinfo).length === 0) return
+
+      let crs_info_ = baseinfo.course_info.filter((x)=> x.id === selected_course)[0]
+  
+      console.log("Selected Course Info : ", crs_info_)
+      setSelectedCourseInfo({...crs_info_})
+      setMapInfo({...crs_info_.map_info})
+  
+    }, [selected_course])
 
     useEffect(() => {
 
@@ -54,7 +75,8 @@ export const BaseProvider = (props) => {
 
     return(
 
-    <BaseContext.Provider  value={{baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapBound, setMapBound}}>
+    <BaseContext.Provider  value={{baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser,
+      selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo}}>
         {props.children}
     </BaseContext.Provider >
     

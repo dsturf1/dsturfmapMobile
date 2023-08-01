@@ -21,23 +21,30 @@
         year:2023,
         month:0    
     };
+    export const MAPINFO_INI =   {
+      'center': [128.110 , 36.520],
+      'level': 12,
+      'bounds': {
+        'sw': [],
+        'ne': []
+      }
+    };
 
     export const COURSEBLANK =   {
       'id': '',
       'dscourseids': '',
       'name': '',
       'address': '',
-      'center': [],
-      'level': 2,
-      'bounds': {
-        'sw': [],
-        'ne': []},
+      'map_info': MAPINFO_INI,
       'numHole':9,
       'course_names':''
     };
 
 
-    export const MAPBLANK ={
+
+
+
+    export const GEOJSONBLANK ={
       "type": "FeatureCollection",
       "crs": {
         "type": "name",

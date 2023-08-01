@@ -13,7 +13,7 @@ export default function DSSearchCommand() {
 
   const [inputword, setInpuWord] = useState();
   const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord, addToDB, setAddToDB} = useContext(SInfoContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapBound, setMapBound} = useContext(BaseContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo} = useContext(BaseContext);
 
   useEffect(() => {
     if (Object.keys(baseinfo).length === 0) return
@@ -34,27 +34,30 @@ export default function DSSearchCommand() {
 
 
   return (
-    <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center' }} >
-      <TextField
-        id="ds-search-word"
-        label="검색골프장"
-        // value={inputword}
-        onChange={(event) => {
-          setInpuWord(event.target.value);
-        }}
-        onKeyPress={(ev) => {
-          if (ev.key === 'Enter') {
-            setSearchWord(inputword)
-            ev.preventDefault();
-          }
-        }}
-      />
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={() => {setSearchWord(inputword)}}>
-        <SearchIcon />
-      </IconButton>
-      <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={() => {handleAdd()}}>
-        <AddIcon />
-      </IconButton>
-    </Paper>
+    <Box sx={{ p: 1, border: '1px solid gray',gap: 1, borderRadius: 0 , m: 0, flexDirection: 'column', display: 'flex'}}>
+      <Stack direction="row" spacing={0}  justifyContent="space-between"  alignItems="center" mt = {0}>
+        <TextField
+          id="ds-search-word"
+          size = "small" 
+          label="검색골프장"
+          // value={inputword}
+          onChange={(event) => {
+            setInpuWord(event.target.value);
+          }}
+          onKeyPress={(ev) => {
+            if (ev.key === 'Enter') {
+              setSearchWord(inputword)
+              ev.preventDefault();
+            }
+          }}
+        />
+        <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={() => {setSearchWord(inputword)}}>
+          <SearchIcon />
+        </IconButton>
+        <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={() => {handleAdd()}}>
+          <AddIcon />
+        </IconButton>
+      </Stack>
+    </Box>
   );
 }

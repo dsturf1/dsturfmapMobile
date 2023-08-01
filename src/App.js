@@ -1,7 +1,7 @@
 // import DSMainMap from "./components/DSMainMap.js";
 import DSSearchMain from "./components/DSSearch/DSSearchMain.js";
 import DSNaverMain from "./components/DSNaver/DSNaverMain.js";
-import DSMapMain from "./components/DSMap/DSMapMain.js";
+import DSMapMain from "./components/DSGeoJson/DSGeoJsonMain.js";
 import ResponsiveAppBar from './components/ResponsiveAppBar';
 import React, { Fragment} from 'react';
 import { Routes, Route } from "react-router-dom";
@@ -17,7 +17,7 @@ const DSTheme = createTheme({
   palette: {
     mode: 'light',
     primary: {
-      main: '#15096d',
+      main: '#035efc',
     },
     secondary: {
       main: '#f50057',
@@ -33,7 +33,7 @@ const App = () => {
       <Fragment>
         < BaseProvider user = {user}>
           <MapQProvider>
-          {/* <ThemeProvider theme={DSTheme}> */}
+          <ThemeProvider theme={DSTheme}>
             <CssBaseline />
             <ResponsiveAppBar signOut = {signOut} user = {user.username}/>
             <Routes>
@@ -47,7 +47,7 @@ const App = () => {
               <Route path="dshuman" element={<DSBaseHumanMain />}></Route>
               <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}
             </Routes>
-          {/* </ThemeProvider> */}
+          </ThemeProvider>
           </MapQProvider>
         </BaseProvider>
       </Fragment>

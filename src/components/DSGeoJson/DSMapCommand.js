@@ -6,7 +6,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
 
 import { BaseContext, SInfoContext} from "../../context"
-import { COURSEBLANK , MAPBLANK} from '../../constant/urlconstants';
+import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 export default function DSSearchCommand() {
@@ -42,7 +42,7 @@ export default function DSSearchCommand() {
 
     PostBaseInfo({area_def:new_area_def, course_info:new_course_info}).then(setBaseInfo({...baseinfo, course_info:new_course_info}));
 
-    let map_info = {...JSON.parse(JSON.stringify(MAPBLANK))}
+    let map_info = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
 
     PostMapInfo(map_info, "MGC"+(maxid+1).toString().padStart(3, '0'))
 

@@ -9,7 +9,6 @@ import { BaseContext, SInfoContext} from "../../context"
 import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
-
 export default function DSSearchEdit() {
 
   const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord,addToDB, setAddToDB, zoomlevel, setZoomLevel} = useContext(SInfoContext);
@@ -133,21 +132,20 @@ export default function DSSearchEdit() {
 
       {/* <Stack direction="column" spacing={0} alignItems="center" mt = {1}> */}
         <Stack direction="row" spacing={2}   justifyContent="space-between"  alignItems="center" mt = {0}>
-          <Typography variant="body2" style={{ fontWeight: 'bold'}} > Zoom Level </Typography>
-          <Typography variant="caption"  > {mapinfo.level}</Typography>
+          <Typography variant="body2" style={{ fontWeight: 'bold'}} > Zoom Level {mapinfo.level}</Typography>
         </Stack>
         <Stack direction="row" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {1} mb = {2}>
-          <Typography variant="body2" style={{ fontWeight: 'bold'}} > Center(Lng,Lat) </Typography>
-          <Typography variant="caption" > {mapinfo.center[0].toFixed(8)}, {mapinfo.center[1].toFixed(8)}</Typography>          
+          <Typography variant="body2" > Center </Typography>
+          <Typography variant="subtitle2" style={{ fontWeight: 'bold'}}> Long: {mapinfo.center[0].toFixed(3)}, Lat: {mapinfo.center[1].toFixed(3)}</Typography>          
         </Stack>
-        <Typography variant="body2" style={{ fontWeight: 'bold'}} > Boundary </Typography>
+        <Typography variant="body2" > Boundary </Typography>
         <Stack direction="row" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {1}>
-          <Typography variant="body2" > SW(Lng,Lat) </Typography>
-          <Typography variant="caption" > {mapinfo.bounds.sw[0].toFixed(8)}, {mapinfo.bounds.sw[1].toFixed(8)}</Typography>          
+          <Typography variant="body2" > SW </Typography>
+          <Typography variant="subtitle2" > Long: {mapinfo.bounds.sw[0].toFixed(3)}, Lat: {mapinfo.bounds.sw[1].toFixed(3)}</Typography>          
         </Stack>
         <Stack direction="row" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {1}>
-          <Typography variant="body2" > NE(Lng,Lat) </Typography>
-          <Typography variant="caption" > {mapinfo.bounds.ne[0].toFixed(8)}, {mapinfo.bounds.ne[1].toFixed(8)}</Typography>      
+          <Typography variant="body2" > NE </Typography>
+          <Typography variant="subtitle2" > Long: {mapinfo.bounds.ne[0].toFixed(3)}, Lat: {mapinfo.bounds.ne[1].toFixed(3)}</Typography>      
         </Stack>
       {/* </Stack> */}
       <Stack direction="column" spacing={0} alignItems="center" mt = {1}>

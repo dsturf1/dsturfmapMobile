@@ -1,14 +1,19 @@
 import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
 
 import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormControl, Select , CircularProgress, Paper } from '@mui/material';
-import DSMapCommand from "./DSMapCommand.js"
-import DSCoursePicker from './DSCoursePicker.js';
-import DSMapEdit from './DSMapEdit.js';
+import { BaseContext, SInfoContext, MapQContext} from "../../context"
 
-export default function DSMapMain() {
+import DSInfoEdit from "../DSBasics/DSInfoEdit.js"
+import DSCoursePicker from './DSCoursePicker.js';
+import DSGeoJsonMap from './DSGeoJsonMap.js';
+
+export default function DSGeoJsonMain() {
+  
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+
 
   useEffect(() => {
-
+    setMode("MAPSelect");
   },[]);
  
   return (
@@ -22,12 +27,12 @@ export default function DSMapMain() {
             {/* <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
               <DSMapCommand/>
             </Stack> */}
-            <DSCoursePicker/>
+            {selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit/>}
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>
           <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
-            <DSMapEdit/>
+            <DSGeoJsonMap/>
           </Box>
         </Grid>
       </Grid>      
