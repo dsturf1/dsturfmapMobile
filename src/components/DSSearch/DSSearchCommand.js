@@ -13,7 +13,7 @@ export default function DSSearchCommand() {
 
   const [inputword, setInpuWord] = useState();
   const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord, addToDB, setAddToDB} = useContext(SInfoContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo} = useContext(BaseContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
 
   useEffect(() => {
     if (Object.keys(baseinfo).length === 0) return
@@ -29,7 +29,15 @@ export default function DSSearchCommand() {
       alert("중복된골프장이 있어요")
       return
     }
-    setAddToDB(true)
+
+    let course_info_ini = JSON.parse(JSON.stringify(COURSEBLANK));
+    setSelectedCourseInfo({...course_info_ini, 
+      id:"MGC"+(maxid+1).toString().padStart(3, '0'),
+      name:selected_info.place_name    ,
+      address:selected_info.address_name,
+      map_info:{...mapinfo}    
+    })
+    setMode("SearchSelected")
   }
 
 

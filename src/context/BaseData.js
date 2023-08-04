@@ -5,9 +5,6 @@ import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK} from '../constant/urlcons
 const mapinfo_ini = JSON.parse(JSON.stringify(MAPINFO_INI));
 const course_info_ini = JSON.parse(JSON.stringify(COURSEBLANK));
 
-
-
-
 export const BaseContext = createContext();
 
 export const BaseProvider = (props) => {

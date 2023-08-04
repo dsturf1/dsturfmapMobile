@@ -4,6 +4,8 @@
     "dscourseids": "",
     "name": "올림픽CC",
     "address": "경기 고양시 덕양구 혜음로 301",
+    "numHole":9,
+    "course_names":["올림픽"],
     "map_info":{
       "center": [
         126.894265298,

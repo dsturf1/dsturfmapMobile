@@ -10,6 +10,30 @@ import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 
+export function DSCourseNameInput({Hole_, name_, ref_, index_}){
+
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+  const [textinput, setText] = useState(name_);
+
+
+  return(
+    <>
+    <Stack direction="row" spacing={1}   justifyContent="space-between"  alignItems="center" mt = {1}>
+      <Typography variant="caption"> 제 {Hole_} 코스명</Typography>
+      <Input key ={"ds-course-name" + Hole_} name = {"ds-course-name" + Hole_} size="small" value={textinput} variant="filled" inputRef={ref_[index_]} Ref={ref_[index_]}
+      onChange={(newValue) => {setText(newValue.target.value); newValue.preventDefault()} }
+      onKeyPress= {(e) => {
+        if (e.key === 'Enter') {
+          if (ref_[index_+1]) ref_[index_+1].current.focus(); 
+        }
+      }}
+      />
+    </Stack>
+    </>
+  )
+}
+
+
 export default function DSInfoEdit() {
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
@@ -17,23 +41,27 @@ export default function DSInfoEdit() {
   const [numHole, setNumHole] = React.useState(9);
   const Textrefs = useRef([]);
 
+
+
+  useEffect(() => {
+    if(selected_course_info === null) return
+    // console.log(selected_course_info.course_names)
+  },[selected_course_info]);
+
+
+
+
   const DSList = () => {
 
-    let list = Array.from({length: parseInt(selected_course_info.numHole/9)}, (_, i) => i + 1);
+    let numHole_ = selected_course_info=== null? 9: selected_course_info.numHole
+
+    let list = Array.from({length: parseInt(numHole_/9)}, (_, i) => i + 1);
     Textrefs.current = list.map(() => createRef());
 
+          // selected_course_info=== null? setText([... textinput, "코스명" + x]): setText([... textinput,selected_course_info.course_names[index]])
 
     let Tlist = list.map((x, index) =>
-        <Stack direction="row" spacing={1}   justifyContent="space-between"  alignItems="center" mt = {1}>
-          <Typography variant="caption"> 제 {x} 코스명</Typography>
-          <Input id={"ds-course-name" + x}  size="small" value ={selected_course_info=== null? "코스명" + x:selected_course_info.course_names[index]} variant="filled" inputRef={Textrefs.current[index]} Ref={Textrefs.current[index]}
-           onKeyPress= {(e) => {
-            if (e.key === 'Enter') {
-              if (Textrefs.current[index+1]) Textrefs.current[index+1].current.focus(); 
-            }
-          }}
-          />
-        </Stack>
+        <DSCourseNameInput Hole_ = {x} name_ = {selected_course_info=== null? "코스명" + x: selected_course_info.course_names[index]} ref_ = {Textrefs.current} index_ = {index}></DSCourseNameInput>
       )
 
     return Tlist
@@ -43,14 +71,15 @@ export default function DSInfoEdit() {
 
     if(selected_course_info === null) return
 
-    let new_course_info = [...baseinfo.course_info.filter((x)=> x.id !== selected_course_info.id),{...selected_course_info, map_info:mapinfo}]
+    setSelectedCourseInfo({...selected_course_info, map_info:mapinfo, course_names: Textrefs.current.map((x)=>x.current.value)})
+    let new_course_info = [...baseinfo.course_info.filter((x)=> x.id !== selected_course_info.id),{...selected_course_info, map_info:mapinfo, course_names: Textrefs.current.map((x)=>x.current.value)}]
     let new_area_def = [...baseinfo.area_def]
 
     PostBaseInfo({area_def:new_area_def, course_info:new_course_info}).then(setBaseInfo({...baseinfo, course_info:new_course_info}));
 
     let geojsoninfo_ = {};
 
-    if(selected_mode === "NewAddtoDB") geojsoninfo_ = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
+    if(selected_mode === "SearchSelected") geojsoninfo_ = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
     else geojsoninfo_ = {...JSON.parse(JSON.stringify(geojsoninfo))}
 
     PostGeoJsonInfo(geojsoninfo_, selected_course_info.id);
@@ -112,6 +141,9 @@ export default function DSInfoEdit() {
     {selected_course_info === null? null:
     <Fragment>
       {/* <Stack direction="column" spacing={0} alignItems="center" mt = {1}> */}
+        <Typography variant="button" display="block" gutterBottom>
+          {selected_course_info.name}
+        </Typography>
         <Stack direction="row" spacing={2}   justifyContent="space-between"  alignItems="center" mt = {0}>
           <Typography variant="body2" style={{ fontWeight: 'bold'}} > Zoom Level </Typography>
           <Typography variant="caption"  > {mapinfo.level}</Typography>
@@ -151,9 +183,9 @@ export default function DSInfoEdit() {
         <DSList/>
       </Stack>
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
-        <Button variant="outlined"  onClick={() => {handleAdd();setMode("MAPEdit")}}> Save</Button>
-        <Button variant="outlined"  onClick={() => {setMode("MAPEdit")}}> Cancel</Button>
-        <Button variant="outlined"  onClick={() => {setMode("MAPSelect");setCourse("MGC000")}}> Back</Button>
+        <Button variant="outlined"  onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPEdit")}}> Save</Button>
+        <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel</Button>
+        {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
       </ButtonGroup>
       </Fragment>
       }
