@@ -31,7 +31,7 @@ const DSGeoJsonMap = () => {
     if (!map) return
     if (selected_course === "MGC000") return
     setMode("MAPEdit")
-    setGeoJsonInfo({...geojsoninfo, 'features':geojsoninfo['features'].sort((a, b) => a.properties.DSZindex - b.properties.DSZindex)})
+    if (isLoading === false) setGeoJsonInfo({...geojsoninfo, 'features':geojsoninfo['features'].sort((a, b) => a.properties.DSZindex - b.properties.DSZindex)})
 
   }, [selected_course])
 
@@ -73,12 +73,13 @@ function DSPolyGons(){
   return(
     <>
         {isLoading === false && geojsoninfo['features'][0]['geometry']['coordinates'].length > 0 ?
-          geojsoninfo['features'].map((geojson_)=>{
+          geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
           // console.log(geojson_['properties'].Type)
             return <DSPolyGon 
               key = {geojson_['properties'].Type + geojson_['properties'].Hole}
               geojson_path = {geojson_['geometry']['coordinates'][0]}
               geojson_color = {baseinfo.area_def.filter((x)=> x.name === geojson_['properties'].Type )[0].color}
+              geojson = {geojson_}
             />
             }
           ):null
@@ -87,10 +88,10 @@ function DSPolyGons(){
   )
 }
 
-function DSPolyGon({geojson_path,geojson_color}){
+function DSPolyGon({geojson_path,geojson_color, geojson}){
 
   const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo} = useContext(BaseContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const [isMouseOver, setIsMouseOver] = useState(false)
 
   return(
@@ -106,8 +107,8 @@ function DSPolyGon({geojson_path,geojson_color}){
         onMouseover={() => setIsMouseOver(true)}
         onMouseout={() => setIsMouseOver(false)}
         onMousedown={(_polygon, mouseEvent) => {
-          console.log(_polygon,mouseEvent)
-          // setDownCount(downCount + 1)
+          console.log(geojson)
+          setPolyGon({...geojson})
         }}
       />            
     </>

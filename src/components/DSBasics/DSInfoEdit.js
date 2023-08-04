@@ -1,7 +1,7 @@
 import React, { useState,useRef, useEffect, useContext, Fragment ,createRef} from 'react';
 import { Auth } from 'aws-amplify';
 
-import { FormControl, InputLabel, Stack, Select, MenuItem, TextField, Avatar, Paper, List, Input, Typography ,Button, ButtonGroup} from '@mui/material';
+import { FormControl, InputLabel, Stack, Select, MenuItem, Box, TextField, Avatar, Paper, List, Input, Typography ,Button, ButtonGroup} from '@mui/material';
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 
@@ -139,7 +139,8 @@ export default function DSInfoEdit() {
   return (
     <>
     {selected_course_info === null? null:
-    <Fragment>
+    // <Box sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , flexDirection: 'column', display: 'flex'}}>
+      <Fragment>
       {/* <Stack direction="column" spacing={0} alignItems="center" mt = {1}> */}
         <Typography variant="button" display="block" gutterBottom>
           {selected_course_info.name}
@@ -187,6 +188,7 @@ export default function DSInfoEdit() {
         <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel</Button>
         {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
       </ButtonGroup>
+      {/* </Box> */}
       </Fragment>
       }
     </>

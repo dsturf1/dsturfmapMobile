@@ -4,6 +4,7 @@ import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormCont
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
 
 import DSInfoEdit from "../DSBasics/DSInfoEdit.js"
+import DSPolySelect from "../DSBasics/DSPolySelect"
 import DSCoursePicker from './DSCoursePicker.js';
 import DSGeoJsonMap from './DSGeoJsonMap.js';
 
@@ -27,7 +28,14 @@ export default function DSGeoJsonMain() {
             {/* <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
               <DSMapCommand/>
             </Stack> */}
-            {selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit/>}
+            {selected_course === 'MGC000'? 
+              <DSCoursePicker/>
+              :
+              <Stack direction="column" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
+                <DSInfoEdit/>
+                <DSPolySelect/>
+              </Stack> 
+            }
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>
