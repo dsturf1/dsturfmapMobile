@@ -36,7 +36,8 @@ export function DSCourseNameInput({Hole_, name_, ref_, index_}){
 
 export default function DSInfoEdit() {
 
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
+    selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
   const [numHole, setNumHole] = React.useState(9);
   const Textrefs = useRef([]);
@@ -80,7 +81,9 @@ export default function DSInfoEdit() {
     let geojsoninfo_ = {};
 
     if(selected_mode === "SearchSelected") geojsoninfo_ = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
-    else geojsoninfo_ = {...JSON.parse(JSON.stringify(geojsoninfo))}
+    else geojsoninfo_ = {...geojsoninfo}
+
+    console.log("Saved Polgon:",  geojsoninfo_ )
 
     PostGeoJsonInfo(geojsoninfo_, selected_course_info.id);
 

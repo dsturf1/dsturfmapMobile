@@ -18,7 +18,7 @@ export const BaseProvider = (props) => {
     const [maxid, setMaxId] = useState();
     const [mapinfo, setMapInfo] = useState(mapinfo_ini);
     const [selected_course_info, setSelectedCourseInfo] = useState(null);
-    const [selected_polygon, setPolyGon] = useState(polygon_info_ini);
+    const [selected_polygon, setPolyGon] = useState(null);
     
   
     const url = BASEURL + '/baseinfo?'+  new URLSearchParams({user: props.user.username });

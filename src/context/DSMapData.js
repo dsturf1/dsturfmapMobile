@@ -14,7 +14,8 @@ export const MapQProvider = (props) => {
   const[geojsoninfo, setGeoJsonInfo] = useState([geojsoninfo_blank]);
   const[isLoading, setIsLoading] = useState(true);
 
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo} = useContext(BaseContext);  
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, 
+    maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);  
   
   useEffect(() => {
       // 처음 데이터를 읽어서 성공하면 State를 Update
@@ -41,12 +42,17 @@ export const MapQProvider = (props) => {
           const fetchData = await fetch(url_, myInit).then((response) => response.json())
           setIsLoading(false)
           console.log('Map Data is :',selected_course, fetchData.body, isLoading)
-          setGeoJsonInfo(fetchData.body)
+          // setGeoJsonInfo(fetchData.body)
+          setGeoJsonInfo({...fetchData.body, 'features':fetchData.body['features'].sort((a, b) =>  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+            baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)})
 
         } catch (err) { console.log('Workinfo Fetching Error', err) }
     }
 
       fetchWorkInfo();
+      // setSelectedCourseInfo(null)
+      setPolyGon(null)
+
 
   },[selected_course]);
 

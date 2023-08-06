@@ -31,7 +31,7 @@ const DSGeoJsonMap = () => {
     if (!map) return
     if (selected_course === "MGC000") return
     setMode("MAPEdit")
-    if (isLoading === false) setGeoJsonInfo({...geojsoninfo, 'features':geojsoninfo['features'].sort((a, b) => a.properties.DSZindex - b.properties.DSZindex)})
+
 
   }, [selected_course])
 
@@ -56,7 +56,7 @@ const DSGeoJsonMap = () => {
 
         <ZoomControl position={kakao.maps.ControlPosition.TOPRIGHT} />
         <MapTypeControl />
-        <DSPolyGons/>
+        {selected_mode === "MAPGEOJSONEDIT"? null: <DSPolyGons/>}
       </Map>
     </Fragment>
   )
@@ -103,12 +103,12 @@ function DSPolyGon({geojson_path,geojson_color, geojson}){
         strokeOpacity={0.8} // 선의 불투명도 입니다 1에서 0 사이의 값이며 0에 가까울수록 투명합니다
         strokeStyle={"solid"} // 선의 스타일입니다
         fillColor={geojson_color} // 채우기 색깔입니다
-        fillOpacity={isMouseOver ?0.3:0.1} // 채우기 불투명도 입니다
+        fillOpacity={selected_polygon===null? 0.1: (selected_polygon.properties.Id === geojson.properties.Id? 0.4:(isMouseOver ?0.2:0.1))} // 채우기 불투명도 입니다
         onMouseover={() => setIsMouseOver(true)}
         onMouseout={() => setIsMouseOver(false)}
         onMousedown={(_polygon, mouseEvent) => {
-          console.log(geojson)
           setPolyGon({...geojson})
+          // console.log(selected_polygon)
         }}
       />            
     </>

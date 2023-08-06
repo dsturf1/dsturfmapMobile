@@ -8,28 +8,25 @@ import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
-import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
+import { COURSEBLANK , GEOJSONBLANK, POLYGONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
+import {JsonEditor} from "react-jsondata-editor";
 
 
 export default function DSPolyJSONEdit() {
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
+    selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
 
+  const [input, setInput] = useState('')
   
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
-  const handleChange = (event) => {
+  useEffect(() => {
 
-    setBaseInfo({
-      ...baseinfo, area_def:[...baseinfo.area_def.filter((x)=>x.name !== event.target.name),
-        {...baseinfo.area_def.filter((x)=>x.name === event.target.name)[0], 
-          display: event.target.checked}].sort((a, b) => a.TypeId - b.TypeId)})
-    
-    // setState({
-    //   ...state,
-    //   [event.target.name]: event.target.checked,
-    // });
-    // console.log(baseinfo.area_def((x)=>x.name !== event.target.name))
-  };
+    setInput(JSON.stringify(selected_polygon.properties));
+    console.log(input)
+  },[selected_polygon]);
 
   return (
-  );
-}
+    <JsonEditor jsonObject={input} onChange={(output)=>{console.log(output)}}/>
+
+  )
+  }

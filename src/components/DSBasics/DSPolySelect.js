@@ -34,15 +34,17 @@ export default function DSPolySelect() {
     <Box
           sx={{
             width:'100%',
-            backgroundColor: '#adb5bd',
+            backgroundColor: '#e5e5e5',
           }}
         >
-    <FormGroup>
+    <FormGroup       row = {true} sx ={{m : 0}}>
       {baseinfo.area_def.map((x)=>
-      <FormControlLabel control={
+      <FormControlLabel sx ={{m : 0}}
+      control={
         <Checkbox 
-          checked={x.display}         
-          sx={{
+          checked={x.display}
+          size="small"         
+                    sx={{
           color: x.color,
           '&.Mui-checked': {
             color: x.color,
@@ -51,8 +53,13 @@ export default function DSPolySelect() {
           name = {x.name}
           onChange={handleChange}
           />} 
-        label= {x.name} />
+          label={
+            <Box component="div" fontSize={15} m={0}>
+           {x.name}
+             </Box>
+       } />
         )}
+
     </FormGroup>
     </Box>
 
