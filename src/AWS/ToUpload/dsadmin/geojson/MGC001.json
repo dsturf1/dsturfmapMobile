@@ -11,18 +11,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "747fa4a2-006b-4373-a370-40ca6c014a8a",
         "Client": "올림픽CC",
         "Course": "",
-        "Hole": "1",
+        "Hole": 1,
         "Type": "전면",
         "TypeId": 0,
-        "DSZindex": 1,
-        "Color": "#00a0e9",
-        "Area": 541644.0568733198,
-        "Centroid": [
-          126.8920611117,
-          37.7211087833
-        ]
+        "DSZindex": 1
       },
       "geometry": {
         "type": "Polygon",
@@ -120,18 +115,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "5cc6c47d-c7ae-4c66-8c18-b941ab9acacd",
         "Client": "올림픽CC",
         "Course": "",
-        "Hole": "1",
+        "Hole": 1,
         "Type": "홀영역",
         "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 25128.363196308,
-        "Centroid": [
-          126.8921018929,
-          37.7239772426
-        ]
+        "DSZindex": 3
       },
       "geometry": {
         "type": "Polygon",
@@ -245,18 +235,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "b6667985-6e32-42a2-8906-59f97952ef9d",
         "Client": "올림픽CC",
         "Course": "",
-        "Hole": "2",
+        "Hole": 2,
         "Type": "홀영역",
         "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 27494.593637798,
-        "Centroid": [
-          126.8909985144,
-          37.7238964255
-        ]
+        "DSZindex": 3
       },
       "geometry": {
         "type": "Polygon",
@@ -358,18 +343,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "5a518ed3-8cab-48f9-97e2-37e8f9a07c35",
         "Client": "올림픽CC",
         "Course": "",
-        "Hole": "9",
+        "Hole": 9,
         "Type": "홀영역",
         "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 9556.8022323899,
-        "Centroid": [
-          126.8932186112,
-          37.7233393921
-        ]
+        "DSZindex": 3
       },
       "geometry": {
         "type": "Polygon",
@@ -443,18 +423,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "e3959b18-e1ba-4ff0-843e-134651c72742",
         "Client": "올림픽CC",
         "Course": "",
-        "Hole": "1",
+        "Hole": 1,
         "Type": "훼어웨이",
         "TypeId": 0,
-        "DSZindex": 6,
-        "Color": "#FFFF33",
-        "Area": 7311.3909939621,
-        "Centroid": [
-          126.8917944746,
-          37.7241198539
-        ]
+        "DSZindex": 6
       },
       "geometry": {
         "type": "Polygon",
