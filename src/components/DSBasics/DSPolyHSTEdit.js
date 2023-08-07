@@ -52,6 +52,8 @@ export default function DSPolyHSTEdit() {
 
   },[selected_polygon]);
 
+
+
   return (
     isLoading=== false?
       <Fragment>
@@ -121,8 +123,9 @@ export default function DSPolyHSTEdit() {
           
         />
 
+
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
-          <Button variant="outlined"  onClick={() => {setMode("MAPGEOJSONEDIT")}}> New Polygon</Button>
+          <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> Polygon Edit</Button>
           <Button variant="outlined"  onClick={() => {setMode("MAPSelect")}}> Edit Polygon</Button>
           {/* <Button variant="outlined"  onClick={() => {setMode("MAPSelect")}}> </Button> */}
         </ButtonGroup>
