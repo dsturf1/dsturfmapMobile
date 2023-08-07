@@ -128,7 +128,8 @@ function DSPolyGon({geojson_path,geojson_color, geojson}){
 function DSPolyEdit(){
 
   const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo} = useContext(BaseContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
+    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const managerRef = useRef(null)
 
   const { kakao } = window;
@@ -142,7 +143,9 @@ function DSPolyEdit(){
   }
 
   useEffect(() => {
-    if (selected_mode === "MAPGEOJSONEDIT") selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
+    if (selected_mode === "MAPGEOJSONEDIT") {
+      if (selected_polygon === null) selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
+    }
     if (selected_mode === "MAPEdit" && managerRef.current!== null) {
 
       managerRef.current.cancel();
@@ -179,6 +182,7 @@ function DSPolyEdit(){
           }}
           onDrawend = {(data)=>{
             managerRef.current.cancel();
+            selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
             // setMode("MAPEdit");
             // data.remove(data.getOverlays())
             // if (managerRef.current.getOverlays().polygon.length >0) managerRef.current.remove(managerRef.current.getOverlays().polygon[0]);
