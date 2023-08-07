@@ -21,3 +21,11 @@ export function ds_geojson2kakao(geojson_){
     }
 return path_;
 }
+
+export function ds_mgrData2geojson(mgr_){
+  var path_ = []
+  for (const p of mgr_) {
+    path_.push([p.x,p.y])
+  }
+return path_;
+};

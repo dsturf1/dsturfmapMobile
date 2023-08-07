@@ -1,9 +1,14 @@
 import React, { useState, useEffect, useContext, useRef, Fragment } from 'react';
 import { Map, MapMarker, ZoomControl, MapTypeControl,StaticMap, Polygon, DrawingManager} from 'react-kakao-maps-sdk';
-import { ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Paper, List, Typography ,Button} from '@mui/material';
+import { Box, ListItemButton, ListItemText, ListItemAvatar, Avatar, Paper, List, ButtonGroup ,Button} from '@mui/material';
 import html2canvas from "html2canvas";
+
+import Fab from '@mui/material/Fab';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+
 import saveAs from "file-saver";
-import  {ds_mgrData2kakao, ds_geojson2kakao}from "../DSBasics/DSCordUtils.js"
+import  {ds_mgrData2kakao, ds_geojson2kakao, ds_mgrData2geojson}from "../DSBasics/DSCordUtils.js"
 
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
 
@@ -43,6 +48,8 @@ const DSGeoJsonMap = () => {
 
   return (
     <Fragment>
+      
+      <Box height="100%" sx={{ position:'relative', p: 0, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 0}}>
       <Map 
         center={{lat:mapinfo.center[1], lng:mapinfo.center[0]}}
         style={{
@@ -66,6 +73,7 @@ const DSGeoJsonMap = () => {
         {console.log("@MAP", selected_mode)}
         
       </Map>
+      </Box>
     </Fragment>
   )
 }
@@ -131,6 +139,7 @@ function DSPolyEdit(){
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
     loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const managerRef = useRef(null)
+  const [local_mode, setLocalMode] = useState('DSMAPGEOJSON_INI')
 
   const { kakao } = window;
 
@@ -144,7 +153,10 @@ function DSPolyEdit(){
 
   useEffect(() => {
     if (selected_mode === "MAPGEOJSONEDIT") {
-      if (selected_polygon === null) selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
+      if (local_mode === 'DSMAPGEOJSON_ADD') {
+        managerRef.current.cancel()
+        selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
+      }
     }
     if (selected_mode === "MAPEdit" && managerRef.current!== null) {
 
@@ -153,21 +165,29 @@ function DSPolyEdit(){
 
       console.log(polygon_in_mgr)
       // if (polygon_in_mgr.length>0)
-      polygon_in_mgr.polygon.forEach((poly_) => {if (managerRef.current.getOverlays().polygon.length >0) managerRef.current.remove(managerRef.current.getOverlays().polygon[0]);})
+      polygon_in_mgr.polygon.forEach((poly_) => {
+
+        console.log(ds_mgrData2geojson(poly_.points))
+        if (managerRef.current.getOverlays().polygon.length >0) {
+          // console.log(managerRef.current.getOverlays().polygon[0])
+        managerRef.current.remove(managerRef.current.getOverlays().polygon[0]);
+        }
+      })
       
 
     }
 
-  },[selected_mode]);
+  },[selected_mode, local_mode]);
 
   return(
     <>
         {isLoading === false?
+      <Fragment>
         <DrawingManager
           ref={managerRef}
-          drawingMode={[
-            kakao.maps.drawing.OverlayType.POLYGON,
-          ]}
+          // drawingMode={[
+          //   kakao.maps.drawing.OverlayType.POLYGON,
+          // ]}
           guideTooltip={["draw", "drag", "edit"]}
           polygonOptions={{
             draggable: true,
@@ -182,15 +202,32 @@ function DSPolyEdit(){
           }}
           onDrawend = {(data)=>{
             managerRef.current.cancel();
-            selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
+            setLocalMode('DSMAPGEOJSON_INI')
+            // selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
             // setMode("MAPEdit");
             // data.remove(data.getOverlays())
             // if (managerRef.current.getOverlays().polygon.length >0) managerRef.current.remove(managerRef.current.getOverlays().polygon[0]);
             // console.log("DrawEnd", managerRef.current.getData().polygon[0]);
           }}
         />
+        {selected_mode === "MAPGEOJSONEDIT"?
+         <Fab color="primary" aria-label="add" size="small" variant="extended"
+         sx ={{
+             position: 'absolute',
+             top: 16,
+             left: 16,
+         }}
+         onClick={() => {setLocalMode('DSMAPGEOJSON_ADD'); console.log(local_mode)}}
+         disabled = {local_mode=== 'DSMAPGEOJSON_ADD'}
+       >
+         <AddIcon />
+         New Polygon
+       </Fab>:null}
+
+    </Fragment>
         :null
         }
+
     </>
   )
 }
