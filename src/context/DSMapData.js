@@ -13,6 +13,7 @@ export const MapQProvider = (props) => {
 
   const[geojsoninfo, setGeoJsonInfo] = useState([geojsoninfo_blank]);
   const[isLoading, setIsLoading] = useState(true);
+  const[tpoly, setTPoly] = useState([])
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, 
     maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);  

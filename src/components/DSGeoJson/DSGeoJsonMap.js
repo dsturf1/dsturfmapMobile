@@ -13,6 +13,7 @@ import  {ds_mgrData2kakao, ds_geojson2kakao, ds_mgrData2geojson}from "../DSBasic
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
 import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK } from '../../constant/urlconstants';
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
+import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon } from "@turf/turf";
 
 const DSGeoJsonMap = () => {
 
@@ -21,6 +22,7 @@ const DSGeoJsonMap = () => {
 
   const [info, setInfo] = useState()
   const [markers, setMarkers] = useState([])
+
 
   const mapRef = useRef()
 
@@ -60,6 +62,11 @@ const DSGeoJsonMap = () => {
         }}
         level={mapinfo.level}
         ref={mapRef}
+        onClick={(_t, mouseEvent) => {
+        let pt = turfpoint([mouseEvent.latLng.getLng(), mouseEvent.latLng.getLat()])
+        console.log(pt, tpoly)
+        }
+        }
         onBoundsChanged={(map) => setMapInfo({center: [map.getCenter().getLng(),map.getCenter().getLat()],level:map.getLevel(),
           bounds:{
             sw: [map.getBounds().getSouthWest().getLng(), map.getBounds().getSouthWest().getLat()],
@@ -91,9 +98,11 @@ function DSPolyGons(){
   return(
     <>
         {isLoading === false && geojsoninfo['features'][0]['geometry']['coordinates'].length > 0 ?
-          // geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
-            geojsoninfo['features'].map((geojson_)=>{
-          console.log("Drawing", geojson_, baseinfo.area_def.filter((x)=> x.name === geojson_['properties'].Type )[0].color)
+          geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
+            // geojsoninfo['features'].map((geojson_)=>{
+          // console.log("Drawing", geojson_, baseinfo.area_def.filter((x)=> x.name === geojson_['properties'].Type )[0].color)
+           setTPoly([...tpoly, turfpolygon(geojson_['geometry']['coordinates'])])
+           
             return <DSPolyGon 
               key = {geojson_['properties'].Id}
               geojson_path = {geojson_['geometry']['coordinates'][0]}
