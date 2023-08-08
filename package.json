@@ -13,6 +13,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@turf/turf": "^6.5.0",
     "aws-amplify": "^5.3.5",
     "file-saver": "^2.0.5",
     "handsontable": "^13.0.0",
