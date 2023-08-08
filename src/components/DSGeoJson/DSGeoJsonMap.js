@@ -162,6 +162,10 @@ function DSPolyEdit(){
         managerRef.current.cancel()
         selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
       }
+      // if (local_mode === 'DSMAPGEOJSON_EDIT') {
+      //   managerRef.current.cancel()
+      //   selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
+      // }
     }
     if (selected_mode === "MAPEdit" && managerRef.current!== null) {
 
