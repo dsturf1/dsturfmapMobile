@@ -11,6 +11,8 @@ import saveAs from "file-saver";
 import  {ds_mgrData2kakao, ds_geojson2kakao, ds_mgrData2geojson}from "../DSBasics/DSCordUtils.js"
 
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
+import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK } from '../../constant/urlconstants';
+import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
 const DSGeoJsonMap = () => {
 
@@ -43,7 +45,7 @@ const DSGeoJsonMap = () => {
     // console.log(mapRef.current)
 
 
-  }, [selected_course])
+  }, [selected_course, geojsoninfo])
 
 
   return (
@@ -89,10 +91,11 @@ function DSPolyGons(){
   return(
     <>
         {isLoading === false && geojsoninfo['features'][0]['geometry']['coordinates'].length > 0 ?
-          geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
-          // console.log(geojson_['properties'].Type)
+          // geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
+            geojsoninfo['features'].map((geojson_)=>{
+          console.log("Drawing", geojson_, baseinfo.area_def.filter((x)=> x.name === geojson_['properties'].Type )[0].color)
             return <DSPolyGon 
-              key = {geojson_['properties'].Type + geojson_['properties'].Hole}
+              key = {geojson_['properties'].Id}
               geojson_path = {geojson_['geometry']['coordinates'][0]}
               geojson_color = {baseinfo.area_def.filter((x)=> x.name === geojson_['properties'].Type )[0].color}
               geojson = {geojson_}
@@ -141,6 +144,8 @@ function DSPolyEdit(){
   const managerRef = useRef(null)
   const [local_mode, setLocalMode] = useState('DSMAPGEOJSON_INI')
 
+  let polygon_info_ini = JSON.parse(JSON.stringify(POLYGONBLANK));
+
   const { kakao } = window;
 
   
@@ -166,8 +171,9 @@ function DSPolyEdit(){
       console.log(polygon_in_mgr)
       // if (polygon_in_mgr.length>0)
       polygon_in_mgr.polygon.forEach((poly_) => {
-
-        console.log(ds_mgrData2geojson(poly_.points))
+        polygon_info_ini = {...polygon_info_ini,geometry:{coordinates: [ds_mgrData2geojson(poly_.points)]},properties:{ ...polygon_info_ini.properties ,Id:uuidv4()}}
+        console.log(polygon_info_ini, geojsoninfo,{...geojsoninfo, features:[...geojsoninfo.features,polygon_info_ini]})
+        setGeoJsonInfo({...geojsoninfo, features:[...geojsoninfo.features,polygon_info_ini]})
         if (managerRef.current.getOverlays().polygon.length >0) {
           // console.log(managerRef.current.getOverlays().polygon[0])
         managerRef.current.remove(managerRef.current.getOverlays().polygon[0]);

@@ -43,22 +43,19 @@
 
     export const POLYGONBLANK =   {
       "type": "Feature",
-          "properties": {
-            "Name": "Contour_",
-            "Client": "",
-            "Course": "",
-            "Hole": "",
-            "Type": "",
-            "TypeId": 0,
-            "DSZindex": 1,
-            "Color": "#00a0e9",
-            "Area": 0,
-            "Centroid": []
-          },
-          "geometry": {
-            "type": "Polygon",
-            "coordinates": []
-          }
+      "properties": {
+        "Name": "Contour_",
+        "Id":"",
+        "Client": "",
+        "Course": "",
+        "Hole": "",
+        "Type": "Undefined",
+        "TypeId": 0,
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": []
+      }
     };
 
 

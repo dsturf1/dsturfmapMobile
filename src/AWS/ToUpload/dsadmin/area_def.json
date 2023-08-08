@@ -2,7 +2,7 @@
   {
     "TypeId": 0,
     "name": "Undefined",
-    "color": "#6c757d",
+    "color": "#00a0e9",
     "display": true,
     "DSZindex": 100
   },
@@ -47,6 +47,5 @@
     "color": "#FFFF33",
     "display": true,
     "DSZindex": 6
-  },
-
+  }
 ]
