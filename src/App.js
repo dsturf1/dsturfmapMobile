@@ -2,6 +2,7 @@
 import DSSearchMain from "./components/DSSearch/DSSearchMain.js";
 import DSNaverMain from "./components/DSNaver/DSNaverMain.js";
 import DSMapMain from "./components/DSGeoJson/DSGeoJsonMain.js";
+import DSMapSettingMain from "./components/DSSetting/DSMapSettingMain.js";
 import ResponsiveAppBar from './components/ResponsiveAppBar';
 import React, { Fragment} from 'react';
 import { Routes, Route } from "react-router-dom";
@@ -41,8 +42,8 @@ const App = () => {
               <Route path="dssearch" element={    <DSSearchMain/>}></Route>
               <Route path="dsnaver" element={<DSNaverMain />}></Route>
               <Route path="dsmapedit" element={<DSMapMain/>}></Route>
-              {/* <Route path="dscalendar" element={<DSPlanCalendarMain/>}></Route>
-              <Route path="dssetting" element={<DSBaseChemMain />}></Route> */}
+              {/* <Route path="dsmapedit" element={<DSMapMain/>}></Route> */}
+              <Route path="dssetting" element={<DSMapSettingMain/>}></Route>
               {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>
               <Route path="dshuman" element={<DSBaseHumanMain />}></Route>
               <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}

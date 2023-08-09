@@ -57,7 +57,7 @@ export default function DSCoursePicker() {
   return (
     <Paper style={{height: '100%', overflow: 'auto'}}>
       <List dense={true}>
-        { Object.keys(baseinfo).length >0 && baseinfo.course_info.length === 0? null: <DSList courses_ = {baseinfo.course_info}/>}
+        { Object.keys(baseinfo).length >0 && baseinfo.course_info.length > 0? <DSList courses_ = {baseinfo.course_info}/>:null}
       </List>
     </Paper>
   );

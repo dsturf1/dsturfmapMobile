@@ -25,7 +25,7 @@ const pages = [
   {name:'관심골프장', url:'dsmapedit'},
   {name:'Naver', url:'dsnaver'},
   // {name:'방제일지보기', url:'dswork'},
-  // {name:'방제자료설정', url:'dssetting'},
+  {name:'설정', url:'dssetting'}
   // {name:'일정작성', url:'dsschedule'},
   // {name:'직원등록', url:'dshuman'},
   // {name:'기타등록', url:'dsother'},

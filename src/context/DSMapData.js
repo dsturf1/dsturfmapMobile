@@ -61,7 +61,7 @@ export const MapQProvider = (props) => {
 
   return(
 
-  <MapQContext.Provider  value={{geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading}}>
+  <MapQContext.Provider  value={{geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly}}>
       {props.children}
   </MapQContext.Provider >
   

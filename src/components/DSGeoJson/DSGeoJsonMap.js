@@ -8,7 +8,7 @@ import AddIcon from '@mui/icons-material/Add';
 import EditIcon from '@mui/icons-material/Edit';
 
 import saveAs from "file-saver";
-import  {ds_mgrData2kakao, ds_geojson2kakao, ds_mgrData2geojson}from "../DSBasics/DSCordUtils.js"
+import  {ds_mgrData2kakao, ds_geojson2kakao, ds_mgrData2geojson, ds_geojson2kakaoV2}from "../DSBasics/DSCordUtils.js"
 
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
 import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK } from '../../constant/urlconstants';
@@ -17,8 +17,8 @@ import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon } fro
 
 const DSGeoJsonMap = () => {
 
-  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo} = useContext(BaseContext);
+  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly} = useContext(MapQContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo,selected_polygon, setPolyGon} = useContext(BaseContext);
 
   const [info, setInfo] = useState()
   const [markers, setMarkers] = useState([])
@@ -28,14 +28,23 @@ const DSGeoJsonMap = () => {
 
   const { kakao } = window;
 
-
-
-
-
   useEffect(() => {
     if (selected_course === "MGC000") setMode("MAPSelect")
 
   }, [])
+
+  useEffect(() => {
+
+    let map = mapRef.current;
+
+    if (!map) return
+    if (selected_course === "MGC000") return
+    setMode("MAPEdit")
+    // console.log(mapRef.current)
+
+
+  }, [selected_course, geojsoninfo])
+
 
   useEffect(() => {
 
@@ -64,9 +73,8 @@ const DSGeoJsonMap = () => {
         ref={mapRef}
         onClick={(_t, mouseEvent) => {
         let pt = turfpoint([mouseEvent.latLng.getLng(), mouseEvent.latLng.getLat()])
-        console.log(pt, tpoly)
-        }
-        }
+        if (tpoly.filter((x)=> booleanPointInPolygon(pt, x)).length === 0) setPolyGon(null)
+        }}
         onBoundsChanged={(map) => setMapInfo({center: [map.getCenter().getLng(),map.getCenter().getLat()],level:map.getLevel(),
           bounds:{
             sw: [map.getBounds().getSouthWest().getLng(), map.getBounds().getSouthWest().getLat()],
@@ -79,7 +87,7 @@ const DSGeoJsonMap = () => {
         <MapTypeControl />
         <DSPolyEdit/>
         {selected_mode === "MAPGEOJSONEDIT"? null: <DSPolyGons/>}
-        {console.log("@MAP", selected_mode)}
+        {/* {console.log("@MAP", selected_mode)} */}
         
       </Map>
       </Box>
@@ -91,18 +99,31 @@ export default DSGeoJsonMap;
 
 function DSPolyGons(){
 
-  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
+  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly} = useContext(MapQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo} = useContext(BaseContext);
+
+  useEffect(() => {
+
+    let tpoly_ = [];
+
+    if(isLoading === false && geojsoninfo['features'].length > 0)
+    geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
+     let tmp = [...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]
+
+     tpoly_.push(turfpolygon([tmp]))
+     })
+
+
+     setTPoly([...tpoly_])
+
+  }, [baseinfo.area_def, geojsoninfo])
   
 
   return(
     <>
-        {isLoading === false && geojsoninfo['features'][0]['geometry']['coordinates'].length > 0 ?
+        {isLoading === false && geojsoninfo['features'].length > 0 ?
           geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
-            // geojsoninfo['features'].map((geojson_)=>{
-          // console.log("Drawing", geojson_, baseinfo.area_def.filter((x)=> x.name === geojson_['properties'].Type )[0].color)
-           setTPoly([...tpoly, turfpolygon(geojson_['geometry']['coordinates'])])
-           
+          
             return <DSPolyGon 
               key = {geojson_['properties'].Id}
               geojson_path = {geojson_['geometry']['coordinates'][0]}
@@ -137,7 +158,7 @@ function DSPolyGon({geojson_path,geojson_color, geojson}){
         onMouseout={() => setIsMouseOver(false)}
         onMousedown={(_polygon, mouseEvent) => {
           setPolyGon({...geojson})
-          // console.log(selected_polygon)
+          console.log(_polygon.getPath())
         }}
       />            
     </>
@@ -153,7 +174,7 @@ function DSPolyEdit(){
   const managerRef = useRef(null)
   const [local_mode, setLocalMode] = useState('DSMAPGEOJSON_INI')
 
-  let polygon_info_ini = JSON.parse(JSON.stringify(POLYGONBLANK));
+  
 
   const { kakao } = window;
 
@@ -171,28 +192,40 @@ function DSPolyEdit(){
         managerRef.current.cancel()
         selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
       }
-      // if (local_mode === 'DSMAPGEOJSON_EDIT') {
-      //   managerRef.current.cancel()
-      //   selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
-      // }
+      if (selected_polygon !== null) {
+        managerRef.current.cancel()
+        // selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
+        // console.log(ds_geojson2kakaoV2(selected_polygon['geometry']['coordinates'][0]))
+        managerRef.current.put(kakao.maps.drawing.OverlayType.POLYGON, ds_geojson2kakaoV2(selected_polygon['geometry']['coordinates'][0]))
+      }
     }
     if (selected_mode === "MAPEdit" && managerRef.current!== null) {
 
       managerRef.current.cancel();
       let polygon_in_mgr = managerRef.current.getData();
 
-      console.log(polygon_in_mgr)
+      console.log("Manager Polygon", polygon_in_mgr)
       // if (polygon_in_mgr.length>0)
+      let new_polygons = [];
+
       polygon_in_mgr.polygon.forEach((poly_) => {
+        let polygon_info_ini = JSON.parse(JSON.stringify(POLYGONBLANK));
+
         polygon_info_ini = {...polygon_info_ini,geometry:{coordinates: [ds_mgrData2geojson(poly_.points)]},properties:{ ...polygon_info_ini.properties ,Id:uuidv4()}}
-        console.log(polygon_info_ini, geojsoninfo,{...geojsoninfo, features:[...geojsoninfo.features,polygon_info_ini]})
-        setGeoJsonInfo({...geojsoninfo, features:[...geojsoninfo.features,polygon_info_ini]})
+        new_polygons.push(polygon_info_ini)
+
         if (managerRef.current.getOverlays().polygon.length >0) {
           // console.log(managerRef.current.getOverlays().polygon[0])
         managerRef.current.remove(managerRef.current.getOverlays().polygon[0]);
         }
       })
-      
+      if(new_polygons.length>0){
+        if (selected_polygon === null) setGeoJsonInfo({...geojsoninfo, features:[...geojsoninfo.features,...new_polygons].sort((a, b) =>  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+            baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)})
+        else setGeoJsonInfo({...geojsoninfo, features:[...geojsoninfo.features.filter((x) => x.properties.Id !== selected_polygon.properties.Id),
+          {...selected_polygon, geometry:new_polygons[0].geometry}].sort((a, b) =>  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+          baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)})
+      }
 
     }
 
@@ -222,21 +255,17 @@ function DSPolyEdit(){
           onDrawend = {(data)=>{
             managerRef.current.cancel();
             setLocalMode('DSMAPGEOJSON_INI')
-            // selectOverlay(kakao.maps.drawing.OverlayType.POLYGON)
-            // setMode("MAPEdit");
-            // data.remove(data.getOverlays())
-            // if (managerRef.current.getOverlays().polygon.length >0) managerRef.current.remove(managerRef.current.getOverlays().polygon[0]);
-            // console.log("DrawEnd", managerRef.current.getData().polygon[0]);
+
           }}
         />
-        {selected_mode === "MAPGEOJSONEDIT"?
+        {selected_mode === "MAPGEOJSONEDIT" && selected_polygon === null?
          <Fab color="primary" aria-label="add" size="small" variant="extended"
          sx ={{
              position: 'absolute',
              top: 16,
              left: 16,
          }}
-         onClick={() => {setLocalMode('DSMAPGEOJSON_ADD'); console.log(local_mode)}}
+         onClick={() => {setLocalMode('DSMAPGEOJSON_ADD')}}
          disabled = {local_mode=== 'DSMAPGEOJSON_ADD'}
        >
          <AddIcon />

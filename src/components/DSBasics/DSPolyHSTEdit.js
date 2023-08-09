@@ -18,6 +18,7 @@ import { HotTable } from '@handsontable/react';
 import numbro from 'numbro';
 import languages from "numbro/dist/languages.min.js";
 import { registerAllModules } from 'handsontable/registry';
+import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, area } from "@turf/turf";
 
 registerAllModules();
 numbro.registerLanguage(languages["ko-KR"]);
@@ -37,13 +38,19 @@ export default function DSPolyHSTEdit() {
   
   useEffect(() => {
 
-    if (isLoading|| selected_polygon === null || selected_course_info === null) return
+    if (isLoading||  selected_course_info === null) return
 
     var rows_ = [];
 
-    rows_.push({title:'코스명',name:selected_polygon.properties.Course})    
-    rows_.push({title:'Type',name:selected_polygon.properties.Type})    
-    rows_.push({title:'홀',name:selected_polygon.properties.Hole})
+    let turfpolygon_ = {}
+    
+    if (selected_polygon !== null) turfpolygon_ = turfpolygon([[...selected_polygon['geometry']['coordinates'][0], selected_polygon['geometry']['coordinates'][0][0]]])
+
+    rows_.push({title:'코스명',name:selected_polygon === null? "":selected_polygon.properties.Course})    
+    rows_.push({title:'Type',name:selected_polygon === null? "":selected_polygon.properties.Type})    
+    rows_.push({title:'홀',name:selected_polygon === null? "":selected_polygon.properties.Hole})
+    rows_.push({title:'면적',name:selected_polygon === null? "":area(turfpolygon_).toFixed(1).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")})
+    rows_.push({title:'개요',name:selected_polygon === null? "":selected_polygon.properties.Desc})
     const hot = hotRef.current.hotInstance;
 
     hot.loadData(rows_)
@@ -65,7 +72,7 @@ export default function DSPolyHSTEdit() {
           startCols = {2}
 
           colHeaders={columns.map((x)=>x.header)}
-          colWidths={columns.map((x)=>x.width)}
+          // colWidths={columns.map((x)=>x.width)}
           columns = {columns.map((x)=>{return{data:x.name, readOnly: x.readOnly, type:x.type}})}
           // manualColumnResize={true}
           width={"100%"}
@@ -99,13 +106,16 @@ export default function DSPolyHSTEdit() {
           // afterChange={(x, source) =>{if(typeof x === 'undefined' && x.length>0) console.log({...rows[x[0]],[x[1]]:x[4]})}}
           afterChange={(changes, source) => {
             changes?.forEach(([row, prop, oldValue, newValue]) => {
-              console.log(row, newValue);
+              // console.log(row, newValue);
+
+              if (selected_polygon === null) return
 
               let newPolygon = {};
 
               if (row === 0) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Course:newValue}}  
               if (row === 1) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Type:newValue}}    
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
+              if (row === 4) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:newValue}}  
 
               setPolyGon({...newPolygon})
 
@@ -125,7 +135,9 @@ export default function DSPolyHSTEdit() {
 
 
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
-          <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> Polygon Edit</Button>
+          <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> 
+          
+          {selected_mode === "MAPEdit" && selected_polygon === null? "신규관심지역 생성":(selected_mode === "MAPEdit" && selected_polygon !== null? "선택된지역수정":"신규/수정모드 종료")}</Button>
         </ButtonGroup>
 
       </Fragment>

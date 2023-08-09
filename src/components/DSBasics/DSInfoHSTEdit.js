@@ -189,7 +189,7 @@ export default function DSInfoEdit() {
           width={"100%"}
           stretchH= {'all'}
           colHeaders={map_info_columns.map((x)=>x.header)}
-          colWidths={map_info_columns.map((x)=>x.width)}
+          // colWidths={map_info_columns.map((x)=>x.width)}
           columns = {map_info_columns.map((x)=>{return{data:x.name, readOnly: x.readOnly, type:x.type}})}
           // mergeCells={[
           //   { row: 0, col: 1, rowspan: 1, colspan: 3 }

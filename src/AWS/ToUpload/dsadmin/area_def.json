@@ -2,7 +2,7 @@
   {
     "TypeId": 0,
     "name": "Undefined",
-    "color": "#00a0e9",
+    "color": "#8d99ae",
     "display": true,
     "DSZindex": 100
   },
@@ -47,5 +47,12 @@
     "color": "#FFFF33",
     "display": true,
     "DSZindex": 6
+  },
+  {
+    "TypeId": 7,
+    "name": "기타관심지역",
+    "color": "#d90429",
+    "display": true,
+    "DSZindex": 200
   }
 ]

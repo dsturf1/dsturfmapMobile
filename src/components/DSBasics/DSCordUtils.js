@@ -13,7 +13,7 @@ return path_;
 export function ds_geojson2kakao(geojson_){
   var path_ = []
   for (const p of geojson_) {
-    path_.push(
+    path_.push( 
       {
         lat: p[1],
         lng: p[0],
@@ -29,3 +29,12 @@ export function ds_mgrData2geojson(mgr_){
   }
 return path_;
 };
+
+export function ds_geojson2kakaoV2(geojson_){
+  const { kakao } = window;
+  var path_ = []
+  for (const p of geojson_) {
+    path_.push( new kakao.maps.LatLng(p[1], p[0]));
+    }
+return path_;
+}
