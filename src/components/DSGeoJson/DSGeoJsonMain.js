@@ -6,7 +6,7 @@ import { BaseContext, SInfoContext, MapQContext} from "../../context"
 import DSInfoEdit from "../DSBasics/DSInfoHSTEdit.js"
 import DSPolySelect from "../DSBasics/DSPolySelect"
 import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
-import DSPolyJSONEdit from "../DSBasics/DSPolyJSONEdit"
+
 import DSCoursePicker from './DSCoursePicker.js';
 import DSGeoJsonMap from './DSGeoJsonMap.js';
 
