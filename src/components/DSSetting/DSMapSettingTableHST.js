@@ -46,6 +46,8 @@ export default function DSMapSettingTableHST({selected_menu}) {
       }    
   },[baseinfo, selected_menu]);
 
+  
+
 
 
 
