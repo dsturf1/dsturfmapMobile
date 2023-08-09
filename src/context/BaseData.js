@@ -62,11 +62,11 @@ export const BaseProvider = (props) => {
 
     useEffect(() => {
 
-      console.log('BaseInfo:', baseinfo, Object.keys(baseinfo).length === 0);
+      // console.log('BaseInfo:', baseinfo, Object.keys(baseinfo).length === 0);
 
       if (typeof baseinfo.course_info === 'undefined') return
       
-      console.log(Math.max(...baseinfo.course_info.map(x => x.id.slice(3,6))))
+      // console.log(Math.max(...baseinfo.course_info.map(x => x.id.slice(3,6))))
       setMaxId(Math.max(...baseinfo.course_info.map(x => x.id.slice(3,6))))
 
     },[baseinfo]);
