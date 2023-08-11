@@ -113,7 +113,12 @@ export default function DSPolyHSTEdit() {
               let newPolygon = {};
 
               if (row === 0) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Course:newValue}}  
-              if (row === 1) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Type:newValue}}    
+              if (row === 1) {
+                let TypeId_list = baseinfo.area_def.filter((x)=> x.Type === newValue);
+                let TypeId_ = TypeId_list.length>0? TypeId_list[0].TypeId:0
+                newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Type:newValue,  TypeId:TypeId_}}   
+                // console.log(newPolygon)
+              }
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
               if (row === 4) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:newValue}}  
 

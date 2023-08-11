@@ -118,6 +118,8 @@ export default function DSInfoEdit() {
 
     console.log("Saved Polgon:",  geojsoninfo_ )
 
+    
+
     PostGeoJsonInfo(geojsoninfo_, selected_course_info.id);
 
 
