@@ -84,7 +84,7 @@ export default function DSPolyHSTEdit() {
             
             if (row === 0) {
               cellMeta.type = 'dropdown';
-              cellMeta.source = selected_course_info !== null?selected_course_info.course_names:null
+              cellMeta.source = selected_course_info !== null?[...selected_course_info.course_names, "전코스"]:null
             }
             if (row === 1) {
               cellMeta.type = 'dropdown';
@@ -114,7 +114,7 @@ export default function DSPolyHSTEdit() {
 
               if (row === 0) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Course:newValue}}  
               if (row === 1) {
-                let TypeId_list = baseinfo.area_def.filter((x)=> x.Type === newValue);
+                let TypeId_list = baseinfo.area_def.filter((x)=> x.name === newValue);
                 let TypeId_ = TypeId_list.length>0? TypeId_list[0].TypeId:0
                 newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Type:newValue,  TypeId:TypeId_}}   
                 // console.log(newPolygon)

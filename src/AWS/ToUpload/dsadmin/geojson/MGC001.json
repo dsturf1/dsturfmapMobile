@@ -11,18 +11,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "e33dbc2d-5b60-4195-8610-26afa56a33e1",
         "Client": "포항cc",
         "Course": "전체",
-        "Hole": "0",
+        "Hole": 0,
         "Type": "전면",
-        "TypeId": 0,
-        "DSZindex": 1,
-        "Color": "#00a0e9",
-        "Area": 735721.8672146478,
-        "Centroid": [
-          129.3355273576,
-          36.223053632100005
-        ]
+        "TypeId": 1,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -660,18 +655,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "fa61e985-32d8-4f6b-a3ab-f94981cbd6db",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "0",
+        "Hole": 0,
         "Type": "코스",
-        "TypeId": 0,
-        "DSZindex": 2,
-        "Color": "#B71C1C",
-        "Area": 380743.10586078814,
-        "Centroid": [
-          129.3394719973,
-          36.22047544255
-        ]
+        "TypeId": 2,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -889,18 +879,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "cbecdff5-0308-4d70-bf14-c812f2576721",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "0",
+        "Hole": 0,
         "Type": "코스",
-        "TypeId": 0,
-        "DSZindex": 2,
-        "Color": "#B71C1C",
-        "Area": 353598.2072275656,
-        "Centroid": [
-          129.33370864975,
-          36.225233518699994
-        ]
+        "TypeId": 2,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -1358,18 +1343,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "280507a9-a857-4646-9085-58c8e75a187c",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "1",
+        "Hole": 1,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 17963.149201569737,
-        "Centroid": [
-          129.34159231820001,
-          36.22257282715
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -1583,18 +1563,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "218c4cf4-7f70-460e-8064-a358441fe3ce",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "2",
+        "Hole": 2,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 13848.562935861282,
-        "Centroid": [
-          129.3410020289,
-          36.222172714500005
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -1852,18 +1827,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "4bf60dc3-ba0d-423a-ad75-8b21d8437f8a",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "3",
+        "Hole": 3,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 27205.190909890625,
-        "Centroid": [
-          129.34054207474998,
-          36.220142307399996
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -2261,18 +2231,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "960fbd3c-e473-4bcb-89ea-4e484db49f27",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "4",
+        "Hole": 4,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 18365.2317049157,
-        "Centroid": [
-          129.33991027550002,
-          36.219217169749996
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -2530,18 +2495,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "24a542d9-5692-4547-8351-32b56297286a",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "5",
+        "Hole": 5,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 18293.214967660686,
-        "Centroid": [
-          129.33899929765,
-          36.21898112415
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -2823,18 +2783,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "0731bafc-e67b-4248-9cc6-7946249583bf",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "6",
+        "Hole": 6,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 5244.102854393751,
-        "Centroid": [
-          129.3386962409,
-          36.2174525424
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -3012,18 +2967,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "90e28c55-ad2b-4356-9dc0-f1f0772d1cc1",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "7",
+        "Hole": 7,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 31081.86216918054,
-        "Centroid": [
-          129.33684789575,
-          36.22078843475
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -3269,18 +3219,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "65bf8e89-7701-4b64-883a-15c4e2a10d40",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "8",
+        "Hole": 8,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 10372.195830087636,
-        "Centroid": [
-          129.33759905355,
-          36.222381872650004
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -3426,18 +3371,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "50a641a5-e67c-4e7f-8fd4-e0a577f37a9e",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "9",
+        "Hole": 9,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 15464.400668852082,
-        "Centroid": [
-          129.33866430645,
-          36.222382260100005
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -3671,18 +3611,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "2a0010a5-f254-4866-98d1-c4d37acdfcbd",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "1",
+        "Hole": 1,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 17886.200085123837,
-        "Centroid": [
-          129.3373123727,
-          36.22506870435
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -3900,18 +3835,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "55272c23-bdd3-4555-8b4a-c6f7a76b7753",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "2",
+        "Hole": 2,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 7706.130815400478,
-        "Centroid": [
-          129.3339165472,
-          36.22553562305
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -4117,18 +4047,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "b53f664e-8165-483d-a234-774e16acf19f",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "3",
+        "Hole": 3,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 14756.0611715331,
-        "Centroid": [
-          129.33346113515,
-          36.2272012922
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -4382,18 +4307,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "c5ca22c1-4ab1-4a50-a3ab-f33147d4acf7",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "4",
+        "Hole": 4,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 15469.629597639194,
-        "Centroid": [
-          129.333816703,
-          36.228718639899995
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -4651,18 +4571,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "c8e8515a-d7d4-4710-a907-d89f654e09ce",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "5",
+        "Hole": 5,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 12945.405359815011,
-        "Centroid": [
-          129.331590211,
-          36.228036283349994
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -4808,18 +4723,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "663fea8e-5cc0-408a-9fe1-11c0d47cd2b8",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "6",
+        "Hole": 6,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 23915.66618625519,
-        "Centroid": [
-          129.33042891815,
-          36.22697831815
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -5069,18 +4979,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "b1237bd5-ec41-430b-bef6-858c882a04dc",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "7",
+        "Hole": 7,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 16035.464017678443,
-        "Centroid": [
-          129.3332635476,
-          36.22317234765
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -5282,18 +5187,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "829186dc-bba8-43d1-976a-5d98b9776ba8",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "8",
+        "Hole": 8,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 21717.740887177642,
-        "Centroid": [
-          129.3341142038,
-          36.22284300045
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -5627,18 +5527,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "516edbac-be23-4ebe-a84f-6dbcae270129",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "9",
+        "Hole": 9,
         "Type": "홀영역",
-        "TypeId": 0,
-        "DSZindex": 3,
-        "Color": "#1A237E",
-        "Area": 26404.4370224165,
-        "Centroid": [
-          129.33604782235,
-          36.22442057515
-        ]
+        "TypeId": 3,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -5900,18 +5795,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "39da48f6-acbf-492b-81ae-c811b3fa7075",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "1",
+        "Hole": 1,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1398.6394290071087,
-        "Centroid": [
-          129.3426701977,
-          36.2213005211
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -5973,18 +5863,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "e33622a7-c173-4865-aeb3-5077d9902ac7",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "2",
+        "Hole": 2,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1211.2701131896195,
-        "Centroid": [
-          129.33993915765,
-          36.223283931850006
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6046,18 +5931,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "d244ebfa-d0f0-4dd0-8cd1-6f58a2f5f805",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "3",
+        "Hole": 3,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1272.4677560699647,
-        "Centroid": [
-          129.34189553845,
-          36.2179569482
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6127,18 +6007,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "e0527c53-0b20-40ba-a2bd-67bff1886897",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "4",
+        "Hole": 4,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1266.2073107116394,
-        "Centroid": [
-          129.3386978458,
-          36.22036790515
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6196,18 +6071,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "c47fd39f-19fc-42d9-beb2-0db0d726ede0",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "5",
+        "Hole": 5,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1324.3083515158414,
-        "Centroid": [
-          129.33979308455,
-          36.217585182600004
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6293,18 +6163,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "267a8b77-2944-4e6e-8f70-e8405c355ddf",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "6",
+        "Hole": 6,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1456.146233247816,
-        "Centroid": [
-          129.3381591553,
-          36.21779003165
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6402,18 +6267,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "417674fb-940c-4e4f-aceb-0b029144414b",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "7",
+        "Hole": 7,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1623.047608616624,
-        "Centroid": [
-          129.33643498355002,
-          36.223178986449994
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6507,18 +6367,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "abf6442c-5c46-4f08-bb25-0b47d293c8c1",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "8",
+        "Hole": 8,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1224.160237608973,
-        "Centroid": [
-          129.33759922320002,
-          36.221717365800004
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6596,18 +6451,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "97de4981-5b05-4e70-be55-7ffc1d0944fc",
         "Client": "포항cc",
         "Course": "동해",
-        "Hole": "9",
+        "Hole": 9,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1191.1113938187077,
-        "Centroid": [
-          129.33916755145,
-          36.22352463165
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6685,18 +6535,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "a0f5271b-46e3-4ff2-82d9-b210b75eb68b",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "1",
+        "Hole": 1,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1777.4761044972765,
-        "Centroid": [
-          129.33555712375,
-          36.22537419125
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6766,18 +6611,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "0a3f5de7-d515-4114-9977-112335ea2d54",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "2",
+        "Hole": 2,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1368.2077939336214,
-        "Centroid": [
-          129.3331208207,
-          36.22592577345
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6843,18 +6683,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "b2754b0f-7d06-4d70-8e12-c3dfd2fcdfcd",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "3",
+        "Hole": 3,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1582.2051434410134,
-        "Centroid": [
-          129.33470394675,
-          36.2278906165
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -6932,18 +6767,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "f753f5b1-733f-4038-a8e5-1697618dc833",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "4",
+        "Hole": 4,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1405.2590046399537,
-        "Centroid": [
-          129.33231856045,
-          36.22835134605
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -7021,18 +6851,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "d3d59ff6-22dd-4c9d-94f7-18d5d1813f44",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "5",
+        "Hole": 5,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1598.4835666182826,
-        "Centroid": [
-          129.3310219297,
-          36.2283872965
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -7114,18 +6939,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "e0ca211e-21c0-46e2-82dd-38ce0f520135",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "6",
+        "Hole": 6,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1517.1711563761114,
-        "Centroid": [
-          129.33225700155,
-          36.22550141885
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -7203,18 +7023,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "0203047a-11c6-4fe3-aaa9-afeb4349dd36",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "7",
+        "Hole": 7,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1187.7941248325953,
-        "Centroid": [
-          129.3339327564,
-          36.22175402025
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -7296,18 +7111,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "9f7672d7-a105-4ed8-a381-212bde3e6c9c",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "8",
+        "Hole": 8,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1557.3486489961213,
-        "Centroid": [
-          129.33347110285,
-          36.224244776649996
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -7393,18 +7203,13 @@
       "type": "Feature",
       "properties": {
         "Name": "Contour_",
+        "Id": "8b13bcbc-dfba-4715-b19d-ba11c94b946c",
         "Client": "포항cc",
         "Course": "태백",
-        "Hole": "9",
+        "Hole": 9,
         "Type": "그린",
-        "TypeId": 0,
-        "DSZindex": 4,
-        "Color": "#336600",
-        "Area": 1589.3790260316323,
-        "Centroid": [
-          129.3389135175,
-          36.22413376285
-        ]
+        "TypeId": 4,
+        "Desc": ""
       },
       "geometry": {
         "type": "Polygon",
@@ -7485,6 +7290,118 @@
             [
               129.3386816437,
               36.2242781639
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Name": "Contour_",
+        "Id": "4e65dfc0-48f9-427f-bad6-73d0a1ccc390",
+        "Client": "",
+        "Course": "동해코스",
+        "Hole": 7,
+        "Type": "기타관심지역",
+        "TypeId": 7,
+        "Desc": ""
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              129.33642739314357,
+              36.22223196894151
+            ],
+            [
+              129.33642739314357,
+              36.22223196894151
+            ],
+            [
+              129.33643970861357,
+              36.22208532033508
+            ],
+            [
+              129.33674220108372,
+              36.222068148362645
+            ],
+            [
+              129.33665336833766,
+              36.22225908816765
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Name": "Contour_",
+        "Id": "71b731f0-6cbe-4120-abd4-f1b29a05f9ae",
+        "Client": "",
+        "Course": "동해코스",
+        "Hole": 7,
+        "Type": "기타관심지역",
+        "TypeId": 7,
+        "Desc": ""
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              129.33661647185045,
+              36.22176652665532
+            ],
+            [
+              129.3367028925554,
+              36.221494546480926
+            ],
+            [
+              129.33683963197262,
+              36.22169909845241
+            ],
+            [
+              129.33680171030974,
+              36.221825975532845
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "Name": "Contour_",
+        "Id": "399b9063-e54d-45fc-9436-cad23b870491",
+        "Client": "",
+        "Course": "동해코스",
+        "Hole": 4,
+        "Type": "병충해",
+        "TypeId": 8,
+        "Desc": ""
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              129.33792740284107,
+              36.224808717052575
+            ],
+            [
+              129.3387429754292,
+              36.22232410812199
+            ],
+            [
+              129.34219067029764,
+              36.2223467353636
+            ],
+            [
+              129.34229529184915,
+              36.22436286167511
             ]
           ]
         ]

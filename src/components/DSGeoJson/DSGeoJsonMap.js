@@ -211,7 +211,7 @@ function DSPolyEdit(){
       polygon_in_mgr.polygon.forEach((poly_) => {
         let polygon_info_ini = JSON.parse(JSON.stringify(POLYGONBLANK));
 
-        polygon_info_ini = {...polygon_info_ini,geometry:{coordinates: [ds_mgrData2geojson(poly_.points)]},properties:{ ...polygon_info_ini.properties ,Id:uuidv4()}}
+        polygon_info_ini = {...polygon_info_ini,geometry:{...polygon_info_ini.geometry, coordinates: [ds_mgrData2geojson(poly_.points)]},properties:{ ...polygon_info_ini.properties ,Id:uuidv4()}}
         new_polygons.push(polygon_info_ini)
 
         if (managerRef.current.getOverlays().polygon.length >0) {

@@ -22,7 +22,7 @@ export default function DSMapSettingTableHST({selected_menu}) {
   const columns_list = {
     area_def:
       [
-        { name: 'TypeId', header: 'ID',align:"center", width:100,type: 'text'},
+        { name: 'TypeId', header: 'ID',align:"center", width:100,type: 'numeric'},
         { name: 'name', header: '구역명',align:"center", width:150,type: 'text'},
         { name: 'color', header: '색상',align:"center", width:80,type: 'text'},
         { name: 'DSZindex', header: 'z-index',align:"center", width:100,type: 'numeric'},
@@ -59,15 +59,16 @@ export default function DSMapSettingTableHST({selected_menu}) {
         let newID = Math.max(...baseinfo.area_def.map((x)=> Number(x.TypeId)))+1;
         let newZindex = Math.max(...baseinfo.area_def.map((x)=> Number(x.DSZindex))) + 1
         setBaseInfo({...baseinfo, area_def:[...baseinfo.area_def, {
-    "TypeId": newID.toString(),
-    "name": "",
-    "color": "",
-    "display": true,
-    "DSZindex": newZindex
-  }]})
-  
-  setEdited(true);
-  }}> 신규 생성</Button>
+          "TypeId": newID,
+          "name": "",
+          "color": "",
+          "display": true,
+          "DSZindex": newZindex
+        }]})
+        
+        setEdited(true);
+        }}> 신규 생성
+      </Button>
       <HotTable
         ref={hotRef}
         rowHeaders={true}
