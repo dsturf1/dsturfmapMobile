@@ -5,6 +5,7 @@ import { Auth } from 'aws-amplify';
 
 import { FormGroup, FormControlLabel, InputLabel, Stack, Select, MenuItem, Box, Checkbox,TextField, Avatar, Paper, List, Input, Typography ,Button, ButtonGroup} from '@mui/material';
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
+import SendIcon from '@mui/icons-material/Send';
 import { green, pink ,indigo} from '@mui/material/colors';
 
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
@@ -30,6 +31,7 @@ export default function DSPolyHSTEdit() {
   const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
 
   const hotRef = useRef(null);
+  const DescRef = useRef(null);
 
   const [columns, setCols] = useState([
     {name:'title', header:'항목', width:100, type:'text', readOnly:true},
@@ -50,7 +52,9 @@ export default function DSPolyHSTEdit() {
     rows_.push({title:'Type',name:selected_polygon === null? "":selected_polygon.properties.Type})    
     rows_.push({title:'홀',name:selected_polygon === null? "":selected_polygon.properties.Hole})
     rows_.push({title:'면적',name:selected_polygon === null? "":area(turfpolygon_).toFixed(1).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")})
-    rows_.push({title:'개요',name:selected_polygon === null? "":selected_polygon.properties.Desc})
+    // rows_.push({title:'개요',name:selected_polygon === null? "":selected_polygon.properties.Desc})
+
+    if(DescRef !== null) DescRef.current.value = selected_polygon === null? "":selected_polygon.properties.Desc
     const hot = hotRef.current.hotInstance;
 
     hot.loadData(rows_)
@@ -88,7 +92,7 @@ export default function DSPolyHSTEdit() {
             }
             if (row === 1) {
               cellMeta.type = 'dropdown';
-              cellMeta.source = baseinfo.area_def.map((x)=>x.name)
+              cellMeta.source = selected_mode === 'MAPEdit'? baseinfo.area_def.filter((item)=> item.area_def === true).map((x)=>x.name):baseinfo.area_def.filter((item)=> item.area_def === false).map((x)=>x.name)
             }
             if (row === 2) {
               cellMeta.type = 'dropdown';
@@ -120,13 +124,11 @@ export default function DSPolyHSTEdit() {
                 // console.log(newPolygon)
               }
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
-              if (row === 4) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:newValue}}  
+              // if (row === 4) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:newValue}}  
 
               setPolyGon({...newPolygon})
 
-              // if (row === 0) setPolyGon({...selected_polygon, properties: {...selected_polygon.properties, Course:newValue}})  
-              // if (row === 1) setPolyGon({...selected_polygon, properties: {...selected_polygon.properties, Type:newValue}})    
-              // if (row === 2) setPolyGon({...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}})  
+
               let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}
 
               setGeoJsonInfo({...geojsoninfo_})
@@ -137,6 +139,35 @@ export default function DSPolyHSTEdit() {
           }}
           
         />
+        <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}>
+          <TextField
+            id="outlined-multiline-static"
+            label="특이사항"
+            multiline
+            rows={4}
+            placeholder='샘지기에게 설명을...'
+            inputRef={DescRef}
+            fullWidth
+            disabled = {selected_polygon === null}
+          />
+          <Button
+            variant='contained'
+            color='primary'
+            size='small'
+            // endIcon={<SendIcon />}
+            onClick={()=>{
+              if(selected_polygon === null) return
+              let newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:DescRef.current.value}}            
+              setPolyGon({...newPolygon})
+              let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}
+              setGeoJsonInfo({...geojsoninfo_})
+            }}
+            fullWidth
+            disabled = {selected_polygon === null}
+            >
+            특이사항 Update
+          </Button>
+          </Stack>
 
 
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>

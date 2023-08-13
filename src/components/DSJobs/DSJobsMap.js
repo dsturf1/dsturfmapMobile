@@ -15,7 +15,7 @@ import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK } from '../..
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon } from "@turf/turf";
 
-const DSGeoJsonMap = () => {
+const DSJobsMap = () => {
 
   const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly} = useContext(MapQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
@@ -67,7 +67,7 @@ const DSGeoJsonMap = () => {
   )
 }
 
-export default DSGeoJsonMap;
+export default DSJobsMap;
 
 function DSPolyGons(){
 
@@ -80,7 +80,7 @@ function DSPolyGons(){
 
     if(isLoading === false && geojsoninfo['features'].length > 0)
     geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display && 
-      baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].area_def).map((geojson_)=>{
+      baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].work_def).map((geojson_)=>{
      let tmp = [...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]
 
      tpoly_.push(turfpolygon([tmp]))
@@ -95,7 +95,8 @@ function DSPolyGons(){
   return(
     <>
         {isLoading === false && geojsoninfo['features'].length > 0 ?
-          geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display).map((geojson_)=>{
+          geojsoninfo['features'].filter((polyg_)=> baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].display
+          && baseinfo.area_def.filter((x)=>x.name ===polyg_['properties'].Type)[0].work_def).map((geojson_)=>{
           
             return <DSPolyGon 
               key = {geojson_['properties'].Id}

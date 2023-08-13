@@ -12,22 +12,17 @@ import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 
-export default function DSPolySelect() {
+export default function DSPolySelect({area_def_flag}) {
 
   
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
+    setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
   const handleChange = (event) => {
 
     setBaseInfo({
       ...baseinfo, area_def:[...baseinfo.area_def.filter((x)=>x.name !== event.target.name),
         {...baseinfo.area_def.filter((x)=>x.name === event.target.name)[0], 
           display: event.target.checked}].sort((a, b) => a.TypeId - b.TypeId)})
-    
-    // setState({
-    //   ...state,
-    //   [event.target.name]: event.target.checked,
-    // });
-    // console.log(baseinfo.area_def((x)=>x.name !== event.target.name))
   };
 
   return (
@@ -38,7 +33,7 @@ export default function DSPolySelect() {
           }}
         >
     <FormGroup       row = {true} sx ={{m : 0}}>
-      {baseinfo.area_def.map((x)=>
+      {baseinfo.area_def.filter((item) => item.area_def === area_def_flag).map((x)=>
       <FormControlLabel sx ={{m : 0}}
       control={
         <Checkbox 

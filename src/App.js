@@ -1,7 +1,8 @@
 // import DSMainMap from "./components/DSMainMap.js";
 import DSSearchMain from "./components/DSSearch/DSSearchMain.js";
 import DSNaverMain from "./components/DSNaver/DSNaverMain.js";
-import DSMapMain from "./components/DSGeoJson/DSGeoJsonMain.js";
+import DSJobsMain from "./components/DSJobs/DSJobsMain.js";
+import DSGeoJsonMain from "./components/DSGeoJson/DSGeoJsonMain.js";
 import DSMapSettingMain from "./components/DSSetting/DSMapSettingMain.js";
 import ResponsiveAppBar from './components/ResponsiveAppBar';
 import React, { Fragment} from 'react';
@@ -40,8 +41,9 @@ const App = () => {
             <Routes>
               <Route path="/" element={    <DSSearchMain/>}></Route>
               <Route path="dssearch" element={    <DSSearchMain/>}></Route>
-              <Route path="dsnaver" element={<DSNaverMain />}></Route>
-              <Route path="dsmapedit" element={<DSMapMain/>}></Route>
+              {/* <Route path="dsnaver" element={<DSNaverMain />}></Route> */}
+              <Route path="dsmapedit" element={<DSGeoJsonMain/>}></Route>
+              <Route path="dsjobsedit" element={<DSJobsMain/>}></Route>
               {/* <Route path="dsmapedit" element={<DSMapMain/>}></Route> */}
               <Route path="dssetting" element={<DSMapSettingMain/>}></Route>
               {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>

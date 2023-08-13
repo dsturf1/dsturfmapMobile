@@ -26,7 +26,9 @@ export default function DSMapSettingTableHST({selected_menu}) {
         { name: 'name', header: '구역명',align:"center", width:150,type: 'text'},
         { name: 'color', header: '색상',align:"center", width:80,type: 'text'},
         { name: 'DSZindex', header: 'z-index',align:"center", width:100,type: 'numeric'},
-        { name: 'display', header: '사용여부 초기값',align:"center", width:80, type: 'dropdown',  source: [true, false] },
+        { name: 'display', header: '사용여부 초기값',align:"center", width:120, type: 'dropdown',  source: [true, false] },
+        { name: 'area_def', header: '골프장영역정의',align:"center", width:120, type: 'dropdown',  source: [true, false] },
+        { name: 'work_def', header: '관심지역',align:"center", width:120, type: 'dropdown',  source: [true, false] },
       ],
     }
 

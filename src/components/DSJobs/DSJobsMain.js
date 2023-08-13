@@ -8,9 +8,9 @@ import DSPolySelect from "../DSBasics/DSPolySelect"
 import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
-import DSGeoJsonMap from './DSGeoJsonMap.js';
+import DSJobsMap from './DSJobsMap.js';
 
-export default function DSGeoJsonMain() {
+export default function DSJobsMain() {
   
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
     setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
@@ -34,8 +34,8 @@ export default function DSGeoJsonMain() {
         </Grid>
         <Grid Grid item xs={12} md={10}>
           <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
-            <DSPolySelect area_def_flag={true}/>
-            <DSGeoJsonMap/>
+            <DSPolySelect area_def_flag={false}/>
+            <DSJobsMap/>
           </Box>
         </Grid>
       </Grid>    

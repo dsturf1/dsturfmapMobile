@@ -22,8 +22,9 @@ import { Link } from "react-router-dom";
 const pages = [
   // {name:'일정작성', url:'dsschedule'},
   {name:'골프장검색', url:'dssearch'},
-  {name:'관심골프장', url:'dsmapedit'},
-  {name:'Naver', url:'dsnaver'},
+  {name:'등록골프장구역설정', url:'dsmapedit'},
+  {name:'등록골프장관심영역설정', url:'dsjobsedit'},
+  // {name:'Naver', url:'dsnaver'},
   // {name:'방제일지보기', url:'dswork'},
   {name:'설정', url:'dssetting'}
   // {name:'일정작성', url:'dsschedule'},

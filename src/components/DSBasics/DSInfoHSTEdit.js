@@ -251,7 +251,7 @@ export default function DSInfoEdit() {
       {selected_mode === "SearchSelected"? null:<DSPolyHSTEdit/>}
 
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
-        <Button variant="outlined"  onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPEdit")}}> Save</Button>
+        <Button variant="outlined"  onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Save</Button>
         <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel/Back</Button>
         {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
       </ButtonGroup>
