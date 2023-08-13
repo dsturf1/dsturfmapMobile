@@ -12,7 +12,7 @@ import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 
-export default function DSPolySelect({area_def_flag}) {
+export default function DSPolySelect({geojson_mode}) {
 
   
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
@@ -33,7 +33,7 @@ export default function DSPolySelect({area_def_flag}) {
           }}
         >
     <FormGroup       row = {true} sx ={{m : 0}}>
-      {baseinfo.area_def.filter((item) => item.area_def === area_def_flag).map((x)=>
+      {baseinfo.area_def.filter((item) =>  item.area_def === (geojson_mode === "AREA") || item.work_def === (geojson_mode === "JOBS")).map((x)=>
       <FormControlLabel sx ={{m : 0}}
       control={
         <Checkbox 

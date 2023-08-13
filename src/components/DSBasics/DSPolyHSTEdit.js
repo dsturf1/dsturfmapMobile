@@ -25,10 +25,11 @@ registerAllModules();
 numbro.registerLanguage(languages["ko-KR"]);
 
 
-export default function DSPolyHSTEdit() {
+export default function DSPolyHSTEdit({geojson_mode}) {
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
+  // const [localmode, setLocalMode] = useState(geojson_mode)
 
   const hotRef = useRef(null);
   const DescRef = useRef(null);
@@ -61,6 +62,8 @@ export default function DSPolyHSTEdit() {
     // setRows(rows_)
     // console.log(selected_polygon)
 
+    // console.log(localmode)
+
   },[selected_polygon]);
 
 
@@ -92,7 +95,8 @@ export default function DSPolyHSTEdit() {
             }
             if (row === 1) {
               cellMeta.type = 'dropdown';
-              cellMeta.source = selected_mode === 'MAPEdit'? baseinfo.area_def.filter((item)=> item.area_def === true).map((x)=>x.name):baseinfo.area_def.filter((item)=> item.area_def === false).map((x)=>x.name)
+              // cellMeta.source = baseinfo.area_def.map((x)=>x.name)
+              cellMeta.source = geojson_mode === "AREA"? baseinfo.area_def.filter((item)=> item.area_def === true).map((x)=>x.name):baseinfo.area_def.filter((item)=> item.work_def === true).map((x)=>x.name)
             }
             if (row === 2) {
               cellMeta.type = 'dropdown';

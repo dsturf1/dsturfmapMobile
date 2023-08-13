@@ -72,6 +72,8 @@ export const BaseProvider = (props) => {
     },[baseinfo]);
 
 
+
+
     return(
 
     <BaseContext.Provider  value={{baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser,

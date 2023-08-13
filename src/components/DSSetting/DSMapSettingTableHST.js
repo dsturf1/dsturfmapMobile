@@ -43,7 +43,7 @@ export default function DSMapSettingTableHST({selected_menu}) {
         columns = columns_list[selected_menu.key_id]
         // setEdited(false)
 
-        console.log(Math.max(...baseinfo.area_def.map((x)=> Number(x.TypeId))).toString())
+        // console.log(Math.max(...baseinfo.area_def.map((x)=> Number(x.TypeId))).toString())
 
       }    
   },[baseinfo, selected_menu]);

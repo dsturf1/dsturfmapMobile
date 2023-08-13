@@ -10,35 +10,42 @@ import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
 import DSGeoJsonMap from './DSGeoJsonMap.js';
 
-export default function DSGeoJsonMain() {
+export default function DSGeoJsonMain({geojson_mode}) {
   
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
-    setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+    setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly} = useContext(MapQContext);
 
 
   useEffect(() => {
     setMode("MAPSelect");
-  },[]);
+    setCourse("MGC000")
+  },[geojson_mode]);
+
+  // useEffect(() => {
+
+  //   console.log("cousre", selected_course, "Mode", selected_mode, "PolyGon", selected_polygon)
+
+  // }, [selected_course, selected_mode, selected_polygon])
  
   return (
     Object.keys(baseinfo).length === 0? 
     <CircularProgress />
     :
-    <Fragment>
+    <div>
       <Grid container spacing={0}>
         <Grid Grid item xs={12} md={2}>
           <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
-            { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit/>}
+            { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit geojson_mode={geojson_mode}/>}
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>
           <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
-            <DSPolySelect area_def_flag={true}/>
-            <DSGeoJsonMap/>
+            <DSPolySelect geojson_mode={geojson_mode}/>
+            <DSGeoJsonMap geojson_mode={geojson_mode}/>
           </Box>
         </Grid>
       </Grid>    
-    </Fragment>  
+    </div>  
   );
 }

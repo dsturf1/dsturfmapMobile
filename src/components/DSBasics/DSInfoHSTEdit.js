@@ -45,7 +45,7 @@ export function DSCourseNameInput({Hole_, name_, ref_, index_}){
 }
 
 
-export default function DSInfoEdit() {
+export default function DSInfoEdit({geojson_mode}) {
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
@@ -248,7 +248,7 @@ export default function DSInfoEdit() {
           }}
         />
 
-      {selected_mode === "SearchSelected"? null:<DSPolyHSTEdit/>}
+      {selected_mode === "SearchSelected"? null:<DSPolyHSTEdit geojson_mode={geojson_mode}/>}
 
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
         <Button variant="outlined"  onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Save</Button>

@@ -33,7 +33,7 @@ export default function DSMapSettingMain() {
 
   useEffect(() => {
 
-   console.log("EDIT", edited)
+  //  console.log("EDIT", edited)
  },[edited]);
 
   const PostBaseInfo = async function (baseinfo_) 
