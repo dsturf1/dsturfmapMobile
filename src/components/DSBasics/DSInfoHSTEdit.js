@@ -116,7 +116,7 @@ export default function DSInfoEdit({geojson_mode}) {
     if(selected_mode === "SearchSelected") geojsoninfo_ = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
     else geojsoninfo_ = {...geojsoninfo}
 
-    console.log("Saved Polgon:",  geojsoninfo_ )
+    // console.log("Saved Polgon:",  geojsoninfo_ )
 
     
 
@@ -251,7 +251,8 @@ export default function DSInfoEdit({geojson_mode}) {
       {selected_mode === "SearchSelected"? null:<DSPolyHSTEdit geojson_mode={geojson_mode}/>}
 
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
-        <Button variant="outlined"  onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Save</Button>
+        <Button variant="outlined"  disabled = {selected_mode === "MAPGEOJSONEDIT"}
+        onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPEdit")}}> Save</Button>
         <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel/Back</Button>
         {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
       </ButtonGroup>

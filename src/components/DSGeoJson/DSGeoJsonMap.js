@@ -33,7 +33,7 @@ const DSGeoJsonMap = ({geojson_mode}) => {
     if (!map) return
     if (selected_course === "MGC000") return
     setMode("MAPEdit")
-    console.log("ATMAP", geojson_mode)
+    // console.log("ATMAP", geojson_mode)
   }, [selected_course, geojsoninfo])
 
 
@@ -187,7 +187,7 @@ function DSPolyEdit(){
 
       let polygon_in_mgr = managerRef.current.getData();
 
-      console.log("Manager Polygon", polygon_in_mgr)
+      // console.log("Manager Polygon", polygon_in_mgr)
 
 
       let new_polygons = [];
@@ -206,7 +206,8 @@ function DSPolyEdit(){
 
 
       if(new_polygons.length>0){
-        if (selected_polygon === null) 
+        if (selected_polygon === null) {
+          // console.log("Multiple New Polygon Added")
           setGeoJsonInfo(
             {...geojsoninfo, 
               features:[...geojsoninfo.features,...new_polygons].sort((a, b) =>  
@@ -214,7 +215,9 @@ function DSPolyEdit(){
               baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
             }
           )
-        else 
+        }
+        else {
+          // console.log("Update Existing Polygon")
           setGeoJsonInfo(
             {...geojsoninfo, 
               features:[...geojsoninfo.features.filter((x) => x.properties.Id !== selected_polygon.properties.Id), {...selected_polygon, geometry:new_polygons[0].geometry}].sort((a, b) =>  
@@ -222,9 +225,11 @@ function DSPolyEdit(){
               baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
             }
           )
+        }
       }
       else {
-        if (selected_polygon !== null) 
+        if (selected_polygon !== null) {
+          // console.log("Remove Existing Polygon")
           setGeoJsonInfo(
             {...geojsoninfo, 
               features:[...geojsoninfo.features.filter((x) => x.properties.Id !== selected_polygon.properties.Id)].sort((a, b) =>  
@@ -232,6 +237,7 @@ function DSPolyEdit(){
               baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
             }
           )
+        }
       }
 
 

@@ -51,6 +51,7 @@
         "Hole": "",
         "Type": "Undefined",
         "TypeId": 0,
+        "Desc":""
       },
       "geometry": {
         "type": "Polygon",
