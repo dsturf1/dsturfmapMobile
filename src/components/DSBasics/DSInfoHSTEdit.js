@@ -77,10 +77,10 @@ export default function DSInfoEdit({geojson_mode}) {
     )
 
   let map_info_data = [];
-  map_info_data.push({title:'Zoom Level',lng:mapinfo.level, lat:null})
-  map_info_data.push({title:'Center',lng:mapinfo.center[0].toFixed(8), lat:mapinfo.center[1].toFixed(8)})
-  map_info_data.push({title:'SW Bounds',lng:mapinfo.bounds.sw[0]? mapinfo.bounds.sw[0].toFixed(8):null, lat:mapinfo.bounds.sw[1]? mapinfo.bounds.sw[1].toFixed(8):null}) 
-  map_info_data.push({title:'NE Bounds',lng:mapinfo.bounds.ne[0]? mapinfo.bounds.ne[0].toFixed(8):null, lat:mapinfo.bounds.ne[1]? mapinfo.bounds.ne[1].toFixed(8):null}) 
+  map_info_data.push({title:'Zoom',lng:mapinfo.level, lat:null})
+  map_info_data.push({title:'Center',lng:mapinfo.center[0].toFixed(5), lat:mapinfo.center[1].toFixed(5)})
+  map_info_data.push({title:'SW Bds',lng:mapinfo.bounds.sw[0]? mapinfo.bounds.sw[0].toFixed(5):null, lat:mapinfo.bounds.sw[1]? mapinfo.bounds.sw[1].toFixed(8):null}) 
+  map_info_data.push({title:'NE Bds',lng:mapinfo.bounds.ne[0]? mapinfo.bounds.ne[0].toFixed(5):null, lat:mapinfo.bounds.ne[1]? mapinfo.bounds.ne[1].toFixed(8):null}) 
 
 
 
@@ -177,8 +177,7 @@ export default function DSInfoEdit({geojson_mode}) {
   return (
     <>
     {selected_course_info === null? null:
-    // <Box sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , flexDirection: 'column', display: 'flex'}}>
-      <Fragment>
+    <Box sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , flexDirection: 'column', display: 'flex'}}>
         <Button variant="contained"  fullWidth> {selected_course_info.name} </Button>
 
         <HotTable
@@ -229,7 +228,7 @@ export default function DSInfoEdit({geojson_mode}) {
           width={"100%"}
           stretchH= {'all'}
           colHeaders={course_names_columns.map((x)=>x.header)}
-          colWidths={course_names_columns.map((x)=>x.width)}
+          // colWidths={course_names_columns.map((x)=>x.width)}
           columns = {course_names_columns.map((x)=>{return{data:x.name, readOnly: x.readOnly, type:x.type}})}
           // mergeCells={[
           //   { row: 0, col: 1, rowspan: 1, colspan: 3 }
@@ -256,8 +255,7 @@ export default function DSInfoEdit({geojson_mode}) {
         <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel/Back</Button>
         {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
       </ButtonGroup>
-      {/* </Box> */}
-      </Fragment>
+      </Box>
       }
     </>
   );

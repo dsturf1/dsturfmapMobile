@@ -148,7 +148,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
             id="outlined-multiline-static"
             label="특이사항"
             multiline
-            rows={4}
+            rows={2}
             placeholder='샘지기에게 설명을...'
             inputRef={DescRef}
             fullWidth
