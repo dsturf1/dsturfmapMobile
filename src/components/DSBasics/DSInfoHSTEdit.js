@@ -177,7 +177,7 @@ export default function DSInfoEdit({geojson_mode}) {
   return (
     <>
     {selected_course_info === null? null:
-    <Box sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , flexDirection: 'column', display: 'flex'}}>
+    <>
         <Button variant="contained"  fullWidth> {selected_course_info.name} </Button>
 
         <HotTable
@@ -255,7 +255,7 @@ export default function DSInfoEdit({geojson_mode}) {
         <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel/Back</Button>
         {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
       </ButtonGroup>
-      </Box>
+      </>
       }
     </>
   );
