@@ -8,9 +8,9 @@ import DSPolySelect from "../DSBasics/DSPolySelect"
 import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
-import DSJobsMap from './DSJobsMap.js';
+import DSWorkMap from './DSWorkMap.js';
 
-export default function DSJobsMain() {
+export default function DSWorkMain({geojson_mode}) {
   
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
     setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
@@ -20,32 +20,27 @@ export default function DSJobsMain() {
   useEffect(() => {
     setMode("MAPSelect");
     setCourse("MGC000")
-  },[]);
-
-  useEffect(() => {
-
-    console.log("cousre", selected_course, "Mode", selected_mode, "PolyGon", selected_polygon)
-
-  }, [selected_course, selected_mode, selected_polygon])
+  },[geojson_mode]);
  
   return (
     Object.keys(baseinfo).length === 0? 
     <CircularProgress />
     :
-    <Fragment>
+    <div>
       <Grid container spacing={0}>
         <Grid Grid item xs={12} md={2}>
-          <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
-            { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit/>}
+          <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
+          borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}>            
+            { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit geojson_mode={geojson_mode}/>}
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>
           <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
-            <DSPolySelect area_def_flag={false}/>
-            <DSJobsMap/>
+            <DSPolySelect geojson_mode={geojson_mode}/>
+            <DSWorkMap/>
           </Box>
         </Grid>
       </Grid>    
-    </Fragment>  
+    </div>  
   );
 }

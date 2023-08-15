@@ -37,6 +37,7 @@ const pages = [
   {name:'골프장검색', url:'dssearch'},
   {name:'등록골프장구역설정', url:'dsmapedit'},
   {name:'등록골프장관심영역설정', url:'dsjobsedit'},
+  {name:'골프장관심영역설정', url:'dsworkedit'},
   // {name:'Naver', url:'dsnaver'},
   // {name:'방제일지보기', url:'dswork'},
   {name:'설정', url:'dssetting'}
