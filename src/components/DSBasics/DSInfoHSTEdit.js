@@ -177,7 +177,8 @@ export default function DSInfoEdit({geojson_mode}) {
   return (
     <>
     {selected_course_info === null? null:
-    <>
+
+      <>
         <Button variant="contained"  fullWidth> {selected_course_info.name} </Button>
 
         <HotTable
@@ -246,15 +247,16 @@ export default function DSInfoEdit({geojson_mode}) {
             });
           }}
         />
+        <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}>
+          {selected_mode === "SearchSelected"? null:<DSPolyHSTEdit geojson_mode={geojson_mode}/>}
 
-      {selected_mode === "SearchSelected"? null:<DSPolyHSTEdit geojson_mode={geojson_mode}/>}
-
-      <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
-        <Button variant="outlined"  disabled = {selected_mode === "MAPGEOJSONEDIT"}
-        onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPEdit")}}> Save</Button>
-        <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel/Back</Button>
-        {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
-      </ButtonGroup>
+          <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
+            <Button variant="outlined"  disabled = {selected_mode === "MAPGEOJSONEDIT"}
+            onClick={() => {handleAdd();selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPEdit")}}> Save</Button>
+            <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Cancel/Back</Button>
+            {/* <Button variant="outlined"  onClick={() => {selected_mode === "SearchSelected"? setMode("CourseSearch"): setMode("MAPSelect");setCourse("MGC000")}}> Back</Button> */}
+          </ButtonGroup>
+        </Stack>
       </>
       }
     </>

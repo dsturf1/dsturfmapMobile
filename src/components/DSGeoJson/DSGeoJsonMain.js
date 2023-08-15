@@ -21,12 +21,6 @@ export default function DSGeoJsonMain({geojson_mode}) {
     setMode("MAPSelect");
     setCourse("MGC000")
   },[geojson_mode]);
-
-  // useEffect(() => {
-
-  //   console.log("cousre", selected_course, "Mode", selected_mode, "PolyGon", selected_polygon)
-
-  // }, [selected_course, selected_mode, selected_polygon])
  
   return (
     Object.keys(baseinfo).length === 0? 
@@ -35,8 +29,8 @@ export default function DSGeoJsonMain({geojson_mode}) {
     <div>
       <Grid container spacing={0}>
         <Grid Grid item xs={12} md={2}>
-          <Box height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
-          borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex'}}>
+          <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
+          borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}>            
             { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit geojson_mode={geojson_mode}/>}
           </Box>
         </Grid>

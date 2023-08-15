@@ -11,9 +11,9 @@ import saveAs from "file-saver";
 import  {ds_mgrData2kakao, ds_geojson2kakao, ds_mgrData2geojson, ds_geojson2kakaoV2}from "../DSBasics/DSCordUtils.js"
 
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
-import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK } from '../../constant/urlconstants';
+import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK, INTERESTED_POLYGONBLANK } from '../../constant/urlconstants';
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
-import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon } from "@turf/turf";
+import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, centroid as turfcentroid} from "@turf/turf";
 
 const DSGeoJsonMap = ({geojson_mode}) => {
 
@@ -87,9 +87,9 @@ function DSPolyGons({geojson_mode}){
       )
       
       ).map((geojson_)=>{
-     let tmp = [...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]
+    //  let tmp = [...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]
 
-     tpoly_.push(turfpolygon([tmp]))
+     tpoly_.push(turfpolygon(geojson_['geometry']['coordinates']))
      })
 
      console.log(geojson_mode)
@@ -152,9 +152,9 @@ function DSPolyGon({geojson_path,geojson_color, geojson}){
 
 function DSPolyEdit(){
 
-  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
+  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, holepoly, setHolePoly, coursepoly, setCoursePoly} = useContext(MapQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
-    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
+    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_polygon, setPolyGon,selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
 
   const managerRef = useRef(null)
   const [local_mode, setLocalMode] = useState('DSMAPGEOJSON_INI')
@@ -194,8 +194,27 @@ function DSPolyEdit(){
 
       polygon_in_mgr.polygon.forEach((poly_) => {
 
-        let polygon_info_ini = JSON.parse(JSON.stringify(POLYGONBLANK));
-        polygon_info_ini = {...polygon_info_ini,geometry:{...polygon_info_ini.geometry, coordinates: [ds_mgrData2geojson(poly_.points)]},properties:{ ...polygon_info_ini.properties ,Id:uuidv4()}}
+        let polygon_info_ini = {}
+
+        let tmp = ds_mgrData2geojson(poly_.points);
+        console.log('After Edit', tmp)
+        // tmp.push(tmp[0]);
+
+        let search_holepoly = holepoly.data.features.filter((x)=> booleanPointInPolygon(turfcentroid(turfpolygon([tmp])), turfpolygon(x.geometry.coordinates)))
+        
+        if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
+            booleanPointInPolygon(turfcentroid(turfpolygon([tmp])), turfpolygon(x.geometry.coordinates)) && x.properties.Course !=='전코스')
+
+            if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
+            booleanPointInPolygon(turfcentroid(turfpolygon([tmp])), turfpolygon(x.geometry.coordinates)) && x.properties.Course ==='전코스')
+        
+        if (search_holepoly.length === 0) search_holepoly = [JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK))];
+
+        polygon_info_ini = {...search_holepoly[0],geometry:{...search_holepoly[0].geometry, coordinates: [ds_mgrData2geojson(poly_.points)]},
+        properties:{ ...search_holepoly[0].properties,Id:uuidv4(), Type: "관심영역", TypeId:10, Valid: true, By: loginuser, When: new Date(), Client: selected_course_info.name}}
+
+        console.log(polygon_info_ini)
+
         new_polygons.push(polygon_info_ini)
 
         if (managerRef.current.getOverlays().polygon.length >0) {

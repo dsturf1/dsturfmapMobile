@@ -36,7 +36,8 @@ export const BaseProvider = (props) => {
         }
 
         fetchBaseInfo();
-        console.log(mapinfo)
+        // console.log(mapinfo)
+        setLoginUser(props.user.username)
         
 
 

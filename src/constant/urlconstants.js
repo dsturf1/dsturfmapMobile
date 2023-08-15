@@ -51,7 +51,31 @@
         "Hole": "",
         "Type": "Undefined",
         "TypeId": 0,
-        "Desc":""
+        "Desc":"",
+        "Valid":true,
+        "By":"",
+        "When":""
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": []
+      }
+    };
+
+    export const INTERESTED_POLYGONBLANK =   {
+      "type": "Feature",
+      "properties": {
+        "Name": "Contour_",
+        "Id":"",
+        "Client": "",
+        "Course": "",
+        "Hole": "",
+        "Type": "관심영역",
+        "TypeId": 10,
+        "Desc":"",
+        "Valid":true,
+        "By":"",
+        "When":""
       },
       "geometry": {
         "type": "Polygon",

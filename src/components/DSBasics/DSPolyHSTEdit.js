@@ -53,17 +53,15 @@ export default function DSPolyHSTEdit({geojson_mode}) {
     rows_.push({title:'Type',name:selected_polygon === null? "":selected_polygon.properties.Type})    
     rows_.push({title:'홀',name:selected_polygon === null? "":selected_polygon.properties.Hole})
     rows_.push({title:'면적',name:selected_polygon === null? "":area(turfpolygon_).toFixed(1).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")})
+    rows_.push({title:'작성자',name:selected_polygon === null? "":selected_polygon.properties.By})
+    rows_.push({title:'작성시점',name:selected_polygon === null? "":selected_polygon.properties.When.split('T')[0]})
+    rows_.push({title:'Valid?',name:selected_polygon === null? "":selected_polygon.properties.Valid})
     // rows_.push({title:'개요',name:selected_polygon === null? "":selected_polygon.properties.Desc})
 
     if(DescRef !== null) DescRef.current.value = selected_polygon === null? "":selected_polygon.properties.Desc
     const hot = hotRef.current.hotInstance;
 
     hot.loadData(rows_)
-    // setRows(rows_)
-    // console.log(selected_polygon)
-
-    // console.log(localmode)
-
   },[selected_polygon]);
 
 
@@ -102,7 +100,10 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,2,3,4,5,6,7,8,9]
             }
-            
+            if (row === 6) {
+              cellMeta.type = 'dropdown';
+              cellMeta.source = [true,false]
+            }
             return cellMeta;
           }
           }
@@ -118,7 +119,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
               if (selected_polygon === null) return
 
-              let newPolygon = {};
+              let newPolygon = {...selected_polygon};
 
               if (row === 0) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Course:newValue}}  
               if (row === 1) {
@@ -128,7 +129,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
                 // console.log(newPolygon)
               }
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
-              // if (row === 4) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:newValue}}  
+              if (row === 6) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
 
               setPolyGon({...newPolygon})
 
@@ -143,7 +144,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
           }}
           
         />
-        <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}>
+        {/* <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}> */}
           <TextField
             id="outlined-multiline-static"
             label="특이사항"
@@ -171,15 +172,15 @@ export default function DSPolyHSTEdit({geojson_mode}) {
             >
             특이사항 Update
           </Button>
-          </Stack>
 
 
-        <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 5 }}>
+
+        <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
           <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> 
           
           {selected_mode === "MAPEdit" && selected_polygon === null? "신규관심지역 생성":(selected_mode === "MAPEdit" && selected_polygon !== null? "선택된지역수정":"신규/수정모드 종료")}</Button>
         </ButtonGroup>
-
+        {/* </Stack> */}
       </Fragment>
         :null
 
