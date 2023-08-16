@@ -1,12 +1,12 @@
 import React, { createContext, useState, useEffect, useContext} from 'react';
 import {BaseContext} from "./BaseData.js";
 import {BASEURL} from "../constant/urlconstants.js";
-import { GEOJSONBLANK , POLYGONBLANK } from '../constant/urlconstants';
+import { GEOJSONBLANK , POLYGONBLANK, MAPBOXINI } from '../constant/urlconstants';
 import { Auth } from 'aws-amplify';
 
 const geojsoninfo_blank = JSON.parse(JSON.stringify(GEOJSONBLANK));
 const targetpolygon_blank = JSON.parse(JSON.stringify(POLYGONBLANK));
-
+const mapboxini_poly = JSON.parse(JSON.stringify(MAPBOXINI));
 
 export const MapQContext = createContext();
 
@@ -19,7 +19,7 @@ export const MapQProvider = (props) => {
   const[targetpolygons, setTargetPolygons] = useState([targetpolygon_blank]);
   const[holepoly, setHolePoly] = useState([])
   const[coursepoly, setCoursePoly] = useState([])
-  const[selectedBoxpoly, setBoxPoly] = useState(targetpolygon_blank)
+  const[selectedBoxpoly, setBoxPoly] = useState({...mapboxini_poly})
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, 
     maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);  

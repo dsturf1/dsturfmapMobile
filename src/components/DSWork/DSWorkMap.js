@@ -7,13 +7,14 @@ import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox
 import './Map.css';
 
 
-import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK,  GEOJSONBLANK } from '../../constant/urlconstants';
+import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK,  GEOJSONBLANK, MAPBOXINI } from '../../constant/urlconstants';
 import { ContactPageSharp } from '@mui/icons-material';
 
 
 const polgygon_ini = JSON.parse(JSON.stringify(POLYGONBLANK));
-
+const mapboxini_poly = JSON.parse(JSON.stringify(MAPBOXINI));
 const geojsoninfo_blank = JSON.parse(JSON.stringify(GEOJSONBLANK));
+
 mapboxgl.accessToken = 'pk.eyJ1IjoiZHNncmVlbiIsImEiOiJjbGw1M2xiMXIwNHYzM2RxcGFxZmZnczVoIn0.LLYuSMxi61w-YvfqXsDW0g';
  
 export default function DSWorkMap(props) {
@@ -88,12 +89,8 @@ export default function DSWorkMap(props) {
       {
         'type': 'geojson',
         'data': {
-        'type': 'Feature',
-        'geometry': {
-        'type': 'Polygon',
-        'coordinates': []
-        }
-        }
+          ...geojsoninfo_blank
+        }  
         });
       map.current.addLayer({
         'id': 'Box_Area',
@@ -148,37 +145,30 @@ export default function DSWorkMap(props) {
 
     if (selected_course === "MGC000"){
       setCRS('전코스')
-      setHole(0)      
+      setHole(0)
+      setBoxPoly({...mapboxini_poly})
       return
     }
-
-    // map.current.flyTo({
-    //   center: baseinfo.course_info.filter((x)=> x.id === selected_course)[0].map_info.center,
-    //   })
-    // if (Object.keys(selectedBoxpoly ).length!== 0 && map.current !== null){
-    //     if (map.current.getSource('BoxArea') != null) map.current.getSource('BoxArea').setData({...selectedBoxpoly});
-    //     }
-  
-
   },[selected_course]);
 
   useEffect(() => {
 
-    let bbox_ =turfbbox(selectedBoxpoly.data);
-    map.current.fitBounds(bbox_, {padding: 20});
+    if (map.current !== null){
 
-    if (Object.keys(selectedBoxpoly ).length!== 0 && map.current !== null){
-        if (map.current.getSource('BoxArea') != null) map.current.getSource('BoxArea').setData({...selectedBoxpoly.data});
-        }
+      let bbox_ =turfbbox(selectedBoxpoly.data);
+      map.current.fitBounds(bbox_, {padding: 20});
+
+        if (map.current.getSource('BoxArea') != null && selected_course !== "MGC000") map.current.getSource('BoxArea').setData({...selectedBoxpoly.data});
+    }
 
   },[selectedBoxpoly]);
 
 
   useEffect(() => {
 
-    if (Object.keys(selectedBoxpoly ).length!== 0 && map.current !== null){
-        if (map.current.getSource('Target-Area') != null) map.current.getSource('Target-Area').setData({...targetpolygons.data});
-        }
+    if (map.current !== null){
+      if (map.current.getSource('Target-Area') != null&& selected_course !== "MGC000") map.current.getSource('Target-Area').setData({...targetpolygons.data});
+    }
 
   },[targetpolygons]);
 
