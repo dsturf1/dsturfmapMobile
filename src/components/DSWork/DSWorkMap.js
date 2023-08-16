@@ -164,8 +164,24 @@ export default function DSWorkMap(props) {
 
   useEffect(() => {
 
+    let bbox_ =turfbbox(selectedBoxpoly.data);
+    map.current.fitBounds(bbox_, {padding: 20});
 
-  },[geojsoninfo]);
+    if (Object.keys(selectedBoxpoly ).length!== 0 && map.current !== null){
+        if (map.current.getSource('BoxArea') != null) map.current.getSource('BoxArea').setData({...selectedBoxpoly.data});
+        }
+
+  },[selectedBoxpoly]);
+
+
+  useEffect(() => {
+
+    if (Object.keys(selectedBoxpoly ).length!== 0 && map.current !== null){
+        if (map.current.getSource('Target-Area') != null) map.current.getSource('Target-Area').setData({...targetpolygons.data});
+        }
+
+  },[targetpolygons]);
+
 
   useEffect(() => {
     
@@ -198,6 +214,7 @@ export default function DSWorkMap(props) {
       'type': 'geojson',
       'data': {...selected_boxpoly_} 
     })
+    console.log(selected_boxpoly_)
 
   },[selected_CRS, selected_hole]);
 

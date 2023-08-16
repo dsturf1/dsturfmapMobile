@@ -47,7 +47,7 @@ export const MapQProvider = (props) => {
 
       try {
           const fetchData = await fetch(url_, myInit).then((response) => response.json())
-          setIsLoading(false)
+
           console.log('Map Data is :',selected_course, fetchData.body, isLoading)
           // setGeoJsonInfo(fetchData.body)
           setGeoJsonInfo({...fetchData.body, 'features':fetchData.body['features'].sort((a, b) =>  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
@@ -91,11 +91,15 @@ export const MapQProvider = (props) => {
   
             tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 1).map((geojson_)=> {
               return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
-            })            
+            }) 
+            console.log(tpoly_)           
             setBoxPoly({
               'type': 'geojson',
               'data': tpoly_[0]              
             })
+
+            setIsLoading(false)
+
 
         } catch (err) { console.log('Workinfo Fetching Error', err) }
     }
