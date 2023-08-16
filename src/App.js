@@ -44,7 +44,7 @@ const App = () => {
               {/* <Route path="dsnaver" element={<DSNaverMain />}></Route> */}
               <Route path="dsmapedit" element={<DSGeoJsonMain geojson_mode={"AREA"}/>}></Route>
               <Route path="dsjobsedit" element={<DSGeoJsonMain geojson_mode={"JOBS"}/>}></Route>
-              <Route path="dsworkedit" element={<DSWorkMain/>}></Route>
+              <Route path="dsworkedit" element={<DSWorkMain geojson_mode={"JOBS"}/>}></Route>
               <Route path="dssetting" element={<DSMapSettingMain/>}></Route>
               {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>
               <Route path="dshuman" element={<DSBaseHumanMain />}></Route>

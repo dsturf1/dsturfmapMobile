@@ -19,20 +19,23 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZHNncmVlbiIsImEiOiJjbGw1M2xiMXIwNHYzM2RxcGFxZ
  
 export default function DSWorkMap(props) {
   const mapContainer = useRef(null);
-  const map = useRef(null);
+  const [map, setMap] = useState(null);
+  
   const [selected_hole, setHole] = useState(0);
   const [selected_CRS, setCRS] = useState('전코스');
 
   const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, isLoading, setIsLoading,  holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
-    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
 
 
 
  
   useEffect(() => {
-    if (map.current) return; // initialize map only once
-    map.current = new mapboxgl.Map({
+
+
+
+    const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/satellite-v9',
       // style: 'mapbox://styles/mapbox/streets-v12',
@@ -40,32 +43,17 @@ export default function DSWorkMap(props) {
       zoom: 14
     });
 
-    map.current.addControl(new mapboxgl.NavigationControl());
+    map.addControl(new mapboxgl.NavigationControl());
 
- 
-    // map.current.on('move', () => {
-    //   setLng(map.current.getCenter().lng.toFixed(4));
-    //   setLat(map.current.getCenter().lat.toFixed(4));
-    //   setZoom(map.current.getZoom().toFixed(2));
-    // });
-    // console.log(holepoly,coursepoly)
-    map.current.on('load', function () {
-      // map.current.resize();
-      // if (selected_course === "MGC000") return
+    map.on('load', function () {
 
-      map.current.addSource('Target-Area', {
+      map.addSource('Target-Area', {
         'type': 'geojson',
         'data': {
-          ...geojsoninfo_blank
+          ...geojsoninfo_blank, features:[polgygon_ini]
         }              
-      }
-      
-      
-      
-      );
-      
-    
-      map.current.addLayer({
+      });    
+      map.addLayer({
         'id': 'Target_Area',
         'type': 'fill',
         'source': 'Target-Area',
@@ -76,23 +64,16 @@ export default function DSWorkMap(props) {
         'filter': ['==', '$type', 'Polygon']
         });
 
-      const layers = map.current.getStyle().layers;
 
-      let firstSymbolId;
-      for (const layer of layers) {
-        if (layer.type === 'Polygon') {
-        firstSymbolId = layer.id;
-        break;
-        }
-      }
-      map.current.addSource('BoxArea', 
+
+      map.addSource('BoxArea', 
       {
         'type': 'geojson',
         'data': {
           ...geojsoninfo_blank
         }  
-        });
-      map.current.addLayer({
+      });        
+      map.addLayer({
         'id': 'Box_Area',
         'type': 'line',
         'source': 'BoxArea',
@@ -106,43 +87,15 @@ export default function DSWorkMap(props) {
           'line-width': 3  
         },        
         'filter': ['==', '$type', 'Polygon']
-        }, 'Target_Area');
-
-      map.current.on('click','Target_Area',  (e) => {
-
-        const coordinates = e.features[0].geometry.coordinates[0][0];
-        const description = '<strong>'+e.features[0].properties.Course+' '+ e.features[0].properties.Hole+
-        '홀</strong><p>'+e.features[0].properties.Desc+'</p>'
-        
-        ;
-         
-        // Ensure that if the map is zoomed out such that multiple
-        // copies of the feature are visible, the popup appears
-        // over the copy being pointed to.
-        // while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
-        // coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
-        // }
-        // console.log(turfcentroid(e.features[0].geometry.coordinates[0]))
-        new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(description)
-        .addTo(map.current);
-  
-        });
+      }, 'Target_Area');
 
     });
+    setMap(map);
 
-
-
-
-  })
+    return () => map.remove();
+  }, []);
 
   useEffect(() => {
-    // if (map.current) return; // initialize map only once
-
-    // console.log("Fyling to Cousre", selected_course)
-
-
     if (selected_course === "MGC000"){
       setCRS('전코스')
       setHole(0)
@@ -153,21 +106,62 @@ export default function DSWorkMap(props) {
 
   useEffect(() => {
 
-    if (map.current !== null){
+    if (map !== null){
 
       let bbox_ =turfbbox(selectedBoxpoly.data);
-      map.current.fitBounds(bbox_, {padding: 20});
+      map.fitBounds(bbox_, {padding: 20});
 
-        if (map.current.getSource('BoxArea') != null && selected_course !== "MGC000") map.current.getSource('BoxArea').setData({...selectedBoxpoly.data});
+        if (map.getSource('BoxArea') != null && selected_course !== "MGC000") map.getSource('BoxArea').setData({...selectedBoxpoly.data});
     }
 
   },[selectedBoxpoly]);
 
 
   useEffect(() => {
+    if (map !== null){
 
-    if (map.current !== null){
-      if (map.current.getSource('Target-Area') != null&& selected_course !== "MGC000") map.current.getSource('Target-Area').setData({...targetpolygons.data});
+        if (map.getSource('Target-Area') != null && selected_course !== "MGC000") map.getSource('Target-Area').setData({...targetpolygons.data});
+        map.on('click','Target_Area',  (e) => {
+          const coordinates = e.features[0].geometry.coordinates[0][0];
+          const description = '<strong>'+e.features[0].properties.Course+' '+ e.features[0].properties.Hole+
+          '홀</strong><p>'+e.features[0].properties.Desc+'</p>'
+          
+          ;
+          console.log(
+            {
+              "type": "Feature",
+              "properties": e.features[0].properties,
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": e.features[0].geometry.coordinates
+              }
+            }
+            )
+
+            setPolyGon(            {
+              "type": "Feature",
+              "properties": e.features[0].properties,
+              "geometry": {
+                "type": "Polygon",
+                "coordinates": e.features[0].geometry.coordinates
+              }
+            })
+           
+          // Ensure that if the map is zoomed out such that multiple
+          // copies of the feature are visible, the popup appears
+          // over the copy being pointed to.
+          // while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+          // coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+          // }
+          // console.log(turfcentroid(e.features[0].geometry.coordinates[0]))
+          new mapboxgl.Popup()
+          .setLngLat(coordinates)
+          .setHTML(description)
+          .addTo(map);
+
+          });
+        
+
     }
 
   },[targetpolygons]);
@@ -175,7 +169,7 @@ export default function DSWorkMap(props) {
 
   useEffect(() => {
     
-    if (Object.keys(coursepoly).length === 0 || Object.keys(holepoly).length ===0) return
+    if (Object.keys(coursepoly).length === 0 || Object.keys(holepoly).length ===0 || map === null) return
 
     let selected_boxpoly_ = {}
 
@@ -194,10 +188,10 @@ export default function DSWorkMap(props) {
     // console.log(selected_boxpoly_, holepoly)
 
     let bbox_ =turfbbox(selected_boxpoly_);
-    map.current.fitBounds(bbox_, {padding: 20});
+    map.fitBounds(bbox_, {padding: 20});
 
-    if (Object.keys(selected_boxpoly_ ).length!== 0 && map.current !== null){
-      if (map.current.getSource('BoxArea') != null) map.current.getSource('BoxArea').setData({...selected_boxpoly_});
+    if (Object.keys(selected_boxpoly_ ).length!== 0 && map !== null){
+      if (map.getSource('BoxArea') != null) map.getSource('BoxArea').setData({...selected_boxpoly_});
 
     }
     setBoxPoly({

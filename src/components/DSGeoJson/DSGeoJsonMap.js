@@ -211,7 +211,7 @@ function DSPolyEdit(){
         if (search_holepoly.length === 0) search_holepoly = [JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK))];
 
         polygon_info_ini = {...search_holepoly[0],geometry:{...search_holepoly[0].geometry, coordinates: [ds_mgrData2geojson(poly_.points)]},
-        properties:{ ...search_holepoly[0].properties,Id:uuidv4(), Type: "관심영역", TypeId:10, Valid: true, By: loginuser, When: new Date(), Client: selected_course_info.name}}
+        properties:{ ...search_holepoly[0].properties,Id:uuidv4(), Type: "관심영역", TypeId:10, Valid: true, By: loginuser, When: (new Date()).toISOString(), Client: selected_course_info.name}}
 
         console.log(polygon_info_ini)
 
