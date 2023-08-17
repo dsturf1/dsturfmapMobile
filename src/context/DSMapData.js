@@ -1,11 +1,13 @@
 import React, { createContext, useState, useEffect, useContext} from 'react';
 import {BaseContext} from "./BaseData.js";
 import {BASEURL} from "../constant/urlconstants.js";
-import { GEOJSONBLANK , POLYGONBLANK, MAPBOXINI } from '../constant/urlconstants';
+import {createGeoJSONCircle} from "../components/DSBasics/DSCordUtils.js";
+import { GEOJSONBLANK , POLYGONBLANK, MAPBOXINI, INTERESTED_POINT, INTERESTED_POLYGONBLANK  } from '../constant/urlconstants';
 import { Auth } from 'aws-amplify';
 
 const geojsoninfo_blank = JSON.parse(JSON.stringify(GEOJSONBLANK));
-const targetpolygon_blank = JSON.parse(JSON.stringify(POLYGONBLANK));
+const targetpolygon_blank = JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK));
+const targetpoint_blank = JSON.parse(JSON.stringify(INTERESTED_POINT));
 const mapboxini_poly = JSON.parse(JSON.stringify(MAPBOXINI));
 
 export const MapQContext = createContext();
@@ -17,6 +19,7 @@ export const MapQProvider = (props) => {
   const[tpoly, setTPoly] = useState([])
 
   const[targetpolygons, setTargetPolygons] = useState([targetpolygon_blank]);
+  const[targetpoints, setTargetPoints] = useState([targetpoint_blank]);
   const[holepoly, setHolePoly] = useState([])
   const[coursepoly, setCoursePoly] = useState([])
   const[selectedBoxpoly, setBoxPoly] = useState({...mapboxini_poly})
@@ -57,17 +60,36 @@ export const MapQProvider = (props) => {
             let tpoly_ = [];
 
           
-            tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId >= 10).map((geojson_)=> {
+            tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId == 10).map((geojson_)=> {
               // return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates: [[...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]]}}
               return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
             })
             
+            let tcircle_poly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId == 11).map((geojson_)=> {
+              return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates:createGeoJSONCircle(geojson_.geometry.coordinates, geojson_.geometry.radius/1000.)}}
+            })
+            
+            console.log("..Circle", [...tpoly_, ...tcircle_poly_])
             setTargetPolygons({
+              'type': 'geojson',
+              'data': {
+                ...fetchData.body, features:[...tpoly_, ...tcircle_poly_]
+              }              
+            })
+
+            tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId == 11).map((geojson_)=> {
+              // return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates: [[...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]]}}
+              return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Point'}}
+            })
+            
+            setTargetPoints({
               'type': 'geojson',
               'data': {
                 ...fetchData.body, features:[...tpoly_]
               }              
             })
+
+
   
             tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 3).map((geojson_)=> {
               return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
@@ -92,7 +114,7 @@ export const MapQProvider = (props) => {
             tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 1).map((geojson_)=> {
               return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
             }) 
-            console.log(tpoly_)           
+            // console.log(tpoly_)           
             setBoxPoly({
               'type': 'geojson',
               'data': tpoly_[0]              
@@ -115,7 +137,8 @@ export const MapQProvider = (props) => {
 
   return(
 
-  <MapQContext.Provider  value={{geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly,  holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly, targetpolygons, setTargetPolygons}}>
+  <MapQContext.Provider  value={{geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly,  holepoly, setHolePoly, coursepoly, setCoursePoly,
+      selectedBoxpoly, setBoxPoly, targetpolygons, setTargetPolygons, targetpoints, setTargetPoints}}>
       {props.children}
   </MapQContext.Provider >
   

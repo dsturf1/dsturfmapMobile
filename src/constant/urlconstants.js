@@ -62,6 +62,28 @@
       }
     };
 
+    export const INTERESTED_POINT =   {
+      "type": "Feature",
+      "properties": {
+        "Name": "Contour_",
+        "Id":"",
+        "Client": "",
+        "Course": "",
+        "Hole": "",
+        "Type": "관심포인트",
+        "TypeId": 11,
+        "Desc":"",
+        "Valid":true,
+        "By":"",
+        "When":""
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [],
+        "radius":1.0
+      }
+    };
+
     export const INTERESTED_POLYGONBLANK =   {
       "type": "Feature",
       "properties": {
