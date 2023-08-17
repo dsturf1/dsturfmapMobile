@@ -31,7 +31,7 @@ export default function DSWorkMain({geojson_mode}) {
         <Grid Grid item xs={12} md={2}>
           <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
           borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}>            
-            { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit geojson_mode={geojson_mode}/>}
+            { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit geojson_mode={"WORK"}/>}
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>

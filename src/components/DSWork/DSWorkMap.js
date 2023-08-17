@@ -96,14 +96,8 @@ export default function DSWorkMap(props) {
     setMap(map);
     setMode('MAPSelect');
     setCourse('MGC000');
+    setEdited(false)
 
-
-
-      
-       
-      // map.on('draw.create', updateArea);
-      // map.on('draw.delete', updateArea);
-      // map.on('draw.update', updateArea);
 
     return () => {setMode('MAPSelect');setCourse('MGC000');map.remove();}
   }, []);
@@ -169,11 +163,10 @@ export default function DSWorkMap(props) {
 
     draw.set(new_data)
 
-    // console.log('Created:',polygon_info_ini, new_data)
+    console.log('Created:',polygon_info_ini, new_data)
   }
 
   useEffect(() => {
-    // if(isLoading === true) return;
     if(map === null) return;
     if(draw === null){
       const draw_ = new MapboxDraw({
@@ -186,11 +179,10 @@ export default function DSWorkMap(props) {
         // Set mapbox-gl-draw to draw by default.
         // The user does not have to click the polygon control button first.
         defaultMode: 'simple_select'
-        });
-
-        
+        });        
         setDraw(draw_)
     }
+
     if (selected_mode === "MAPGEOJSONEDIT") {
       
       map.addControl(draw);
@@ -199,11 +191,14 @@ export default function DSWorkMap(props) {
       map.on('draw.update', handle_editpolygonNewUpdate);
 
       map.setLayoutProperty('Target_Area', 'visibility', 'none');
+      draw.deleteAll()
       draw.add({...targetpolygons.data})
     
+      setEdited(true)
+    
     }
-    if (selected_mode === "MAPEdit" && draw !== null && draw !== undefined) {
-      // console.log("ALL Data:", draw.getAll())
+    if (selected_mode === "MAPEdit"&& draw !== null && draw !== undefined && edited === true) {
+      console.log("ALL Data:", draw)
       setTargetPolygons({
         'type': 'geojson',
         'data': {
@@ -213,16 +208,35 @@ export default function DSWorkMap(props) {
       
       setGeoJsonInfo(
         {...geojsoninfo, 
-          features:[...geojsoninfo.features.filter((x) => x.properties.TypeId <=10),...draw.getAll().features ].sort((a, b) =>  
+          features:[...geojsoninfo.features.filter((x) => x.properties.TypeId <10),...draw.getAll().features ].sort((a, b) =>  
           baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
           baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
         }
       )
+      draw.deleteAll()
+
+
+      map.off('draw.selectionchange',handle_editpolygonChange);
+      map.off('draw.create',handle_editpolygonNewUpdate);
+      map.off('draw.update', handle_editpolygonNewUpdate);
       map.removeControl(draw);
+
       map.setLayoutProperty('Target_Area', 'visibility', 'visible');
+      setEdited(false)
 
 
     }
+
+    // if (selected_mode === "MAPSelect"&& draw !== null && draw !== undefined) {
+
+    //   console.log("REMOVE ALL", draw)     
+      
+    //   draw.deleteAll()
+    //   map.removeControl(draw);
+    //   map.setLayoutProperty('Target_Area', 'visibility', 'visible');
+
+
+    // }
   },[selected_mode]);
 
 

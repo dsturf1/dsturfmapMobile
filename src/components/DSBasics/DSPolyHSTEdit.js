@@ -177,8 +177,11 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
           <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> 
-          
-          {selected_mode === "MAPEdit" && selected_polygon === null? "신규관심지역 생성":(selected_mode === "MAPEdit" && selected_polygon !== null? "선택된지역수정":"신규/수정모드 종료")}</Button>
+          {geojson_mode === "JOBS"? 
+            (selected_mode === "MAPEdit" && selected_polygon === null? "신규관심지역 생성":(selected_mode === "MAPEdit" && selected_polygon !== null? "선택된지역수정":"신규/수정모드 종료"))
+            :
+            (selected_mode === "MAPEdit" ? "신규/수정모드":"신규/수정모드 종료")          
+          }</Button>
         </ButtonGroup>
         {/* </Stack> */}
       </Fragment>
