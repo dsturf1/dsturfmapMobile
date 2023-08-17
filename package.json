@@ -8,6 +8,7 @@
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.5",
     "@handsontable/react": "^13.0.0",
+    "@mapbox/mapbox-gl-draw": "^1.4.2",
     "@mui/icons-material": "^5.14.1",
     "@mui/lab": "^5.0.0-alpha.139",
     "@mui/material": "^5.14.4",

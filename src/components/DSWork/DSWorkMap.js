@@ -3,11 +3,13 @@ import { Box, Button, Stack, Avatar, Typography, Grid, InputLabel, MenuItem, For
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import { BaseContext, MapQContext} from "../../context"
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 
 import './Map.css';
 
 
-import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK,  GEOJSONBLANK, MAPBOXINI } from '../../constant/urlconstants';
+import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK,  GEOJSONBLANK, MAPBOXINI, INTERESTED_POLYGONBLANK } from '../../constant/urlconstants';
 import { ContactPageSharp } from '@mui/icons-material';
 
 
@@ -20,6 +22,7 @@ mapboxgl.accessToken = 'pk.eyJ1IjoiZHNncmVlbiIsImEiOiJjbGw1M2xiMXIwNHYzM2RxcGFxZ
 export default function DSWorkMap(props) {
   const mapContainer = useRef(null);
   const [map, setMap] = useState(null);
+  const [draw, setDraw] = useState(null);
   
   const [selected_hole, setHole] = useState(0);
   const [selected_CRS, setCRS] = useState('전코스');
@@ -59,7 +62,7 @@ export default function DSWorkMap(props) {
         'source': 'Target-Area',
         'paint': {
         'fill-color': "#d90429",
-        'fill-opacity': 0.4
+        'fill-opacity': 0.2
         },
         'filter': ['==', '$type', 'Polygon']
         });
@@ -91,8 +94,18 @@ export default function DSWorkMap(props) {
 
     });
     setMap(map);
+    setMode('MAPSelect');
+    setCourse('MGC000');
 
-    return () => map.remove();
+
+
+      
+       
+      // map.on('draw.create', updateArea);
+      // map.on('draw.delete', updateArea);
+      // map.on('draw.update', updateArea);
+
+    return () => {setMode('MAPSelect');setCourse('MGC000');map.remove();}
   }, []);
 
   useEffect(() => {
@@ -115,6 +128,102 @@ export default function DSWorkMap(props) {
     }
 
   },[selectedBoxpoly]);
+
+  const handle_editpolygonChange = () =>{
+
+    if(draw === null) return
+    // draw.changeMode("direct_select")
+    
+    if (draw.getSelected().features.length>0) setPolyGon( {...draw.getSelected().features[0]}  );
+    // console.log('Selected:',draw.getSelected())
+  }
+
+  const handle_editpolygonNewUpdate = (e) =>{
+
+    if(draw === null) return
+    // draw.changeMode("direct_select")
+    let data_= draw.getAll()
+    
+    // let created_ = data_.features[data_.features.length - 1]
+    let created_ = {...e.features[0]}
+    // console.log('Before Created Procerss:',created_, data_, e)
+    let polygon_info_ini = {}
+
+    let search_holepoly = holepoly.data.features.filter((x)=> booleanPointInPolygon(turfcentroid(created_), turfpolygon(x.geometry.coordinates)))
+
+    if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
+        booleanPointInPolygon(turfcentroid(created_), turfpolygon(x.geometry.coordinates)) && x.properties.Course !=='전코스')
+
+        if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
+        booleanPointInPolygon(turfcentroid(created_), turfpolygon(x.geometry.coordinates)) && x.properties.Course ==='전코스')
+    
+    if (search_holepoly.length === 0) search_holepoly = [JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK))];
+
+    polygon_info_ini = {...search_holepoly[0],geometry:{...search_holepoly[0].geometry, coordinates: [...created_.geometry.coordinates]}, id:created_.id,
+      properties:{ ...search_holepoly[0].properties,Id:uuidv4(), Type: "관심영역", TypeId:10, Valid: true, By: loginuser, When: (new Date()).toISOString(), Client: selected_course_info.name}}
+
+    // console.log(polygon_info_ini)
+    setPolyGon( {...polygon_info_ini}  );
+
+    let new_data = {...data_, features: [...data_.features.filter((x)=>x.id !== created_.id) ,polygon_info_ini ] }
+
+    draw.set(new_data)
+
+    // console.log('Created:',polygon_info_ini, new_data)
+  }
+
+  useEffect(() => {
+    // if(isLoading === true) return;
+    if(map === null) return;
+    if(draw === null){
+      const draw_ = new MapboxDraw({
+        displayControlsDefault: false,
+        // Select which mapbox-gl-draw control buttons to add to the map.
+        controls: {
+        polygon: true,
+        trash: true
+        },
+        // Set mapbox-gl-draw to draw by default.
+        // The user does not have to click the polygon control button first.
+        defaultMode: 'simple_select'
+        });
+
+        
+        setDraw(draw_)
+    }
+    if (selected_mode === "MAPGEOJSONEDIT") {
+      
+      map.addControl(draw);
+      map.on('draw.selectionchange',handle_editpolygonChange);
+      map.on('draw.create',handle_editpolygonNewUpdate);
+      map.on('draw.update', handle_editpolygonNewUpdate);
+
+      map.setLayoutProperty('Target_Area', 'visibility', 'none');
+      draw.add({...targetpolygons.data})
+    
+    }
+    if (selected_mode === "MAPEdit" && draw !== null && draw !== undefined) {
+      // console.log("ALL Data:", draw.getAll())
+      setTargetPolygons({
+        'type': 'geojson',
+        'data': {
+          ...draw.getAll()
+        }              
+      })
+      
+      setGeoJsonInfo(
+        {...geojsoninfo, 
+          features:[...geojsoninfo.features.filter((x) => x.properties.TypeId <=10),...draw.getAll().features ].sort((a, b) =>  
+          baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+          baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
+        }
+      )
+      map.removeControl(draw);
+      map.setLayoutProperty('Target_Area', 'visibility', 'visible');
+
+
+    }
+  },[selected_mode]);
 
 
   useEffect(() => {
@@ -160,7 +269,7 @@ export default function DSWorkMap(props) {
           .addTo(map);
 
           });
-        
+
 
     }
 
