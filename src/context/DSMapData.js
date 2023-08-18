@@ -66,7 +66,7 @@ export const MapQProvider = (props) => {
             })
             
             let tcircle_poly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId == 11).map((geojson_)=> {
-              return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates:createGeoJSONCircle(geojson_.geometry.coordinates, geojson_.geometry.radius/1000.)}}
+              return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates:createGeoJSONCircle(geojson_.geometry.coordinates, geojson_.properties.radius/1000.)}}
             })
             
             console.log("..Circle", [...tpoly_, ...tcircle_poly_])

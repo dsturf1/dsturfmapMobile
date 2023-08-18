@@ -47,19 +47,23 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
     let turfpolygon_ = {}
     
-    if (selected_polygon !== null) turfpolygon_ = turfpolygon([[...selected_polygon['geometry']['coordinates'][0], selected_polygon['geometry']['coordinates'][0][0]]])
+    // if (selected_polygon !== null) turfpolygon_ = turfpolygon([[...selected_polygon['geometry']['coordinates'][0], selected_polygon['geometry']['coordinates'][0][0]]])
 
     rows_.push({title:'코스명',name:selected_polygon === null? "":selected_polygon.properties.Course})    
     rows_.push({title:'Type',name:selected_polygon === null? "":selected_polygon.properties.Type})    
     rows_.push({title:'홀',name:selected_polygon === null? "":selected_polygon.properties.Hole})
-    rows_.push({title:'면적',name:selected_polygon === null? "":area(turfpolygon_).toFixed(1).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")})
+    rows_.push({title:'면적',name:selected_polygon === null? "":area(selected_polygon).toFixed(1).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")})
+
     rows_.push({title:'작성자',name:selected_polygon === null? "":selected_polygon.properties.By})
     rows_.push({title:'작성시점',name:selected_polygon === null? "":selected_polygon.properties.When.split('T')[0]})
     rows_.push({title:'Valid?',name:selected_polygon === null? "":selected_polygon.properties.Valid})
+    rows_.push({title:'반지름(m)',name:selected_polygon === null? 0:selected_polygon.properties.radius})
     // rows_.push({title:'개요',name:selected_polygon === null? "":selected_polygon.properties.Desc})
 
     if(DescRef !== null) DescRef.current.value = selected_polygon === null? "":selected_polygon.properties.Desc
     const hot = hotRef.current.hotInstance;
+
+    // console.log("@InfoEdit", selected_polygon)
 
     hot.loadData(rows_)
   },[selected_polygon]);
@@ -104,6 +108,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [true,false]
             }
+
             return cellMeta;
           }
           }
@@ -130,8 +135,14 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               }
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
               if (row === 6) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
+              if (row === 7) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}} 
 
               setPolyGon({...newPolygon})
+
+              if(newPolygon.properties.TypeId === 11){
+                newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, coordinates:newPolygon.properties.center, type:'Point'} }
+              }     
+
 
 
               let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}
@@ -164,6 +175,13 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               if(selected_polygon === null) return
               let newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:DescRef.current.value}}            
               setPolyGon({...newPolygon})
+
+
+              if(newPolygon.properties.TypeId === 11){
+                newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, coordinates:newPolygon.properties.center, type:'Point'} }
+              }     
+
+
               let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}
               setGeoJsonInfo({...geojsoninfo_})
             }}

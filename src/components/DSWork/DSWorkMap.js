@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useContext , Fragment} from 'react'
 import { Box, Button, Stack, Avatar, Typography, Grid, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, CircularProgress} from '@mui/material';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
 import { BaseContext, MapQContext} from "../../context"
+import {createGeoJSONCircle} from "../DSBasics/DSCordUtils.js";
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
@@ -87,7 +88,7 @@ export default function DSWorkMap(props) {
             'circle-stroke-color': '#fff'
             },
           'filter': ['==', '$type', 'Point']
-          });
+          }, 'Target_Area');
 
 
 
@@ -135,6 +136,18 @@ export default function DSWorkMap(props) {
 
   useEffect(() => {
 
+    if (selected_polygon === null ) return
+
+    if(selected_polygon.properties.TypeId === 11){
+
+
+    }
+
+
+  },[selected_polygon]);
+
+  useEffect(() => {
+
     if (map !== null){
 
       let bbox_ =turfbbox(selectedBoxpoly.data);
@@ -151,7 +164,26 @@ export default function DSWorkMap(props) {
     // draw.changeMode("direct_select")
     
     if (draw.getSelected().features.length>0) setPolyGon( {...draw.getSelected().features[0]}  );
-    // console.log('Selected:',draw.getSelected())
+
+
+
+
+    console.log('Selected:',draw.getSelected())
+  }
+
+  const check_CRSandHole = (pnt_) =>
+  {
+    let search_holepoly = holepoly.data.features.filter((x)=> booleanPointInPolygon(pnt_, turfpolygon(x.geometry.coordinates)))
+
+    if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
+        booleanPointInPolygon(pnt_, turfpolygon(x.geometry.coordinates)) && x.properties.Course !=='전코스')
+
+    if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
+        booleanPointInPolygon(pnt_, turfpolygon(x.geometry.coordinates)) && x.properties.Course ==='전코스')
+    
+    if (search_holepoly.length === 0) search_holepoly = [JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK))];
+
+    return search_holepoly
   }
 
   const handle_editpolygonNewUpdate = (e) =>{
@@ -161,34 +193,48 @@ export default function DSWorkMap(props) {
     let data_= draw.getAll()
     
     // let created_ = data_.features[data_.features.length - 1]
-    let created_ = {...e.features[0]}
-    // console.log('Before Created Procerss:',created_, data_, e)
-    let polygon_info_ini = {}
+    let created_ = {...e.features[0]} // Created 된 객체를 직접 Event에서 받는다.
 
-    let search_holepoly = holepoly.data.features.filter((x)=> booleanPointInPolygon(turfcentroid(created_), turfpolygon(x.geometry.coordinates)))
+    // console.log('Before Created Procerss:',created_.geometry.type,turfcentroid(created_), data_, e)
 
-    if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
-        booleanPointInPolygon(turfcentroid(created_), turfpolygon(x.geometry.coordinates)) && x.properties.Course !=='전코스')
+    let geo_type_ = created_.geometry.type === 'Point'?'Point':(created_.properties.TypeId === 11?'Point':'Polygon')
+    let geo_type_center = created_.geometry.type === 'Point'?created_.geometry.coordinates:(created_.properties.TypeId === 11?
+      turfcentroid(created_).geometry.coordinates:[])
+    let geo_type_radius = created_.geometry.type === 'Point'?4:(created_.properties.TypeId === 11? created_.properties.radius:0)
+    let polgygon_coordinates = created_.geometry.type === 'Point'? createGeoJSONCircle(created_.geometry.coordinates, 4/1000.):
+      (created_.properties.TypeId === 11?createGeoJSONCircle(geo_type_center, created_.properties.radius/1000.):created_.geometry.coordinates)
 
-        if (search_holepoly.length === 0) search_holepoly = coursepoly.data.features.filter((x)=> 
-        booleanPointInPolygon(turfcentroid(created_), turfpolygon(x.geometry.coordinates)) && x.properties.Course ==='전코스')
     
-    if (search_holepoly.length === 0) search_holepoly = [JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK))];
+    let polygon_info_ini = {}
+    let search_holepoly = check_CRSandHole(turfcentroid(created_)) // 만들어진 객체의 현재 홀 객체를 받음.
 
-    polygon_info_ini = {...search_holepoly[0],geometry:{...search_holepoly[0].geometry, coordinates: [...created_.geometry.coordinates]}, id:created_.id,
-      properties:{ ...search_holepoly[0].properties,Id:uuidv4(), Type: "관심영역", TypeId:10, Valid: true, By: loginuser, When: (new Date()).toISOString(), Client: selected_course_info.name}}
+
+
+    polygon_info_ini = {
+      ...search_holepoly[0],
+      geometry:{...search_holepoly[0].geometry, coordinates: [...polgygon_coordinates]
+      }, 
+      id:created_.id,
+      properties:{ ...search_holepoly[0].properties,Id:uuidv4(), 
+        Type:geo_type_ === 'Point'?"관심포인트":"관심영역", 
+        TypeId:geo_type_ === 'Point'? 11:10,
+        radius:geo_type_radius,
+        center:geo_type_center,
+        Valid: true, By: loginuser, When: (new Date()).toISOString(), Client: selected_course_info.name}
+    }
 
     // console.log(polygon_info_ini)
     setPolyGon( {...polygon_info_ini}  );
 
-    let new_data = {...data_, features: [...data_.features.filter((x)=>x.id !== created_.id) ,polygon_info_ini ] }
+    let new_data = {...data_, features: [...data_.features.filter((x)=>x.id !== created_.id) ,polygon_info_ini ] } // 폴리건의 위치 정보 홀정보등이 들어가여 함으로...
 
-    draw.set(new_data)
+    draw.set(new_data)// Delete All and Add All
 
     console.log('Created:',polygon_info_ini, new_data)
   }
 
   useEffect(() => {
+
     if(map === null) return;
     if(draw === null){
       const draw_ = new MapboxDraw({
@@ -196,6 +242,7 @@ export default function DSWorkMap(props) {
         // Select which mapbox-gl-draw control buttons to add to the map.
         controls: {
         polygon: true,
+        point:true,
         trash: true
         },
         // Set mapbox-gl-draw to draw by default.
@@ -213,26 +260,47 @@ export default function DSWorkMap(props) {
       map.on('draw.update', handle_editpolygonNewUpdate);
 
       map.setLayoutProperty('Target_Area', 'visibility', 'none');
+      map.setLayoutProperty('Target_Point', 'visibility', 'none');
       draw.deleteAll()
       draw.add({...targetpolygons.data})
+      // draw.add({...targetpoints.data})
     
       setEdited(true)
     
     }
     if (selected_mode === "MAPEdit"&& draw !== null && draw !== undefined && edited === true) {
-      console.log("ALL Data:", draw)
+      console.log("ALL Data:", draw.getAll())
+
       setTargetPolygons({
         'type': 'geojson',
         'data': {
           ...draw.getAll()
         }              
       })
+
+      let PointObjects = draw.getAll().features.filter((x)=>  x.properties.TypeId ===11).map((circleASpolygon) => {
+        return {...circleASpolygon, geometry: {...circleASpolygon.geometry, coordinates:circleASpolygon.properties.center, type:'Point'}}
+      })
+
+      console.log(PointObjects)
+
+      setTargetPoints({
+        'type': 'geojson',
+        'data': {
+          ...draw.getAll(), features:[...PointObjects]
+        }              
+      })
+
+
       
       setGeoJsonInfo(
         {...geojsoninfo, 
-          features:[...geojsoninfo.features.filter((x) => x.properties.TypeId <10),...draw.getAll().features ].sort((a, b) =>  
-          baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
-          baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
+          features:[...geojsoninfo.features.filter((x) => x.properties.TypeId <10),
+            ...draw.getAll().features.filter((x)=>  x.properties.TypeId ===10), 
+            ...PointObjects
+          ].sort((a, b) =>  
+            baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+            baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
         }
       )
       draw.deleteAll()
@@ -244,6 +312,7 @@ export default function DSWorkMap(props) {
       map.removeControl(draw);
 
       map.setLayoutProperty('Target_Area', 'visibility', 'visible');
+      map.setLayoutProperty('Target_Point', 'visibility', 'visible');
       setEdited(false)
 
 
@@ -263,10 +332,11 @@ export default function DSWorkMap(props) {
           '홀</strong><p>'+e.features[0].properties.Desc+'</p>'
           
           ;
+          console.log('At Click',e.features[0].properties)
 
             setPolyGon(            {
               "type": "Feature",
-              "properties": e.features[0].properties,
+              "properties":{...e.features[0].properties,center:JSON.parse(e.features[0].properties.center)},
               "geometry": {
                 "type": "Polygon",
                 "coordinates": e.features[0].geometry.coordinates
@@ -289,31 +359,31 @@ export default function DSWorkMap(props) {
     // DSMAPDATA에서 geojson 이 최종적으로 로드가 완료되면 실행되는 함수,
     //따라서 각 폴리건의 초기화 즉 클릭하면 실향되는 evemt Function으로 초기화
     if (map !== null){
-
+      console.log("Points Updated", targetpoints)
       if (map.getSource('Target-Point') != null && selected_course !== "MGC000") map.getSource('Target-Point').setData({...targetpoints.data});
       
-      map.on('click','Target_Point',  (e) => {
-        const coordinates = e.features[0].geometry.coordinates;
-        const description = '<strong>'+e.features[0].properties.Course+' '+ e.features[0].properties.Hole+
-        '홀</strong><p>'+e.features[0].properties.Desc+'</p>'
+      // map.on('click','Target_Point',  (e) => {
+      //   const coordinates = e.features[0].geometry.coordinates;
+      //   const description = '<strong>'+e.features[0].properties.Course+' '+ e.features[0].properties.Hole+
+      //   '홀</strong><p>'+e.features[0].properties.Desc+'</p>'
         
-        ;
+      //   ;
         
-        // setPolyGon({
-        //   "type": "Feature",
-        //   "properties": e.features[0].properties,
-        //   "geometry": {
-        //     "type": "Point",
-        //     "coordinates": e.features[0].geometry.coordinates
-        //   }
-        // })         
+      //   // setPolyGon({
+      //   //   "type": "Feature",
+      //   //   "properties": e.features[0].properties,
+      //   //   "geometry": {
+      //   //     "type": "Point",
+      //   //     "coordinates": e.features[0].geometry.coordinates
+      //   //   }
+      //   // })         
 
-        new mapboxgl.Popup()
-        .setLngLat(coordinates)
-        .setHTML(description)
-        .addTo(map);
+      //   new mapboxgl.Popup()
+      //   .setLngLat(coordinates)
+      //   .setHTML(description)
+      //   .addTo(map);
 
-        });
+      //   });
 
 
     }

@@ -72,6 +72,11 @@ export const BaseProvider = (props) => {
 
     },[baseinfo]);
 
+    useEffect(() => {
+
+      console.log("Selected Ploygon Updated: ", selected_polygon)
+    },[selected_polygon]);
+
 
 
 
