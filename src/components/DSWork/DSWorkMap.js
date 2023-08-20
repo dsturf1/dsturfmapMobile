@@ -114,6 +114,56 @@ export default function DSWorkMap(props) {
         },        
         'filter': ['==', '$type', 'Polygon']
       }, 'Target_Area');
+      map.addSource('selected-course-hole',       {
+        'type': 'geojson',
+        'data': {
+          ...geojsoninfo_blank
+        }  
+      });   
+      map.addLayer({
+        'id': 'selected-course-hole',
+        'type': 'symbol',
+        'source': 'selected-course-hole',
+        "paint": {
+          "text-color": "#ffd500"
+        },
+        'layout': {
+          'text-field': [
+            'format',
+            // ['upcase', ['get', 'Course']],
+            // { 'font-scale': 0.8 },
+            ['get', 'Hole'],
+            { 'font-scale': 0.8 }
+          ],
+          'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold']
+          
+          }
+        });
+
+        map.addSource('selected-course-CRS',       {
+          'type': 'geojson',
+          'data': {
+            ...geojsoninfo_blank
+          }  
+        });   
+        map.addLayer({
+          'id': 'selected-course-CRS',
+          'type': 'symbol',
+          'source': 'selected-course-CRS',
+          "paint": {
+            "text-color": "#ffd500"
+          },
+          'layout': {
+            'text-field': [
+              'format',
+              ['get', 'Course'],
+              { 'font-scale': 0.8 },
+
+            ],
+            'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold']
+            
+            }
+          });
 
     });
     setMap(map);
@@ -132,7 +182,29 @@ export default function DSWorkMap(props) {
       setBoxPoly({...mapboxini_poly})
       return
     }
+
+    // if (typeof(map.getSource('selected-course-hole')) !== undefined && selected_course !== "MGC000") map.getSource('selected-course-hole').setData({...holepoly.data});
   },[selected_course]);
+
+
+  useEffect(() => {
+    if (selected_course === "MGC000")  return
+    if (map === null) return
+
+    console.log('HolePoly is ready', holepoly)
+
+    if (typeof(map.getSource('selected-course-hole')) !== undefined && selected_course !== "MGC000") map.getSource('selected-course-hole').setData({...holepoly.data});
+  },[holepoly]);
+
+  useEffect(() => {
+    if (selected_course === "MGC000")  return
+    if (map === null) return
+
+    console.log('CoursePoly is ready', {...coursepoly.data.features.filter((x)=>x.properties.TypeId === 2)})
+
+    if (typeof(map.getSource('selected-course-CRS')) !== undefined && selected_course !== "MGC000") 
+      map.getSource('selected-course-CRS').setData({...coursepoly.data, features:coursepoly.data.features.filter((x)=>x.properties.TypeId === 2)});
+  },[coursepoly]);
 
   useEffect(() => {
 
