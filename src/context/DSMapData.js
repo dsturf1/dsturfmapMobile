@@ -30,7 +30,15 @@ export const MapQProvider = (props) => {
   useEffect(() => {
       // 처음 데이터를 읽어서 성공하면 State를 Update
 
-    if(selected_course === "MGC000") return
+    if(selected_course === "MGC000"){
+      setHolePoly([])
+      setCoursePoly([])
+      setBoxPoly({...mapboxini_poly})
+      setPolyGon(null)
+      setIsLoading(true)
+      return
+
+    }
 
     const fetchWorkInfo = async() => {
 

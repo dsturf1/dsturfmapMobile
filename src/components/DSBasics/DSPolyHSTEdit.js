@@ -108,6 +108,10 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [true,false]
             }
+            if (row === 7) {
+              cellMeta.type = 'dropdown';
+              cellMeta.source = [1,1.5,2,2.5,3,3.5,4,5,7.5,10,15,20, 50]
+            }
 
             return cellMeta;
           }

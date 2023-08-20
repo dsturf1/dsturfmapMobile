@@ -173,6 +173,7 @@ export default function DSWorkMap(props) {
   },[selected_polygon]);
 
   useEffect(() => {
+    console.log("BOXPoly CHanged", selectedBoxpoly)
 
     if (map !== null){
 
@@ -277,6 +278,8 @@ export default function DSWorkMap(props) {
         });        
         setDraw(draw_)
     }
+
+    if (selected_mode === "MAPSelect") setBoxPoly({...mapboxini_poly})
 
     if (selected_mode === "MAPGEOJSONEDIT") {
       
@@ -437,18 +440,18 @@ export default function DSWorkMap(props) {
 
     // console.log(selected_boxpoly_, holepoly)
 
-    let bbox_ =turfbbox(selected_boxpoly_);
-    map.fitBounds(bbox_, {padding: 20});
+    // let bbox_ =turfbbox(selected_boxpoly_);
+    // map.fitBounds(bbox_, {padding: 20});
 
-    if (Object.keys(selected_boxpoly_ ).length!== 0 && map !== null){
-      if (map.getSource('BoxArea') != null) map.getSource('BoxArea').setData({...selected_boxpoly_});
+    // if (Object.keys(selected_boxpoly_ ).length!== 0 && map !== null){
+    //   if (map.getSource('BoxArea') != null) map.getSource('BoxArea').setData({...selected_boxpoly_});
 
-    }
+    // }
     setBoxPoly({
       'type': 'geojson',
       'data': {...selected_boxpoly_} 
     })
-    console.log(selected_boxpoly_)
+    console.log("Boxpoly @ CRS Holw", selected_boxpoly_)
 
   },[selected_CRS, selected_hole]);
 
