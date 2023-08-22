@@ -165,8 +165,10 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
               if(newPolygon.properties.TypeId === 11){
                 newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, coordinates:newPolygon.properties.center, type:'Point'} }
-              }     
-
+              }   
+              else{
+                newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, type:'Polygon'} }
+              }  
 
 
               let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}

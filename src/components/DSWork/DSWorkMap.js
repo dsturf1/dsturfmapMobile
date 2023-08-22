@@ -238,8 +238,30 @@ export default function DSWorkMap(props) {
         })
 
       }
-
     }
+      if(selected_polygon.properties.TypeId === 10){
+
+        console.log("IN MAP",selected_polygon.properties.TypeId , selected_polygon)
+        let polygon_info_ini = {
+          ...selected_polygon
+        }
+  
+        if (selected_mode === "MAPGEOJSONEDIT"){
+        let data_= draw.getAll()
+        let new_data = {...data_, features: [...data_.features.filter((x)=>x.properties.Id !== selected_polygon.properties.Id) ,polygon_info_ini ] } // 폴리건의 위치 정보 홀정보등이 들어가여 함으로...
+  
+        draw.set(new_data)// Delete All and Add All
+        }
+        else{
+          setTargetPolygons({
+            'type': 'geojson',
+            'data': {
+              ...targetpolygons.data, features: [...targetpolygons.data.features.filter((x)=>x.properties.Id !== selected_polygon.properties.Id) ,polygon_info_ini ]
+            }              
+          })
+  
+        }
+      }
 
 
   },[selected_polygon]);
