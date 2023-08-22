@@ -10,6 +10,7 @@ import { green, pink ,indigo} from '@mui/material/colors';
 
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
 import { COURSEBLANK , GEOJSONBLANK, POLYGONBLANK} from '../../constant/urlconstants';
+import { label_Level1_info,  label_Level2_info, turf_type } from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 
@@ -19,7 +20,7 @@ import { HotTable } from '@handsontable/react';
 import numbro from 'numbro';
 import languages from "numbro/dist/languages.min.js";
 import { registerAllModules } from 'handsontable/registry';
-import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, area } from "@turf/turf";
+import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, area, polygon } from "@turf/turf";
 
 registerAllModules();
 numbro.registerLanguage(languages["ko-KR"]);
@@ -58,9 +59,12 @@ export default function DSPolyHSTEdit({geojson_mode}) {
     rows_.push({title:'작성시점',name:selected_polygon === null? "":selected_polygon.properties.When.split('T')[0]})
     rows_.push({title:'Valid?',name:selected_polygon === null? "":selected_polygon.properties.Valid})
     rows_.push({title:'반지름(m)',name:selected_polygon === null? 0:selected_polygon.properties.radius})
+    rows_.push({title:'종류 L1',name:selected_polygon === null? 0:selected_polygon.properties.LabelL1})
+    rows_.push({title:'종류 L2',name:selected_polygon === null? 0:selected_polygon.properties.LabelL2})
+    rows_.push({title:'잔디종류',name:selected_polygon === null? 0:selected_polygon.properties.TurfType})
     // rows_.push({title:'개요',name:selected_polygon === null? "":selected_polygon.properties.Desc})
 
-    if(DescRef !== null) DescRef.current.value = selected_polygon === null? "":selected_polygon.properties.Desc
+    // if(DescRef !== null) DescRef.current.value = selected_polygon === null? "":selected_polygon.properties.Desc
     const hot = hotRef.current.hotInstance;
 
     // console.log("@InfoEdit", selected_polygon)
@@ -112,6 +116,19 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,1.5,2,2.5,3,3.5,4,5,7.5,10,15,20, 50]
             }
+            if (row === 8) {
+              cellMeta.type = 'dropdown';
+              cellMeta.source = label_Level1_info
+            }
+            if (row === 9) {
+              cellMeta.type = 'dropdown';
+              cellMeta.source = label_Level2_info[label_Level1_info.findIndex((item) => 
+                item === selected_polygon.properties.LabelL1)]
+              }
+            if (row === 10) {
+              cellMeta.type = 'dropdown';
+              cellMeta.source = turf_type
+            }
 
             return cellMeta;
           }
@@ -140,6 +157,9 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
               if (row === 6) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
               if (row === 7) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}} 
+              if (row === 8) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, LabelL1:newValue}} 
+              if (row === 9) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, LabelL2:newValue}} 
+              if (row === 10) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, TurfType:newValue}} 
 
               setPolyGon({...newPolygon})
 
@@ -160,7 +180,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
           
         />
         {/* <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}> */}
-          <TextField
+          {/* <TextField
             id="outlined-multiline-static"
             label="특이사항"
             multiline
@@ -193,7 +213,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
             disabled = {selected_polygon === null}
             >
             특이사항 Update
-          </Button>
+          </Button> */}
 
 
 
