@@ -179,7 +179,7 @@ export default function DSInfoEdit({geojson_mode}) {
     {selected_course_info === null? null:
 
       <>
-        <Button variant="contained"  fullWidth> {selected_course_info.name} </Button>
+        {/* <Button variant="contained"  fullWidth> {selected_course_info.name} </Button>
 
         <HotTable
           ref={hotRef}
@@ -246,7 +246,7 @@ export default function DSInfoEdit({geojson_mode}) {
 
             });
           }}
-        />
+        /> */}
         <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}>
           {selected_mode === "SearchSelected"? null:<DSPolyHSTEdit geojson_mode={geojson_mode}/>}
 
