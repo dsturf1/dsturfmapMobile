@@ -3,7 +3,7 @@
 import React, { useState,useRef, useEffect, useContext, Fragment ,createRef} from 'react';
 import { Auth } from 'aws-amplify';
 
-import { FormGroup, FormControlLabel, InputLabel, Stack, Select, MenuItem, Box, Checkbox,TextField, Avatar, Paper, List, Input, Typography ,Button, ButtonGroup} from '@mui/material';
+import { FormGroup, FormControlLabel, InputLabel, Stack, Select, MenuItem, Box, Checkbox,TextField, Avatar, Paper, List, Input, Typography ,Button, ButtonGroup, Autocomplete} from '@mui/material';
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import SendIcon from '@mui/icons-material/Send';
 import { green, pink ,indigo} from '@mui/material/colors';
@@ -15,16 +15,44 @@ import { BASEURL } from '../../constant/urlconstants.js';
 
 
 import 'handsontable/dist/handsontable.full.min.css';
-// import Handsontable from 'handsontable/base';
-import { HotTable } from '@handsontable/react';
+import Handsontable from 'handsontable/base';
+import { HotTable} from '@handsontable/react';
+import {
+  registerCellType,
+  NumericCellType,
+} from 'handsontable/cellTypes';
+import {
+  registerEditor,
+  NumericEditor,
+} from 'handsontable/editors';
+import {
+  registerValidator,
+  numericValidator,
+} from 'handsontable/validators';
+import {
+  registerRenderer,
+  numericRenderer,
+} from 'handsontable/renderers';
+
 import numbro from 'numbro';
 import languages from "numbro/dist/languages.min.js";
 import { registerAllModules } from 'handsontable/registry';
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, area, polygon } from "@turf/turf";
 
+// import { MultiSelectEditor, MultiSelectRenderer } from 'handsontable-multi-select'
+// import 'handsontable-multi-select/dist/css/handsontable-multi-select.css'
+
 registerAllModules();
 numbro.registerLanguage(languages["ko-KR"]);
 
+// registerEditor(MultiSelectEditor);
+// registerRenderer(MultiSelectRenderer);
+registerCellType(NumericCellType);
+
+// registerCellType('ds.select', {
+//   editor: MultiSelectEditor,
+//   renderer: MultiSelectRenderer,
+// });
 
 export default function DSPolyHSTEdit({geojson_mode}) {
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
@@ -34,6 +62,9 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
   const hotRef = useRef(null);
   const DescRef = useRef(null);
+
+  
+
 
   const [columns, setCols] = useState([
     {name:'title', header:'항목', width:100, type:'text', readOnly:true},
@@ -95,37 +126,37 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
             var cellMeta = {};
             
-            if (row === 0) {
+            if (row === 0 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = selected_course_info !== null?[...selected_course_info.course_names, "전코스"]:null
             }
-            if (row === 1) {
+            if (row === 1 && column ==1) {
               cellMeta.type = 'dropdown';
               // cellMeta.source = baseinfo.area_def.map((x)=>x.name)
               cellMeta.source = geojson_mode === "AREA"? baseinfo.area_def.filter((item)=> item.area_def === true).map((x)=>x.name):baseinfo.area_def.filter((item)=> item.work_def === true).map((x)=>x.name)
             }
-            if (row === 2) {
+            if (row === 2 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,2,3,4,5,6,7,8,9]
             }
-            if (row === 6) {
+            if (row === 6 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [true,false]
             }
-            if (row === 7) {
+            if (row === 7 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,1.5,2,2.5,3,3.5,4,5,7.5,10,15,20, 50]
             }
-            if (row === 8) {
+            if (row === 8 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = label_Level1_info
             }
-            if (row === 9) {
+            if (row === 9 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = label_Level2_info[label_Level1_info.findIndex((item) => 
                 item === selected_polygon.properties.LabelL1)]
               }
-            if (row === 10) {
+            if (row === 10 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = turf_type
             }
@@ -181,6 +212,35 @@ export default function DSPolyHSTEdit({geojson_mode}) {
           }}
           
         />
+
+<Stack spacing={2} sx={{ width: 1 }} mt = {3}>
+  
+      <Autocomplete
+        multiple
+        freeSolo
+        value={selected_polygon === null? [turf_type[0]]:(Array.isArray(selected_polygon.properties.TurfType)? selected_polygon.properties.TurfType: [selected_polygon.properties.TurfType])}
+        onChange={(event, newValue) => {
+          let newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, TurfType:newValue}} 
+          setPolyGon({...newPolygon})
+        }}
+        id="tags-level1"
+        options={turf_type}
+        getOptionLabel={(option) => option}
+        size="small"
+        sx={{ fontSize: 10, mt :2}}
+        renderInput={(params) => (
+          <TextField
+            inputProps={{style: {fontSize: 10}}}
+            InputLabelProps={{style: {fontSize: 10}}} 
+            {...params}
+            // variant="outlined"
+            label="잔디종류"
+            // placeholder="잔디종류"
+          />
+        )}
+      />
+
+</Stack>
         {/* <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}> */}
           {/* <TextField
             id="outlined-multiline-static"
