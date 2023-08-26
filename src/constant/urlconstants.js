@@ -55,6 +55,7 @@
         "Valid":true,
         "By":"",
         "When":"",
+        "Labels":[],
         "LabelL1":"",
         "LabelL2":"",
         "TurfType":"",
@@ -81,6 +82,7 @@
         "Valid":true,
         "By":"",
         "When":"",
+        "Labels":[],
         "LabelL1":"",
         "LabelL2":"",
         "TurfType":"",
@@ -108,6 +110,7 @@
         "Valid":true,
         "By":"",
         "When":"",
+        "Labels":[],
         "LabelL1":"",
         "LabelL2":"",
         "TurfType":"",
@@ -151,6 +154,7 @@
           "Valid": true,
           "By": "dsadmin",
           "When": "2023-08-16T06:31:56.671Z",
+          "Labels":[],
           "LabelL1":"",
           "LabelL2":"",
           "TurfType":"",
@@ -198,4 +202,12 @@
 
   ]
   export const turf_type = ['한국잔디','벤트그래스',	'켄터키블루그래스',	'라이그래스',		'버뮤다그래스']
+
+
+  export const label_single = {
+    level1:"",
+    level2:"",
+    level3:"",
+    TurfType:""
+  }
 

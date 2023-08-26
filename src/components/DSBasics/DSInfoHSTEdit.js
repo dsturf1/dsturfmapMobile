@@ -5,7 +5,7 @@ import { FormControl, InputLabel, Stack, Select, MenuItem, Box, TextField, Avata
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 
-import { BaseContext, SInfoContext, MapQContext} from "../../context"
+import { BaseContext, MapCRSQContext, MapQContext} from "../../context"
 import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
@@ -49,7 +49,8 @@ export default function DSInfoEdit({geojson_mode}) {
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
-  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
+
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo,isCRSLoading, setIsCRSLoading,  holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const [numHole, setNumHole] = React.useState(9);
   const Textrefs = useRef([]);
 
@@ -114,7 +115,7 @@ export default function DSInfoEdit({geojson_mode}) {
     let geojsoninfo_ = {};
 
     if(selected_mode === "SearchSelected") geojsoninfo_ = {...JSON.parse(JSON.stringify(GEOJSONBLANK))}
-    else geojsoninfo_ = {...geojsoninfo}
+    else geojsoninfo_ = {...CRSgeojsoninfo}
 
     // console.log("Saved Polgon:",  geojsoninfo_ )
 
@@ -152,7 +153,7 @@ export default function DSInfoEdit({geojson_mode}) {
   const PostGeoJsonInfo = async function (mapinfo_, id_) 
   {
   
-    const url_ = BASEURL + '/geojson/'+baseinfo.user.username +'?'+  new URLSearchParams({courseid: id_.toString() });
+    const url_ = BASEURL + '/course_geojson/'+baseinfo.user.username +'?'+  new URLSearchParams({courseid: id_.toString() });
     const myInit = {
       method: 'POST',
       body: JSON.stringify( mapinfo_),

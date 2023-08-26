@@ -17,51 +17,26 @@ import { BASEURL } from '../../constant/urlconstants.js';
 import 'handsontable/dist/handsontable.full.min.css';
 import Handsontable from 'handsontable/base';
 import { HotTable} from '@handsontable/react';
-import {
-  registerCellType,
-  NumericCellType,
-} from 'handsontable/cellTypes';
-import {
-  registerEditor,
-  NumericEditor,
-} from 'handsontable/editors';
-import {
-  registerValidator,
-  numericValidator,
-} from 'handsontable/validators';
-import {
-  registerRenderer,
-  numericRenderer,
-} from 'handsontable/renderers';
+
 
 import numbro from 'numbro';
 import languages from "numbro/dist/languages.min.js";
 import { registerAllModules } from 'handsontable/registry';
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, area, polygon } from "@turf/turf";
 
-// import { MultiSelectEditor, MultiSelectRenderer } from 'handsontable-multi-select'
-// import 'handsontable-multi-select/dist/css/handsontable-multi-select.css'
+
 
 registerAllModules();
 numbro.registerLanguage(languages["ko-KR"]);
 
-// registerEditor(MultiSelectEditor);
-// registerRenderer(MultiSelectRenderer);
-registerCellType(NumericCellType);
 
-// registerCellType('ds.select', {
-//   editor: MultiSelectEditor,
-//   renderer: MultiSelectRenderer,
-// });
 
 export default function DSPolyHSTEdit({geojson_mode}) {
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
-  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
-  // const [localmode, setLocalMode] = useState(geojson_mode)
+  const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
 
   const hotRef = useRef(null);
-  const DescRef = useRef(null);
 
   
 
@@ -77,9 +52,8 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
     var rows_ = [];
 
-    let turfpolygon_ = {}
+    let turfpolygon_ = {} 
     
-    // if (selected_polygon !== null) turfpolygon_ = turfpolygon([[...selected_polygon['geometry']['coordinates'][0], selected_polygon['geometry']['coordinates'][0][0]]])
 
     rows_.push({title:'코스명',name:selected_polygon === null? "":selected_polygon.properties.Course})    
     rows_.push({title:'Type',name:selected_polygon === null? "":selected_polygon.properties.Type})    
@@ -90,15 +64,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
     rows_.push({title:'작성시점',name:selected_polygon === null? "":selected_polygon.properties.When.split('T')[0]})
     rows_.push({title:'Valid?',name:selected_polygon === null? "":selected_polygon.properties.Valid})
     rows_.push({title:'반지름(m)',name:selected_polygon === null? 0:selected_polygon.properties.radius})
-    rows_.push({title:'종류 L1',name:selected_polygon === null? 0:selected_polygon.properties.LabelL1})
-    rows_.push({title:'종류 L2',name:selected_polygon === null? 0:selected_polygon.properties.LabelL2})
-    rows_.push({title:'잔디종류',name:selected_polygon === null? 0:selected_polygon.properties.TurfType})
-    // rows_.push({title:'개요',name:selected_polygon === null? "":selected_polygon.properties.Desc})
-
-    // if(DescRef !== null) DescRef.current.value = selected_polygon === null? "":selected_polygon.properties.Desc
     const hot = hotRef.current.hotInstance;
-
-    // console.log("@InfoEdit", selected_polygon)
 
     hot.loadData(rows_)
   },[selected_polygon]);
@@ -147,20 +113,6 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,1.5,2,2.5,3,3.5,4,5,7.5,10,15,20, 50]
             }
-            if (row === 8 && column ==1) {
-              cellMeta.type = 'dropdown';
-              cellMeta.source = label_Level1_info
-            }
-            if (row === 9 && column ==1) {
-              cellMeta.type = 'dropdown';
-              cellMeta.source = label_Level2_info[label_Level1_info.findIndex((item) => 
-                item === selected_polygon.properties.LabelL1)]
-              }
-            if (row === 10 && column ==1) {
-              cellMeta.type = 'dropdown';
-              cellMeta.source = turf_type
-            }
-
             return cellMeta;
           }
           }
@@ -188,9 +140,6 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
               if (row === 6) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
               if (row === 7) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}} 
-              if (row === 8) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, LabelL1:newValue}} 
-              if (row === 9) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, LabelL2:newValue}} 
-              if (row === 10) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, TurfType:newValue}} 
 
               setPolyGon({...newPolygon})
 
@@ -212,72 +161,6 @@ export default function DSPolyHSTEdit({geojson_mode}) {
           }}
           
         />
-
-<Stack spacing={2} sx={{ width: 1 }} mt = {3}>
-  
-      <Autocomplete
-        multiple
-        freeSolo
-        value={selected_polygon === null? [turf_type[0]]:(Array.isArray(selected_polygon.properties.TurfType)? selected_polygon.properties.TurfType: [selected_polygon.properties.TurfType])}
-        onChange={(event, newValue) => {
-          let newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, TurfType:newValue}} 
-          setPolyGon({...newPolygon})
-        }}
-        id="tags-level1"
-        options={turf_type}
-        getOptionLabel={(option) => option}
-        size="small"
-        sx={{ fontSize: 10, mt :2}}
-        renderInput={(params) => (
-          <TextField
-            inputProps={{style: {fontSize: 10}}}
-            InputLabelProps={{style: {fontSize: 10}}} 
-            {...params}
-            // variant="outlined"
-            label="잔디종류"
-            // placeholder="잔디종류"
-          />
-        )}
-      />
-
-</Stack>
-        {/* <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}> */}
-          {/* <TextField
-            id="outlined-multiline-static"
-            label="특이사항"
-            multiline
-            rows={2}
-            placeholder='샘지기에게 설명을...'
-            inputRef={DescRef}
-            fullWidth
-            disabled = {selected_polygon === null}
-          />
-          <Button
-            variant='contained'
-            color='primary'
-            size='small'
-            // endIcon={<SendIcon />}
-            onClick={()=>{
-              if(selected_polygon === null) return
-              let newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Desc:DescRef.current.value}}            
-              setPolyGon({...newPolygon})
-
-
-              if(newPolygon.properties.TypeId === 11){
-                newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, coordinates:newPolygon.properties.center, type:'Point'} }
-              }     
-
-
-              let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}
-              setGeoJsonInfo({...geojsoninfo_})
-            }}
-            fullWidth
-            disabled = {selected_polygon === null}
-            >
-            특이사항 Update
-          </Button> */}
-
-
 
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
           <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> 

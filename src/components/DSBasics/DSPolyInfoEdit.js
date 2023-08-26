@@ -1,17 +1,17 @@
 import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
 import { Box, Button, ToggleButton, Stack, Avatar, Typography, Grid, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, CircularProgress, TextField, InputAdornment} from '@mui/material';
 
-import { BaseContext, MapQContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 import { label_Level1_info,  label_Level2_info, turf_type } from '../../constant/urlconstants';
 
 
 export default function DSPolyInfoEdit() {
 
-  const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, 
-    isLoading, setIsLoading,  holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapQContext);
-    const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, beforeSave, setBS,
-      loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, 
-      selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
+  const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
+  const {isCRSLoading, setIsCRSLoading,  holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, beforeSave, setBS,
+    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, 
+    selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
 
   return (
     <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="center" mt = {2}> 

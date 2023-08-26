@@ -1,20 +1,22 @@
 import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
 
 import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormControl, Select , CircularProgress, Paper } from '@mui/material';
-import { BaseContext, SInfoContext, MapQContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 
 import DSInfoEdit from "../DSBasics/DSInfoHSTEdit.js"
 import DSPolySelect from "../DSBasics/DSPolySelect"
 import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
+import DSSave from '../DSBasics/DSSave';
+import DSLabelHSTEdit from '../DSBasics/DSLabelHSTEdit';
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
 import DSWorkMap from './DSWorkMap.js';
+
 
 export default function DSWorkMain({geojson_mode}) {
   
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
     setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
-  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly} = useContext(MapQContext);
 
 
   useEffect(() => {
@@ -31,7 +33,13 @@ export default function DSWorkMain({geojson_mode}) {
         <Grid Grid item xs={12} md={2}>
           <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
           borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}>            
-            { selected_course === 'MGC000'? <DSCoursePicker/>:<DSInfoEdit geojson_mode={"WORK"}/>}
+            { selected_course === 'MGC000'? <DSCoursePicker/>:
+              <>
+                <DSPolyHSTEdit geojson_mode={"WORK"}/>
+                <DSLabelHSTEdit/>
+                <DSSave/>
+              </>
+            }
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>

@@ -14,6 +14,7 @@ import { MapQProvider} from "./context/DSMapData.js"
 
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
+import { MapCRSQProvider } from "./context/DSCRSData.js";
 
 const DSTheme = createTheme({
   palette: {
@@ -34,16 +35,17 @@ const App = () => {
       {({ signOut, user }) => (
       <Fragment>
         < BaseProvider user = {user}>
+          <MapCRSQProvider>
           <MapQProvider>
           <ThemeProvider theme={DSTheme}>
             <CssBaseline />
             <ResponsiveAppBar signOut = {signOut} user = {user.username}/>
             <Routes>
-              <Route path="/" element={    <DSSearchMain/>}></Route>
-              <Route path="dssearch" element={    <DSSearchMain/>}></Route>
+              <Route path="/" element={    <DSWorkMain geojson_mode={"JOBS"}/>}></Route>
+              {/* <Route path="dssearch" element={    <DSSearchMain/>}></Route> */}
               {/* <Route path="dsnaver" element={<DSNaverMain />}></Route> */}
-              <Route path="dsmapedit" element={<DSGeoJsonMain geojson_mode={"AREA"}/>}></Route>
-              <Route path="dsjobsedit" element={<DSGeoJsonMain geojson_mode={"JOBS"}/>}></Route>
+              {/* <Route path="dsmapedit" element={<DSGeoJsonMain geojson_mode={"AREA"}/>}></Route> */}
+              {/* <Route path="dsjobsedit" element={<DSGeoJsonMain geojson_mode={"JOBS"}/>}></Route> */}
               <Route path="dsworkedit" element={<DSWorkMain geojson_mode={"JOBS"}/>}></Route>
               <Route path="dssetting" element={<DSMapSettingMain/>}></Route>
               {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>
@@ -51,7 +53,9 @@ const App = () => {
               <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}
             </Routes>
           </ThemeProvider>
+          
           </MapQProvider>
+          </MapCRSQProvider>
         </BaseProvider>
       </Fragment>
       )}

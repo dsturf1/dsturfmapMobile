@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState, useContext , Fragment} from 'react';
 import { Box, Button, Stack, Avatar, Typography, Grid, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, CircularProgress} from '@mui/material';
 import mapboxgl from '!mapbox-gl'; // eslint-disable-line import/no-webpack-loader-syntax
-import { BaseContext, MapQContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 import {createGeoJSONCircle} from "../DSBasics/DSCordUtils.js";
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
@@ -29,8 +29,8 @@ export default function DSWorkMap(props) {
   const [selected_hole, setHole] = useState(0);
   const [selected_CRS, setCRS] = useState('전코스');
 
-  const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, 
-      isLoading, setIsLoading,  holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapQContext);
+  const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
+  const {isCRSLoading, setIsCRSLoading,  holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
     loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
 
@@ -459,7 +459,7 @@ export default function DSWorkMap(props) {
 
             setPolyGon(            {
               "type": "Feature",
-              "properties":{...e.features[0].properties,center:JSON.parse(e.features[0].properties.center)},
+              "properties":{...e.features[0].properties,center:JSON.parse(e.features[0].properties.center), Labels:JSON.parse(e.features[0].properties.Labels)},
               "geometry": {
                 "type": "Polygon",
                 "coordinates": e.features[0].geometry.coordinates

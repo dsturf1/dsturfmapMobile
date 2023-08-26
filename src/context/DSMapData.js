@@ -8,7 +8,7 @@ import { Auth } from 'aws-amplify';
 const geojsoninfo_blank = JSON.parse(JSON.stringify(GEOJSONBLANK));
 const targetpolygon_blank = JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK));
 const targetpoint_blank = JSON.parse(JSON.stringify(INTERESTED_POINT));
-const mapboxini_poly = JSON.parse(JSON.stringify(MAPBOXINI));
+
 
 export const MapQContext = createContext();
 
@@ -16,13 +16,10 @@ export const MapQProvider = (props) => {
 
   const[geojsoninfo, setGeoJsonInfo] = useState([geojsoninfo_blank]);
   const[isLoading, setIsLoading] = useState(true);
-  const[tpoly, setTPoly] = useState([])
 
   const[targetpolygons, setTargetPolygons] = useState([targetpolygon_blank]);
   const[targetpoints, setTargetPoints] = useState([targetpoint_blank]);
-  const[holepoly, setHolePoly] = useState([])
-  const[coursepoly, setCoursePoly] = useState([])
-  const[selectedBoxpoly, setBoxPoly] = useState({...mapboxini_poly})
+
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, 
     maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);  
@@ -31,13 +28,9 @@ export const MapQProvider = (props) => {
       // 처음 데이터를 읽어서 성공하면 State를 Update
 
     if(selected_course === "MGC000"){
-      setHolePoly([])
-      setCoursePoly([])
-      setBoxPoly({...mapboxini_poly})
       setPolyGon(null)
       setIsLoading(true)
       return
-
     }
 
     const fetchWorkInfo = async() => {
@@ -97,37 +90,6 @@ export const MapQProvider = (props) => {
               }              
             })
 
-
-  
-            tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 3).map((geojson_)=> {
-              return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
-            })
-            setHolePoly({
-              'type': 'geojson',
-              'data': {
-                ...fetchData.body, features:[...tpoly_]
-              }              
-            })
-  
-            tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 2 || poly_['properties'].TypeId === 1).map((geojson_)=> {
-              return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
-            })
-            setCoursePoly({
-              'type': 'geojson',
-              'data': {
-                ...fetchData.body, features:[...tpoly_]
-              }              
-            })
-  
-            tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 1).map((geojson_)=> {
-              return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
-            }) 
-            // console.log(tpoly_)           
-            setBoxPoly({
-              'type': 'geojson',
-              'data': tpoly_[0]              
-            })
-
             setIsLoading(false)
 
 
@@ -135,18 +97,14 @@ export const MapQProvider = (props) => {
     }
 
       fetchWorkInfo();
-      // setSelectedCourseInfo(null)
       setPolyGon(null)
-
-
   },[selected_course]);
 
 
 
   return(
 
-  <MapQContext.Provider  value={{geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading, tpoly, setTPoly,  holepoly, setHolePoly, coursepoly, setCoursePoly,
-      selectedBoxpoly, setBoxPoly, targetpolygons, setTargetPolygons, targetpoints, setTargetPoints}}>
+  <MapQContext.Provider  value={{geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints}}>
       {props.children}
   </MapQContext.Provider >
   

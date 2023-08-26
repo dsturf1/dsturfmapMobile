@@ -8,7 +8,7 @@ import { BaseContext, SInfoContext, MapQContext} from "../../context"
 
 export default function DSCoursePicker() {
 
-  const {geojsoninfo, setGeoJsonInfo, isLoading, setIsLoading} = useContext(MapQContext);
+
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 

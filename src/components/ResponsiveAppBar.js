@@ -34,9 +34,9 @@ const ToggleButton = styled(MuiToggleButton)({
 
 const pages = [
   // {name:'일정작성', url:'dsschedule'},
-  {name:'골프장검색', url:'dssearch'},
-  {name:'등록골프장구역설정', url:'dsmapedit'},
-  {name:'등록골프장관심영역설정', url:'dsjobsedit'},
+  // {name:'골프장검색', url:'dssearch'},
+  // {name:'등록골프장구역설정', url:'dsmapedit'},
+  // {name:'등록골프장관심영역설정', url:'dsjobsedit'},
   {name:'골프장관심영역설정', url:'dsworkedit'},
   // {name:'Naver', url:'dsnaver'},
   // {name:'방제일지보기', url:'dswork'},
