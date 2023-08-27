@@ -46,6 +46,8 @@ export default function DSIMGLabelMain() {
     setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const [AWSfolders, setAWSfolders] = useState([]);
   const [selected_folder,setSelectedFolder] = useState("public/");
+  const [imgURLs, setImgURLs] = useState([]);
+  const [imgUrl, setImgUrl] = useState("");
 
     // const s3 = new AWS.S3({
     //   params: { Bucket: 'ds-niaimages' },
@@ -57,12 +59,9 @@ export default function DSIMGLabelMain() {
   
   let awsparams = { Bucket: 'ds-niaimages'}
 
-  
-
-
-  async function GetFolders(prefix_) {
+  async function GetImageFileKey(prefix_) {
     awsparams.Prefix = prefix_
-    let allfolders_ = [];
+    let allimageKeys_ = [];
     try {
       // Storage.list('') // for listing ALL files without prefix, pass '' instead
       // .then(({ results }) => console.log("AT LABEL",results))
@@ -72,16 +71,64 @@ export default function DSIMGLabelMain() {
         new AWS.S3().listObjectsV2(awsparams,function (err, data) {
           if (err) {
 
+            console.log(err)
+          } else {
+            var contents = data.Contents;
+            console.log(contents)
+            contents.forEach(function (file) {
+              // let imgURL_ = 'https://' + awsparams.Bucket + '.s3.' + 'us-east-1.amazonaws.com/'+ file.Key
+              if (file.Key.includes('JPG')) allimageKeys_ = [...allimageKeys_, file.Key];
+            });
+            setImgURLs(allimageKeys_)
+              // setAWSfolders(allfolders_)
+
+          // if (data.IsTruncated) {
+          //     awsparams.ContinuationToken = data.NextContinuationToken;
+          //     GetFolders(prefix_);
+          // } 
+             
+          } 
+        });
+      })
+      
+    
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
+  async function GetImg(key_) {
+
+    try {
+      const signedURL = await Storage.get(key_.replace('public/',''))
+      console.log("Url: ",signedURL);
+      // setImgUrl( URL.createObjectURL(signedURL.Body));
+      setImgUrl(signedURL);
+
+    } catch (error) {
+      setImgUrl(null);
+    }
+  }
+  
+
+
+  async function GetFolders(prefix_) {
+    awsparams.Prefix = prefix_
+    let allfolders_ = [];
+    try {
+      Auth.currentCredentials().then((creds) => {
+        AWS.config.credentials = creds
+        new AWS.S3().listObjectsV2(awsparams,function (err, data) {
+          if (err) {
                 console.log(err)
           } else {
               var contents = data.Contents;
               console.log(contents)
               contents.forEach(function (file) {
                 let path_ = file.Key.split("/").slice(0,-1).join("/") + '/'
-                // console.log(path_)
                 if (!allfolders_.includes(path_)) allfolders_ = [...allfolders_, path_];
               });
-              console.log(allfolders_)
+              // console.log(allfolders_)
               setAWSfolders(allfolders_)
 
           // if (data.IsTruncated) {
@@ -102,30 +149,42 @@ export default function DSIMGLabelMain() {
 
   useEffect(() => {
     setMode("LabelSelect");
-    GetFolders('public/').then((x)=>{
-      // let result = [];
-      // let level = {result};
+    GetFolders('public/')
+    // GetFolders('public/').then((x)=>{
+    //   // let result = [];
+    //   // let level = {result};
 
-      // allfolders_.forEach(path => {
-      //   path.split('/').reduce((r, name, i, a) => {
-      //     if(!r[name]) {
-      //       r[name] = {result: []};
-      //       r.result.push({name, children: r[name].result})
-      //     }
+    //   // allfolders_.forEach(path => {
+    //   //   path.split('/').reduce((r, name, i, a) => {
+    //   //     if(!r[name]) {
+    //   //       r[name] = {result: []};
+    //   //       r.result.push({name, children: r[name].result})
+    //   //     }
           
-      //     return r[name];
-      //   }, level)
-      // })
-      console.log(x)
-      // setAWSfolders(x)
-      // console.log(result)
-    })
+    //   //     return r[name];
+    //   //   }, level)
+    //   // })
+    //   console.log(x)
+    //   // setAWSfolders(x)
+    //   // console.log(result)
+    // })
   },[]);
 
   useEffect(() => {
       // setAWSfolders(allfolders_)
       console.log("Folders:", AWSfolders)
   },[AWSfolders]);
+
+  useEffect(() => {
+    GetImageFileKey(selected_folder)
+
+},[selected_folder]);
+
+useEffect(() => {
+  console.log(imgURLs)
+  GetImg(imgURLs[0])
+
+},[imgURLs]);
  
   return (
     Object.keys(baseinfo).length === 0? 
@@ -136,7 +195,6 @@ export default function DSIMGLabelMain() {
         <Grid Grid item xs={12} md={2}>
           <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
           borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}> 
-          {AWSfolders.length === 0? <null/>:
             <FormControl fullWidth = {true}>
               <InputLabel id="ds-org-select-awsfolder">선택 정보</InputLabel>
               <Select
@@ -151,12 +209,12 @@ export default function DSIMGLabelMain() {
                 // console.log("Folders:", AWSfolders)
                 }
               </Select>
-            </FormControl>      
-          }
+            </FormControl>    
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>
-
+          <img src={imgUrl}>  
+        </img>
         </Grid>
       </Grid>    
     </div>  
