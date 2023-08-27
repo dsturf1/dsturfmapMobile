@@ -40,6 +40,7 @@ const pages = [
   {name:'골프장관심영역설정', url:'dsworkedit'},
   // {name:'Naver', url:'dsnaver'},
   // {name:'방제일지보기', url:'dswork'},
+  {name:'Label', url:'dsimglabel'},
   {name:'설정', url:'dssetting'}
   // {name:'일정작성', url:'dsschedule'},
   // {name:'직원등록', url:'dshuman'},
