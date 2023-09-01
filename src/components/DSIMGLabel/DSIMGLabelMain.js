@@ -3,13 +3,7 @@ import { Amplify, Auth , Storage } from 'aws-amplify';
 
 import AWS from 'aws-sdk';
 
-
-/*
- * Configure the SDK to use anonymous identity 
- */
-
-
-import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormControl, Select , CircularProgress, Paper } from '@mui/material';
+import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormControl, Select , CircularProgress, Button } from '@mui/material';
 import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 
 import DSInfoEdit from "../DSBasics/DSInfoHSTEdit.js"
@@ -19,173 +13,110 @@ import DSSave from '../DSBasics/DSSave';
 import DSLabelHSTEdit from '../DSBasics/DSLabelHSTEdit';
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
-import DSIMGView from './DSIMGView.js';
+import DSIMGView from './DSIMGViewYAIV';
+// import DSIMGAnnotate from './DSIMGAnnotate.js';
 
-// import {
-//   S3Client,
-//   // This command supersedes the ListObjectsCommand and is the recommended way to list objects.
-//   ListObjectsV2Command,
-// } from "@aws-sdk/client-s3";
+// import DropdownTreeSelect from 'react-dropdown-tree-select';
+import CheckboxTree from 'react-checkbox-tree';
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import '@fortawesome/fontawesome-svg-core/styles.css'
 
-// const client = new S3Client({});
-
-
-// AWS.config.update({
-//   region: 'us-east-1',
-//   credentials: new AWS.CognitoIdentityCredentials({
-//     IdentityPoolId: 'us-east-1:81ad79da-011a-4b19-8324-1e6528d1667e'
-//   }),
-//   // AWS_SDK_LOAD_CONFIG:1
-// });
-
-
+import "./label.css";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+// import fontawesome from '@fortawesome/fontawesome'
 
 export default function DSIMGLabelMain() {
   
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
-    setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
-  const [AWSfolders, setAWSfolders] = useState([]);
+    setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, se5Gon} = useContext(BaseContext);
+  const [awsFileInfo, setAWSFileInfo] = useState([]);
+  const [totalJPG, setTotalJPG] = useState(0)
   const [selected_folder,setSelectedFolder] = useState("public/");
   const [imgURLs, setImgURLs] = useState([]);
   const [imgUrl, setImgUrl] = useState("");
+  const [checked, setChecked] = useState([]);
+  const [expanded, setExpanded] = useState([]);
 
-    // const s3 = new AWS.S3({
-    //   params: { Bucket: 'ds-niaimages' },
-    //   region: 'us-east-1',
-    //   credentials: new AWS.CognitoIdentityCredentials({
-    //     IdentityPoolId: 'us-east-1:81ad79da-011a-4b19-8324-1e6528d1667e'
-    //   }),
-    // });
-  
-  let awsparams = { Bucket: 'ds-niaimages'}
 
-  async function GetImageFileKey(prefix_) {
-    awsparams.Prefix = prefix_
-    let allimageKeys_ = [];
-    try {
-      // Storage.list('') // for listing ALL files without prefix, pass '' instead
-      // .then(({ results }) => console.log("AT LABEL",results))
-      Auth.currentCredentials().then((creds) => {
-        AWS.config.credentials = creds
-        // new AWS.S3().listObjectsV2({ Bucket: 'ds-niaimages' ,Delimiter:'/', Prefix:'public/'},function (err, data) {
-        new AWS.S3().listObjectsV2(awsparams,function (err, data) {
-          if (err) {
+  function processStorageListV2(response) {
+    let result = [];
+    let level = {result};
 
-            console.log(err)
-          } else {
-            var contents = data.Contents;
-            console.log(contents)
-            contents.forEach(function (file) {
-              // let imgURL_ = 'https://' + awsparams.Bucket + '.s3.' + 'us-east-1.amazonaws.com/'+ file.Key
-              if (file.Key.includes('JPG')) allimageKeys_ = [...allimageKeys_, file.Key];
-            });
-            setImgURLs(allimageKeys_)
-              // setAWSfolders(allfolders_)
-
-          // if (data.IsTruncated) {
-          //     awsparams.ContinuationToken = data.NextContinuationToken;
-          //     GetFolders(prefix_);
-          // } 
-             
-          } 
-        });
-      })
-      
+    // console.log(response[1].split('/').reduce((r, name, i, a) => console.log(r, name, i, a)),response[1])
     
-    } catch (err) {
-      console.log(err);
-    }
+    response.forEach((path) =>
+      path.split('/').reduce((r, name, i, a) => {
+        if(!r[name]) {
+          if(name !==''){
+          r[name] = {result: [] , prev:'/'+name};
+          if (name.endsWith('.JPG')) r.result.push({name, label:name, value:path,title:name, description:path})
+          else r.result.push({name, label:name, value:'/'+ path.split('/').slice(0,i+1).join('/'), children: r[name].result, expandDisabled:true})
+          }
+        }
+        return r[name];
+      }, level)
+    )
+    return result;
   }
 
-  async function GetImg(key_) {
 
-    try {
-      const signedURL = await Storage.get(key_.replace('public/',''))
-      console.log("Url: ",signedURL);
-      // setImgUrl( URL.createObjectURL(signedURL.Body));
-      setImgUrl(signedURL);
+  async function GetFolders() {
+    let folders_ = []
+    Storage.list('') // for listing ALL files without prefix, pass '' instead
+      .then(({ results }) => {
+        // console.log( processStorageListV2(results))
+        folders_ = processStorageListV2(results.filter((x) => x.key.endsWith('.JPG')).map((item) => item.key))
+        setTotalJPG(results.filter((x) => x.key.endsWith('.JPG')).length)
+        assignObjectPaths(folders_);
+        console.log(folders_)
+        setAWSFileInfo(folders_);
+      }    
+    )
+    .catch((err) => alert(err));
+  }
 
-    } catch (error) {
-      setImgUrl(null);
-    }
+  async function getImgUrl() {
+    const signedURL = await Promise.all(checked.map(key_ => {return Storage.get(key_)}))
+    return signedURL
   }
   
-
-
-  async function GetFolders(prefix_) {
-    awsparams.Prefix = prefix_
-    let allfolders_ = [];
-    try {
-      Auth.currentCredentials().then((creds) => {
-        AWS.config.credentials = creds
-        new AWS.S3().listObjectsV2(awsparams,function (err, data) {
-          if (err) {
-                console.log(err)
-          } else {
-              var contents = data.Contents;
-              console.log(contents)
-              contents.forEach(function (file) {
-                let path_ = file.Key.split("/").slice(0,-1).join("/") + '/'
-                if (!allfolders_.includes(path_)) allfolders_ = [...allfolders_, path_];
-              });
-              // console.log(allfolders_)
-              setAWSfolders(allfolders_)
-
-          // if (data.IsTruncated) {
-          //     awsparams.ContinuationToken = data.NextContinuationToken;
-          //     GetFolders(prefix_);
-          // } 
-             
-          } 
-        });
-      })
-      
-    
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
+  const assignObjectPaths = (obj, stack) => {
+    Object.keys(obj).forEach(k => {
+      const node = obj[k];
+      if (typeof node === "object") {
+        node.path = stack ? `${stack}.${k}` : k;
+        assignObjectPaths(node, node.path);
+      }
+    });
+  };
 
   useEffect(() => {
     setMode("LabelSelect");
-    GetFolders('public/')
-    // GetFolders('public/').then((x)=>{
-    //   // let result = [];
-    //   // let level = {result};
-
-    //   // allfolders_.forEach(path => {
-    //   //   path.split('/').reduce((r, name, i, a) => {
-    //   //     if(!r[name]) {
-    //   //       r[name] = {result: []};
-    //   //       r.result.push({name, children: r[name].result})
-    //   //     }
-          
-    //   //     return r[name];
-    //   //   }, level)
-    //   // })
-    //   console.log(x)
-    //   // setAWSfolders(x)
-    //   // console.log(result)
-    // })
+    GetFolders()
   },[]);
 
   useEffect(() => {
       // setAWSfolders(allfolders_)
-      console.log("Folders:", AWSfolders)
-  },[AWSfolders]);
+      console.log("Folders:", awsFileInfo)
+  },[awsFileInfo]);
 
   useEffect(() => {
-    GetImageFileKey(selected_folder)
+    // GetImageFileKey(selected_folder)
 
 },[selected_folder]);
 
 useEffect(() => {
-  console.log(imgURLs)
-  GetImg(imgURLs[0])
+  // console.log(checked)
+  // console.log(checked.map((x)))
+  // GetImg(imgURLs[0])
 
-},[imgURLs]);
- 
+    // setImgURLs(result)})
+
+},[checked]);
+
+
+
+
   return (
     Object.keys(baseinfo).length === 0? 
     <CircularProgress />
@@ -194,27 +125,25 @@ useEffect(() => {
       <Grid container spacing={0}>
         <Grid Grid item xs={12} md={2}>
           <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
-          borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}> 
-            <FormControl fullWidth = {true}>
-              <InputLabel id="ds-org-select-awsfolder">선택 정보</InputLabel>
-              <Select
-                labelId="ds-org-select-awsfolder"
-                id="ds-awsfolder-select"
-                value={selected_folder}
-                label="선택 정보"
-                onChange={(event) => {setSelectedFolder(event.target.value);}}
-              >
-                {
-                AWSfolders.map((x)=> <MenuItem key={'Numhole'+x} value= {x} >{x}</MenuItem>)
-                // console.log("Folders:", AWSfolders)
-                }
-              </Select>
-            </FormControl>    
+            borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
+            <Button variant= {checked.length === 0 ? "outlined":"contained"} onClick = {()=> {
+                getImgUrl().then(result=>{console.log(result.map((x, index)=>{return {src:x, title:awsFileInfo[index]}})); 
+                setImgURLs(result.map((x, index)=>{return {src:x, title:checked[index], description:checked[index]}}))})
+            }}> 총 {totalJPG} 이미지 중 {checked.length} 선택</Button>
+              <CheckboxTree
+                nodes={awsFileInfo}
+                checked={checked}
+                expanded={expanded}
+                onCheck={(checked) => setChecked(checked)}
+                onExpand={(expanded) => {console.log(expanded); setExpanded(expanded)}}
+              />
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>
-          <img src={imgUrl}>  
-        </img>
+        <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
+            borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
+          <DSIMGView DSslides = {imgURLs}/>
+          </Box>
         </Grid>
       </Grid>    
     </div>  
