@@ -36,7 +36,8 @@ export default function DSIMGLabelMain() {
   const [awsFileList, setAWSFileList] = useState([]);
 
   const [selectedFileList, setSelectedFileList] = useState([]);
-
+  const [selectedRGBFileList, setSelectedRGBFileList] = useState([]);
+  const [selectedThumbFileList, setSelectedThumbFileList] = useState([]);
 
   const [totalJPG, setTotalJPG] = useState(0)
   const [selected_folder,setSelectedFolder] = useState("public/");
@@ -92,17 +93,34 @@ export default function DSIMGLabelMain() {
     Storage.list('') // for listing ALL files without prefix, pass '' instead
       .then(({ results }) => {
         // console.log( processStorageListV2(results))
-        setTotalJPG(results.filter((x) => x.key.endsWith('.JPG')).length)
+        setTotalJPG(results.filter((x) => x.key.includes('.JPG') && x.key.includes('rgb') && !x.key.includes('thumb')).length)
         setAWSFileList(results.filter((x) => x.key.endsWith('.JPG')));
-        folders_ = GetFolderList(results.filter((x) => x.key.endsWith('.JPG')).map((item) => item.key))
+        folders_ = GetFolderList(results.filter((x) => x.key.includes('.JPG') && x.key.includes('rgb')&& !x.key.includes('thumb')).map((item) => item.key))
         setAWSFolderInfo(folders_);
       }    
     )
     .catch((err) => alert(err));
   }
 
+
+  async function getDataJson(jsonKey) {
+    console.log(jsonKey)
+    try {
+      const result = await Storage.get(jsonKey,  { download: true });
+      const datajson = await new Response(result.Body).json();
+      console.log(datajson)
+    } catch(err){
+      alert(err)
+    }
+  }
+
   async function getImgUrl() {
     const signedURL = await Promise.all(selectedFileList.map(x => {return Storage.get(x.key)}))
+    return signedURL
+  }
+
+  async function getImgUrlSet() {
+    const signedURL = await Promise.all(selectedFileList.map(x => {urlrgb:Storage.get(x.key)}))
     return signedURL
   }
   
@@ -120,12 +138,21 @@ export default function DSIMGLabelMain() {
 
   useEffect(() => {
     // GetImageFileKey(selected_folder)
+    console.log(selectedRGBFileList.map((x)=>x.key))
+    
 
-},[selected_folder]);
+},[selectedRGBFileList]);
 
 useEffect(() => {
-  // console.log("CHecked Folder",checked)
-  setSelectedFileList(awsFileList.filter((x)=> checked.some(element => x.key.includes(element))))
+
+  if (checked.length ===0) return
+
+  console.log("CHecked Folder",checked[0].replace('rgb','data.json'))
+  setSelectedFileList(awsFileList.filter((x)=> checked.map((x)=>x.replace('rgb','thumb')).some(element => x.key.includes(element))));
+  // setSelectedRGBFileList(awsFileList.filter((x)=> checked.some(element => x.key.includes(element)) && x.key.includes('rgb')))
+  // setSelectedThumbFileList(awsFileList.filter((x)=> checked.some(element => x.key.includes(element)) && x.key.includes('rgb')))
+
+  getDataJson(checked[0].replace('rgb','data.json'))
 
 
 },[checked]);
@@ -134,7 +161,7 @@ useEffect(() => {
   console.log("ImgURLs",imgURLs)
   // console.log(checked.map((x)))
   // GetImg(imgURLs[0])
-
+  getImgUrlSet().then(result=>{console.log(result)})
     setImgURL(imgURLs[1])
 
 },[imgURLs]);
@@ -152,7 +179,7 @@ useEffect(() => {
           <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
             borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
             <Button variant= {checked.length === 0 ? "outlined":"contained"} onClick = {()=> {
-                getImgUrl().then(result=>{setImgURLs(result.map((x, index)=>{return {src:x, title:selectedFileList[index].key, description:selectedFileList[index].key}}))})
+                getImgUrl().then(result=>{setImgURLs(result.map((x, index)=>{return {src:x.urlrgb, title:selectedFileList[index].key, description:selectedFileList[index].key}}))})
             }}> 총 {totalJPG} 이미지 중 {selectedFileList.length} 선택</Button>
               <CheckboxTree
                 nodes={awsFolderInfo}

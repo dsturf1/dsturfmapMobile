@@ -1,6 +1,9 @@
 import cv2 as cv
 import numpy as np
+import glob
 import copy
+import os
+from exif import Image as exifimg
 
 
 orb = cv.ORB_create(
@@ -43,3 +46,10 @@ def feature_matching(features0, features1):
             features0.matched_pts = np.float32([ features0.kps[m.queryIdx].pt for m in matches ]).reshape(-1,1,2)
             features1.matched_pts = np.float32([ features1.kps[m.trainIdx].pt for m in matches ]).reshape(-1,1,2)
     return matches
+
+def decimal_coords(coords, ref):
+  decimal_degrees = coords[0] + coords[1] / 60 + coords[2] / 3600
+  if ref == "S" or ref =='W' :
+      decimal_degrees = -decimal_degrees
+  return decimal_degrees
+

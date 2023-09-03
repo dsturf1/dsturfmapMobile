@@ -2,7 +2,9 @@ import React, { useRef, useEffect, useState, useContext , Fragment} from 'react'
 import { Box, Button, Stack, Avatar, Typography, Grid, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, CircularProgress} from '@mui/material';
 import { Annotorious } from '@recogito/annotorious';
 
+
 import '@recogito/annotorious/dist/annotorious.min.css';
+import "./anno.css";
 
 export default function DSIMGAnnotorious({image}) {
 
@@ -68,16 +70,32 @@ export default function DSIMGAnnotorious({image}) {
         </button>
       </div>
       {image ==null? 
+      <div
+        width='800px' 
+        height='600px'    
+        >
         <img 
         ref={imgEl} 
         src="logo512.png"
         alt="Hallstatt Town Square" />
+      </div>
       
       :
+      // <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
+      <div className="profile_picture">
         <img 
           ref={imgEl} 
-          src={image.src}
+          src={image.src}      
+          width='800px' 
+          height='600px'   
           alt="Hallstatt Town Square" />
+        <img 
+          src={image.src}      
+          width='800px' 
+          height='600px'   
+          alt="Hallstatt Town Square" />
+      {/* // </Stack> */}
+      </div>
       }
     </div>
   );
