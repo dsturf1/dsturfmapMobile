@@ -85,12 +85,12 @@ export default function DSIMGAnnotorious({image}) {
       <div className="profile_picture">
         <img 
           ref={imgEl} 
-          src={image.src}      
+          src={image.rgb}      
           width='800px' 
           height='600px'   
           alt="Hallstatt Town Square" />
         <img 
-          src={image.src}      
+          src={image.ndvi}      
           width='800px' 
           height='600px'   
           alt="Hallstatt Town Square" />
