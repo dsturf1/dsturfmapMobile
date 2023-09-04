@@ -88,6 +88,7 @@ export default function DSIMGAnnotorious({image}) {
           src={image.rgb}      
           width='800px' 
           height='600px'   
+          style={"border-image-width: 30px"}
           alt="Hallstatt Town Square" />
         <img 
           src={image.ndvi}      
