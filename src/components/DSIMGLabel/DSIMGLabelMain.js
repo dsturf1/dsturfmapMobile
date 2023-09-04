@@ -151,10 +151,15 @@ export default function DSIMGLabelMain() {
 
   async function getDataJson(checked_) {
 
-    for (const f_ of checked_){
+    // console.log(checked.map(x=>x.split('/').slice(0, 2).join('/')))
+
+
+    let folders_ = [...new Set(checked.map(x=>x.split('/').slice(0, 2).join('/')))]
+
+    for (const f_ of folders_){
       
-      console.log("reading json:", f_.replace('rgb','data.json'))
-      const result = await Storage.get(f_.replace('rgb','data.json'),  { download: true });
+      console.log("reading json:", f_ + '/data.json')
+      const result = await Storage.get(f_ + '/data.json',  { download: true });
       const datajson = await new Response(result.Body).json();
       setLabelJson([...labeljson, ...datajson])
     }
