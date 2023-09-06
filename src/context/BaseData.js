@@ -63,7 +63,7 @@ export const BaseProvider = (props) => {
 
     useEffect(() => {
 
-      // console.log('BaseInfo:', baseinfo, Object.keys(baseinfo).length === 0);
+      console.log('BaseInfo:', baseinfo, Object.keys(baseinfo).length === 0);
 
       if (typeof baseinfo.course_info === 'undefined') return
       
@@ -76,6 +76,12 @@ export const BaseProvider = (props) => {
 
       console.log("Selected Ploygon Updated: ", selected_polygon)
     },[selected_polygon]);
+
+
+    useEffect(() => {
+
+      console.log("Selected Mode: ", selected_mode)
+    },[selected_mode]);
 
 
 

@@ -203,6 +203,8 @@
   ]
   export const turf_type = ['한국잔디','벤트그래스',	'켄터키블루그래스',	'라이그래스',		'버뮤다그래스']
 
+  export const course_list_label = ['청도','포항','중문']
+  export const captured_date_label = ['20230823']
 
   export const label_single = {
     level1:"",

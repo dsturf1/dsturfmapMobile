@@ -12,6 +12,7 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { BaseProvider} from "./context/BaseData.js"
 import { MapQProvider} from "./context/DSMapData.js"
+import { LabelProvider} from "./context/DSLabelData.js"
 
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
@@ -39,6 +40,7 @@ const App = () => {
         < BaseProvider user = {user}>
           <MapCRSQProvider>
           <MapQProvider>
+          <LabelProvider>
           <ThemeProvider theme={DSTheme}>
             <CssBaseline />
             <ResponsiveAppBar signOut = {signOut} user = {user.username}/>
@@ -56,7 +58,7 @@ const App = () => {
               <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}
             </Routes>
           </ThemeProvider>
-          
+          </LabelProvider>
           </MapQProvider>
           </MapCRSQProvider>
         </BaseProvider>

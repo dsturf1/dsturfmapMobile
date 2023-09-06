@@ -4,17 +4,18 @@ import { Amplify, Auth , Storage } from 'aws-amplify';
 import AWS from 'aws-sdk';
 
 import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormControl, Select , CircularProgress, Button,  ListItem, ListItemButton, ListItemText, Typography } from '@mui/material';
-import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext, LabelContext} from "../../context"
+import { course_list_label, captured_date_label } from '../../constant/labelconstants';
 
 import DSInfoEdit from "../DSBasics/DSInfoHSTEdit.js"
 import DSPolySelect from "../DSBasics/DSPolySelect"
 import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
 import DSSave from '../DSBasics/DSSave';
-import DSLabelHSTEdit from '../DSBasics/DSLabelHSTEdit';
+import DSLabelHSTEdit from '../DSBasics/DSLabelHSTEdit4Label';
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
 import DSIMGView from './DSIMGViewYAIV';
-import DSIMGAnnotorious from './DSIMGAnnotorious';
+// import DSIMGAnnotorious from './DSIMGAnnotorious';
 // import DSIMGView from './DSIMGViewOpenSD';
 // import DSIMGAnnotate from './DSIMGAnnotate.js';
 
@@ -25,94 +26,28 @@ import '@fortawesome/fontawesome-svg-core/styles.css'
 
 import "./label.css";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { label } from 'yet-another-react-lightbox';
 // import fontawesome from '@fortawesome/fontawesome'
+
+
+
 
 export default function DSIMGLabelMain() {
   
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, 
     setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, se5Gon} = useContext(BaseContext);
 
+  const {labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, selected_singlelabel, setSSLabel, selected_capdate, setCapDate} = useContext(LabelContext);
+
+
+
   const [awsFolderInfo, setAWSFolderInfo] = useState([]);
-  const [awsFileList, setAWSFileList] = useState([]);
-  const [labeljson, setLabelJson] = useState([]);
 
-  const [selectedFileList, setSelectedFileList] = useState([]);
-  const [selectedRGBFileList, setSelectedRGBFileList] = useState([]);
-  const [selectedThumbFileList, setSelectedThumbFileList] = useState([]);
 
-  const [totalJPG, setTotalJPG] = useState(0)
-  const [selected_folder,setSelectedFolder] = useState("public/");
-  const [imgURLs, setImgURLs] = useState([]);
-  const [imgURL, setImgURL] = useState({});
   const [checked, setChecked] = useState([]);
   const [expanded, setExpanded] = useState([]);
 
-  const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
-
-  const DSIMGList = ({ imgURLs }) => {
-
-    const list = imgURLs.map((img, index) => 
-
-      <ListItem key = {img.id} divider={true} style={{ paddingTop: 0, paddingBottom: 0, margin: 0 }}>
-        <ListItemButton style={{ lineHeight: 1, margin: 0 }} selected={selectedIndex === index} onClick={() => {
-          setImgURL({...img})
-          setSelectedIndex(index);
-        }}    
-          sx={{
-            "&.Mui-selected": {
-              backgroundColor: "#035efc"
-            },
-            "&.Mui-focusVisible": {
-              backgroundColor: "#035efc"
-            },
-            ":hover": {
-              backgroundColor: "#f0f4fa"
-            }
-          }}
-        >
-        <img 
-          src={img.thumb}      
-          width='43px' 
-          height='32px'   
-          alt="Hallstatt Town Square" />
-        {/* <ListItemText
-          disableTypography
-          primary={
-            <Stack direction="row" justifyContent="space-between"  alignItems="center" >
-              <Typography variant="body2" style={{ fontWeight: 'bold' ,color: selectedIndex === index? '#ffffff':'#000000'}} > {"["+(index + 1)+"]"+ img.id}</Typography>
-            </Stack>
-          }
-        /> */}
-        </ListItemButton>
-      </ListItem>
-    )
-
-    return list
-  }
-
-
-
-  function GetFolderAndFiles(response) {
-    let result = [];
-    let level = {result};
-
-    // console.log(response[1].split('/').reduce((r, name, i, a) => console.log(r, name, i, a)),response[1])
-    
-    response.forEach((path) =>
-      path.split('/').reduce((r, name, i, a) => {
-        if(!r[name]) {
-          if(name !==''){
-          r[name] = {result: [] , prev:'/'+name};
-          if (name.endsWith('.JPG')) r.result.push({name, label:name, value:path,title:name, description:path, type:'file'})
-          else r.result.push({name, label:name, value:'/'+ path.split('/').slice(0,i+1).join('/'), children: r[name].result, type:'folder'})
-          }
-        }
-        return r[name];
-      }, level)
-    )
-    return result;
-  }
 
   function GetFolderList(response) {
     let result = [];
@@ -124,8 +59,16 @@ export default function DSIMGLabelMain() {
       path.split('/').reduce((r, name, i, a) => {
         if(!r[name]) {
           if(name !==''){
-          r[name] = {result: [] , prev:'/'+name};
-          if (!name.endsWith('.JPG')) r.result.push({name, label:name, value:path.split('/').slice(0,i+1).join('/'), children: r[name].result, type:'folder'})
+            r[name] = {result: [] , prev:'/'+name};
+            if (!name.endsWith('.JPG')) {
+              let file_cnt = response.filter((x)=>x.includes(path.split('/').slice(0,i+1).join('/'))).length
+              let newname = name
+              if( i === 0) newname = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name
+
+              r.result.push({name, label:newname + ' [' + file_cnt + ']', numOffiles: file_cnt, value:path.split('/').slice(0,i+1).join('/'), 
+              children: r[name].result, 
+              type:'folder'})
+            }
           }
         }
         return r[name];
@@ -136,11 +79,8 @@ export default function DSIMGLabelMain() {
 
   async function GetFolders() {
     let folders_ = []
-    Storage.list('') // for listing ALL files without prefix, pass '' instead
+    Storage.list(selected_course + '/'+selected_capdate, { pageSize: 'ALL' }) // for listing ALL files without prefix, pass '' instead
       .then(({ results }) => {
-        // console.log( processStorageListV2(results))
-        setTotalJPG(results.filter((x) => x.key.includes('.JPG') && x.key.includes('rgb') && !x.key.includes('thumb')).length)
-        setAWSFileList(results.filter((x) => x.key.endsWith('.JPG')));
         folders_ = GetFolderList(results.filter((x) => x.key.includes('.JPG') && x.key.includes('rgb')&& !x.key.includes('thumb')).map((item) => item.key))
         setAWSFolderInfo(folders_);
       }    
@@ -149,31 +89,24 @@ export default function DSIMGLabelMain() {
   }
 
 
-  async function getDataJson(checked_) {
-
-    // console.log(checked.map(x=>x.split('/').slice(0, 2).join('/')))
-
-
-    let folders_ = [...new Set(checked.map(x=>x.split('/').slice(0, 2).join('/')))]
-
-    for (const f_ of folders_){
+  // async function getDataJson() {
       
-      console.log("reading json:", f_ + '/data.json')
-      const result = await Storage.get(f_ + '/data.json',  { download: true });
-      const datajson = await new Response(result.Body).json();
-      setLabelJson([...labeljson, ...datajson])
-    }
-  }
-
-  async function getImgUrl() {
-    const signedURL = await Promise.all(selectedFileList.map(x => {return Storage.get(x.key)}))
-    return signedURL
-  }
+  //   console.log("reading json:", selected_course + '/'+selected_capdate + '/data.json')
+  //   const result = await Storage.get(selected_course + '/'+selected_capdate +  '/data.json',  { download: true , cacheControl: 'no-cache'});
+  //   const datajson_ = await new Response(result.Body).json();
+  //   setLabelJson([ ...datajson_])
+  // }
 
   async function getImgUrlSet(keyset) {
     const signedURL = await Promise.all(keyset.map(async (x) => {
       return {
         id:x.id,
+        desc:x.desc,
+        width:800,
+        height:600,
+        src:await Storage.get(x.rgb, {
+          // validateObjectExistence: true 
+        }), 
         rgb:await Storage.get(x.rgb, {
           // validateObjectExistence: true 
         }), 
@@ -186,61 +119,69 @@ export default function DSIMGLabelMain() {
       }
     }))
     return signedURL
-  }
-  
+  } 
 
 
   useEffect(() => {
-    setMode("LabelSelect");
-    GetFolders()
+    setMode("DATAselect");
+    // GetFolders()
   },[]);
+
+  useEffect(() => {
+    if (selected_course === "MGC000" || selected_capdate ==="") return
+
+    GetFolders();
+    // getDataJson();
+
+  },[selected_capdate]);
 
   useEffect(() => {
       // setAWSfolders(allfolders_)
       console.log("Folders:", awsFolderInfo)
   },[awsFolderInfo]);
 
-  useEffect(() => {
-    // setAWSfolders(allfolders_)
-    console.log("Files:", awsFileList)
-},[awsFileList]);
-
-  useEffect(() => {
-    // GetImageFileKey(selected_folder)
-    console.log(selectedRGBFileList.map((x)=>x.key))
-    
-
-},[selectedRGBFileList]);
-
 useEffect(() => {
 
   if (checked.length ===0) {
-    setLabelJson([]);
-    return
+    setSLabelJson([])
+    return 
   }
-  getDataJson(checked);
+
+    let searchC = checked.map((x) => x.split('/'))
+  
+    let selectedJson = [] 
+
+    searchC.forEach((x) =>{
+  
+      // console.log(labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3]),x[2],x[3])
+      selectedJson = [...selectedJson, ...labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3])]
+  
+    })
+
+    setSLabelJson(selectedJson)
+    
+    // console.log(selectedJson)
+
+
 },[checked]);
 
-useEffect(() => {
-  console.log("ImgURLs",imgURLs)
-  // console.log(checked.map((x)))
-  // GetImg(imgURLs[0])
-  // getImgUrlSet().then(result=>{console.log(result)})
-    setImgURL(imgURLs[30])
+// useEffect(() => {
+//   console.log("ImgURLs",imgURLs)
 
-},[imgURLs]);
+// },[imgURLs]);
 
 
-useEffect(() => {
-  if(labeljson.length === 0) {
-    getImgUrlSet([])
-    return
-  }
-  console.log("Data",labeljson.filter((x) => x.dest.thumb !== '').map(item => {return {id:item.id,rgb:item.dest.rgb.replace(/\\/g, '/'), ndvi:item.dest.ndvi.replace(/\\/g, '/'), thumb:item.dest.thumb.replace(/\\/g, '/')}}))
-  getImgUrlSet(
-    labeljson.filter((x) => x.dest.thumb !== '').map(item => {return {id:item.id, rgb:item.dest.rgb.replace(/\\/g, '/'), ndvi:item.dest.ndvi.replace(/\\/g, '/'), thumb:item.dest.thumb.replace(/\\/g, '/')}})
-  ).then((result) => {console.log("URL", result); setImgURLs([...result])})
-},[labeljson]);
+// useEffect(() => {
+//   if(labeljson.length === 0) {
+//     setImgURLs([])
+//     return
+//   }
+
+
+//   console.log("Data:", labeljson);
+
+
+// },[labeljson]);
 
 
 
@@ -253,21 +194,50 @@ useEffect(() => {
       <Grid container spacing={0}>
         <Grid Grid item xs={12} md={2}>
           <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
-            borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
-            <Button variant= {checked.length === 0 ? "outlined":"contained"} onClick = {()=> {
-                // getImgUrl().then(result=>{setImgURLs(result.map((x, index)=>{return {src:x.urlrgb, title:selectedFileList[index].key, description:selectedFileList[index].key}}))})
-            }}> 총 {totalJPG} 이미지 중 {selectedFileList.length} 선택</Button>
-              <CheckboxTree
-                nodes={awsFolderInfo}
-                checked={checked}
-                expanded={expanded}
-                onCheck={(checked) => setChecked(checked)}
-                onExpand={(expanded) => {console.log(expanded); setExpanded(expanded)}}
-              />
-              <Box component="div" sx={{ p: 2, border: '1px solid gray',gap: 2, 
-                  borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
-              {imgURLs.length>0? <DSIMGList imgURLs = {imgURLs}/>:<null></null>}
-              </Box>
+            borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}> 
+            
+            { selected_course === 'MGC000'? <DSCoursePicker/>:
+              <>
+
+              <FormControl  size="small">
+                <InputLabel id="ds-capdate-select-label">촬영일자</InputLabel>
+                <Select
+                  labelId="ds-capdate-select-label"
+                  id="ds-capdate-select"
+                  value={selected_capdate}
+                  label="촬영일자"
+                  onChange={(event) => {setCapDate(event.target.value)}}
+                >
+                  {captured_date_label.filter((x)=> x.id === selected_course).map((x) =>  <MenuItem key={'date'+x.capdate} value={x.capdate}>{x.capdate}</MenuItem>)}
+                </Select>
+              </FormControl>
+
+                <CheckboxTree
+                  nodes={awsFolderInfo}
+                  checked={checked}
+                  expanded={expanded}
+                  onCheck={(checked) => setChecked(checked)}
+                  onExpand={(expanded) => {setExpanded(expanded)}}
+                />
+                {/* <Box component="div" sx={{ p: 2, border: '1px solid gray',gap: 2, 
+                    borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
+                {imgURLs.length>0? <DSIMGList imgURLs = {imgURLs}/>:<null></null>}
+                </Box> */}
+                <Button variant= {checked.length === 0 ? "outlined":"contained"} onClick = {()=> {
+                  let data2Url = selected_labeljson.filter((x) => x.dest.thumb !== '').map(item => {return {
+                    id:item.id,
+                    desc:item.info.desc,
+                    rgb:item.dest.rgb.replace(/\\/g, '/'), 
+                    ndvi:item.dest.ndvi.replace(/\\/g, '/'), 
+                    thumb:item.dest.thumb.replace(/\\/g, '/')}
+                  })
+
+                  getImgUrlSet(data2Url).then((result) => {console.log("URL", result); setImgURLs([...result]);setMode('GRPLABEL')})
+                }}> 총 {labeljson.length} 이미지 중 {selected_labeljson.length} 선택</Button>
+                {selected_mode !== 'DATAselect'? <DSLabelHSTEdit/>:null}
+              </>
+            }
+
 
           </Box>
         </Grid>
@@ -275,8 +245,9 @@ useEffect(() => {
         <Box component="div" height="90vh" sx={{ p: 2, border: '1px solid gray',gap: 2, 
             borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
           {/* <DSIMGView image = {imgURL}/> */}
-          <DSIMGAnnotorious image = {imgURL}/>
-          {/* <DSIMGView DSslides={imgURLs}/> */}
+          {/* <DSIMGAnnotorious image = {imgURL}/> */}
+          {imgURLs.length>0 && selected_mode !== 'DATAselect'? <DSIMGView DSslides={imgURLs}/>:<null/>} 
+          {/* {console.log(imgURLs.length)} */}
           </Box>
         </Grid>
       </Grid>    
