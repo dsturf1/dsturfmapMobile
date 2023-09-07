@@ -1,7 +1,7 @@
 
 
 import React, { useState,useRef, useEffect, useContext, Fragment ,createRef} from 'react';
-import { Auth } from 'aws-amplify';
+import { Amplify, Auth , Storage } from 'aws-amplify';
 
 import { FormGroup, FormControlLabel, InputLabel, Stack, Select, MenuItem, Box, Checkbox,TextField, Avatar, Paper, List, Input, Typography ,Button, ButtonGroup, Autocomplete} from '@mui/material';
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
@@ -209,14 +209,33 @@ export default function DSLabelHSTEdit({geojson_mode}) {
           <Button variant= "contained"  sx={{ width: 1/4}} onClick={() => {
             if (Object.keys(selected_singlelabel).length === 0) return
 
-            setLabelJson([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]);
+
+
+            if(window.confirm('정말로 저장?')){
+              setLabelJson([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]);
+              // Storage.put(selected_course + '/'+selected_capdate +  '/data.json', 
+              // JSON.stringify([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]) ,
+              //   { cacheControl: 'no-cache'}
+              //   ).then(async function(result) {console.log(`result : ${JSON.stringify(result)}`);})
+              Storage.copy({ key: selected_course + '/'+selected_capdate +  '/data.json' }, { key: selected_course + '/'+selected_capdate +  '/data'+(new Date().toJSON().slice(0,10))+'.json' })
+                .then(async function(result) {
+                  console.log(`result : ${JSON.stringify(result)}`);
+                  Storage.put(selected_course + '/'+selected_capdate +  '/data.json', 
+                  JSON.stringify([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]) ,
+                  { cacheControl: 'no-cache'})
+                    .then(async function(result) {console.log(`result : ${JSON.stringify(result)}`);})           
+            
+                })
+            }
 
           }}> 저장하기 </Button>
           <Button variant= "contained"  sx={{ width: 2/4}} onClick={() => {
             if (Object.keys(selected_singlelabel).length === 0) return
 
             if(window.confirm('정말로 전체 그룹사진에 덮어쓸까요?')){
-              let newJason_ = selected_labeljson.map((label_) => {return {...label_ , label:[...selected_singlelabel.label]}})
+              // let single_ = [...selected_singlelabel.label]
+              // single_ = 
+              let newJason_ = selected_labeljson.map((label_) => {return {...label_ , label:[...selected_singlelabel.label.filter((x)=> x.level1 !== '')]}})
               setSLabelJson([...newJason_])
             }
 
