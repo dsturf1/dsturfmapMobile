@@ -10,6 +10,8 @@ import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
 
+import DSIMGAnnotorious from './DSIMGAnnotorious';
+
 
 import InfoIcon from '@mui/icons-material/Info';
 import { ImageList, ImageListItem, ImageListItemBar, ListSubheader, IconButton} from '@mui/material';
@@ -46,7 +48,7 @@ export default function DSIMGView() {
     
     setSSLabel({...newJson})
 
-    console.log("INDEX Changed", index)
+    console.log("INDEX Changed", index, newJson)
     imgURLs.length>0 && index>=0? setCaption('['+index+'/'+ imgURLs.length+']'+imgURLs[index].desc):setCaption("")
 
     return () => {}
@@ -100,6 +102,7 @@ export default function DSIMGView() {
             ))}
           </ImageList>
           :
+          // <DSIMGAnnotorious image = {imgURLs[index]}/>
           <Lightbox
             index={index}
             open={selected_mode === "INDLABEL"}

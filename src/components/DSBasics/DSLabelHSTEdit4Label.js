@@ -19,6 +19,8 @@ import 'handsontable/dist/handsontable.full.min.css';
 import Handsontable from 'handsontable/base';
 import { HotTable} from '@handsontable/react';
 
+import { read, utils, writeFileXLSX } from 'xlsx';
+
 
 import numbro from 'numbro';
 import languages from "numbro/dist/languages.min.js";
@@ -241,6 +243,65 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
 
           }}> 전체 그룹사진라벨 설정</Button>
+        </ButtonGroup>
+        <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
+          <Button variant= "outlined"  sx={{ width: 1/2}} onClick={() => {
+              if (Object.keys(selected_singlelabel).length === 0) return
+
+              const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name + selected_capdate +  '_label.json'
+              const data = new Blob([JSON.stringify(labeljson)], { type: "text/json" });
+              const jsonURL = window.URL.createObjectURL(data);
+              const link = document.createElement("a");
+              document.body.appendChild(link);
+              link.href = jsonURL;
+              link.setAttribute("download", fileName);
+              link.click();
+              document.body.removeChild(link);
+
+
+            }}> 라벨 Json Download</Button>
+          <Button variant= "outlined" sx={{ width: 1/2}} onClick={() => {
+              if (Object.keys(selected_singlelabel).length === 0) return
+
+
+              var allData = [];
+
+              labeljson.forEach(x => { 
+                let labels = x.label.map((x,i)=>{return {
+                  ['level1_'+i]:x.level1,
+                  ['level2_'+i]:x.level2,
+                  ['level3_'+i]:x.level3,
+                  ['turf_type_'+i]:x.turf_type        
+                
+                }}).reduce(function(result, current) {
+                  return Object.assign(result, current);
+                }, {})
+                allData.push({
+                  filename_org:x.originalFileJPG,
+                  date:x.info.date,
+                  desc:x.info.dec,
+                  desc:x.info.dec,
+                  course:x.info.course,
+                  area:x.info.area,
+                  ...labels
+                })
+              });
+
+              console.log(allData)
+
+              const ws = utils.json_to_sheet(allData);
+              const wb = utils.book_new();
+          
+              // var filename = baseinfo.course_info.filter((x)=>x.dscourseids === selected_course).length>0? 
+              //   baseinfo.course_info.filter((x)=>x.dscourseids === selected_course)[0].name:"Noname"
+
+              const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name + selected_capdate +  '_label'
+          
+              utils.book_append_sheet(wb, ws, fileName);
+              writeFileXLSX(wb, fileName + '.xlsx');
+
+
+            }}> 라벨 Excel Download</Button>
         </ButtonGroup>
 
 
