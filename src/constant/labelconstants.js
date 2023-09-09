@@ -14,7 +14,7 @@
   export const course_list_label = ['청도','포항','중문']
   export const captured_date_label = [
     {id:'MGC000',capdate:[]},
-    {id:'MGC001',capdate:[]},
+    {id:'MGC001',capdate:['20230811']},
     {id:'MGC002',capdate:['20230823']}
   ]
 

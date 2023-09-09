@@ -42,6 +42,7 @@ export default function DSIMGLabelMain() {
 
 
   const [awsFolderInfo, setAWSFolderInfo] = useState([]);
+  const [flatFolderInfo, setFlatFolderInfo] = useState([]);
 
 
   const [checked, setChecked] = useState([]);
@@ -49,23 +50,27 @@ export default function DSIMGLabelMain() {
 
 
 
-  function GetFolderList(response) {
+  function GetFolderList(fileinfo_) {
     let result = [];
     let level = {result};
 
     // console.log(response[1].split('/').reduce((r, name, i, a) => console.log(r, name, i, a)),response[1])
+
+    let response = fileinfo_.map((x)=>x.path)
     
-    response.forEach((path) =>
-      path.split('/').reduce((r, name, i, a) => {
+    response.forEach((path_) =>
+      path_.split('/').reduce((r, name, i, a) => {
         if(!r[name]) {
           if(name !==''){
             r[name] = {result: [] , prev:'/'+name};
             if (!name.endsWith('.JPG')) {
-              let file_cnt = response.filter((x)=>x.includes(path.split('/').slice(0,i+1).join('/'))).length
+              let file_cnt = fileinfo_.filter((x)=>x.path.includes(path_.split('/').slice(0,i+1).join('/'))).reduce((total, obj) => obj.file_cnt + total,0)
+              let labeled_file_cnt = fileinfo_.filter((x)=>x.path.includes(path_.split('/').slice(0,i+1).join('/'))).reduce((total, obj) => obj.labeled_file_cnt+ total,0)
+              // let file_cnt = 0
               let newname = name
               if( i === 0) newname = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name
 
-              r.result.push({name, label:newname + ' [' + file_cnt + ']', numOffiles: file_cnt, value:path.split('/').slice(0,i+1).join('/'), 
+              r.result.push({name, label:newname + ' [' + labeled_file_cnt+'/'+ file_cnt + ']', numOffiles: file_cnt, value:path_.split('/').slice(0,i+1).join('/'), 
               children: r[name].result, 
               type:'folder'})
             }
@@ -79,13 +84,22 @@ export default function DSIMGLabelMain() {
 
   async function GetFolders() {
     let folders_ = []
-    Storage.list(selected_course + '/'+selected_capdate, { pageSize: 'ALL' }) // for listing ALL files without prefix, pass '' instead
-      .then(({ results }) => {
-        folders_ = GetFolderList(results.filter((x) => x.key.includes('.JPG') && x.key.includes('rgb')&& !x.key.includes('thumb')).map((item) => item.key))
-        setAWSFolderInfo(folders_);
-      }    
-    )
-    .catch((err) => alert(err));
+
+    const result = await Storage.get(selected_course + '/'+selected_capdate + '/filepath_'+ selected_course+'_'+selected_capdate+'.json',  { download: true , cacheControl: 'no-cache'});
+    let datajson_ = await new Response(result.Body).json();
+
+    folders_ = GetFolderList(datajson_)
+    setFlatFolderInfo(datajson_)
+    setAWSFolderInfo(folders_);
+    console.log("Filepath",datajson_)
+
+    // Storage.list(selected_course + '/'+selected_capdate, { pageSize: 'ALL' }) // for listing ALL files without prefix, pass '' instead
+    //   .then(({ results }) => {
+    //     folders_ = GetFolderList(results.filter((x) => x.key.includes('.JPG') && x.key.includes('rgb')&& !x.key.includes('thumb')).map((item) => item.key))
+    //     setAWSFolderInfo(folders_);
+    //   }    
+    // )
+    // .catch((err) => alert(err));
   }
 
 
@@ -147,20 +161,22 @@ useEffect(() => {
     return 
   }
 
-    let searchC = checked.map((x) => x.split('/'))
+    // let searchC = checked.map((x) => x.split('/'))
   
-    let selectedJson = [] 
+    // let selectedJson = [] 
 
-    searchC.forEach((x) =>{
+    // searchC.forEach((x) =>{
   
-      // console.log(labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3]),x[2],x[3])
-      selectedJson = [...selectedJson, ...labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3])]
+    //   // console.log(labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3]),x[2],x[3])
+    //   selectedJson = [...selectedJson, ...labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3])]
   
-    })
+    // })
 
-    setSLabelJson(selectedJson)
+    // setSLabelJson(selectedJson)
     
-    // console.log(selectedJson)
+    console.log(flatFolderInfo.filter((x)=>checked.some((item) => item === x.path)).reduce((accumulator, object) => {
+      return accumulator + object.file_cnt;
+    }, 0), checked, flatFolderInfo)
 
 
 },[checked]);
@@ -224,7 +240,25 @@ useEffect(() => {
                 {imgURLs.length>0? <DSIMGList imgURLs = {imgURLs}/>:<null></null>}
                 </Box> */}
                 <Button variant= {checked.length === 0 ? "outlined":"contained"} onClick = {()=> {
-                  let data2Url = selected_labeljson.filter((x) => x.dest.thumb !== '').map(item => {return {
+                  let searchC = checked.map((x) => x.split('/'))
+                
+                  let selectedJson = [] 
+
+                  searchC.forEach((x) =>{
+                
+                    // console.log(labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3]),x[2],x[3])
+                    selectedJson = [...selectedJson, ...labeljson.filter((item) => item.info.area === x[2] && item.info.desc === x[3])]
+                
+                  })
+
+                  if(selectedJson.length > 1000) {
+                    alert("인간적으로 1000개이상 이미지는 힘들어요")
+                    return
+                  }
+
+                  setSLabelJson(selectedJson)
+
+                  let data2Url = selectedJson.filter((x) => x.dest.thumb !== '').map(item => {return {
                     id:item.id,
                     desc:item.info.desc,
                     rgb:item.dest.rgb.replace(/\\/g, '/'), 
@@ -233,7 +267,9 @@ useEffect(() => {
                   })
 
                   getImgUrlSet(data2Url).then((result) => {console.log("URL", result); setImgURLs([...result]);setMode('GRPLABEL')})
-                }}> 총 {labeljson.length} 이미지 중 {selected_labeljson.length} 선택</Button>
+                }}> 총 {labeljson.length} 이미지 중 {flatFolderInfo.filter((x)=>checked.some((item) => item === x.path)).reduce((accumulator, object) => {
+                  return accumulator + object.file_cnt;
+                }, 0)} 선택</Button>
                 {selected_mode !== 'DATAselect'? <DSLabelHSTEdit/>:null}
               </>
             }

@@ -49,8 +49,8 @@ export const LabelProvider = (props) => {
   
     async function getDataJson() {
       
-      console.log("reading json:", selected_course + '/'+selected_capdate + '/data.json')
-      const result = await Storage.get(selected_course + '/'+selected_capdate +  '/data.json',  { download: true , cacheControl: 'no-cache'});
+      console.log("reading json:", selected_course + '/'+selected_capdate + '/photo.json')
+      const result = await Storage.get(selected_course + '/'+selected_capdate +  '/photo.json',  { download: true , cacheControl: 'no-cache'});
       let datajson_ = await new Response(result.Body).json();
       // datajson_ = datajson_.map((json_)=> {
       //   let newjson = {}

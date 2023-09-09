@@ -219,10 +219,10 @@ export default function DSLabelHSTEdit({geojson_mode}) {
               // JSON.stringify([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]) ,
               //   { cacheControl: 'no-cache'}
               //   ).then(async function(result) {console.log(`result : ${JSON.stringify(result)}`);})
-              Storage.copy({ key: selected_course + '/'+selected_capdate +  '/data.json' }, { key: selected_course + '/'+selected_capdate +  '/data'+(new Date().toJSON().slice(0,10))+'.json' })
+              Storage.copy({ key: selected_course + '/'+selected_capdate +  '/photo.json' }, { key: selected_course + '/'+selected_capdate +  '/photo'+(new Date().toJSON().slice(0,10))+'.json' })
                 .then(async function(result) {
                   console.log(`result : ${JSON.stringify(result)}`);
-                  Storage.put(selected_course + '/'+selected_capdate +  '/data.json', 
+                  Storage.put(selected_course + '/'+selected_capdate +  '/photo.json', 
                   JSON.stringify([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]) ,
                   { cacheControl: 'no-cache'})
                     .then(async function(result) {console.log(`result : ${JSON.stringify(result)}`);})           
