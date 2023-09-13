@@ -110,7 +110,7 @@ export default function DSIMGView() {
         </ButtonGroup>
 
         {selected_mode === "GRPLABEL" && Object.keys(labeljson).length !== 0? 
-          (ndviView === true?
+          (ndviView === false?
             <ImageList sx={{ width: '100%', height: '100%' }} cols={6}>
               {imgURLs.map((item, i_) => (
                 <ImageListItem key={'ds'+item.id}>
@@ -155,7 +155,7 @@ export default function DSIMGView() {
               ))}
             </ImageList>:<DSIMGAnnotorious image = {imgURLs[index]}/>)
           :
-          (ndviView === true?
+          (ndviView === false?
             <Lightbox
               index={index}
               open={selected_mode === "INDLABEL"}
