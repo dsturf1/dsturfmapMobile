@@ -11,6 +11,7 @@ export const LabelContext = createContext();
 export const LabelProvider = (props) => {
 
   const [selected_capdate, setCapDate] = useState("");
+  const [selected_area_desc, setAreaDesc] = useState([]);
   const [selected_labeljson, setSLabelJson] = useState([]);
   const [labeljson, setLabelJson] = useState([]);
   const [selected_singlelabel, setSSLabel] = useState({})
@@ -18,7 +19,7 @@ export const LabelProvider = (props) => {
 
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, 
-    maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext); 
+    maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon } = useContext(BaseContext); 
 
 
   
@@ -46,23 +47,99 @@ export const LabelProvider = (props) => {
 
 
     if (selected_course === "MGC000" || selected_capdate ==="") return
-  
-    async function getDataJson() {
-      
-      console.log("reading json:", selected_course + '/'+selected_capdate + '/photo.json')
-      const result = await Storage.get(selected_course + '/'+selected_capdate +  '/photo.json',  { download: true , cacheControl: 'no-cache'});
-      let datajson_ = await new Response(result.Body).json();
-      // datajson_ = datajson_.map((json_)=> {
-      //   let newjson = {}
-      //   if (json_.label.length ===0) newjson = {...json_, label_flg: false}
-      //   else newjson = {...json_, label_flg: true}
-      // })
-      setLabelJson([ ...datajson_])
-    }
-  getDataJson();
-  // console.log("Loaded Json @DSLabelData",labeljson)
+    if (selected_area_desc.length ===0) return
 
-},[selected_capdate]);
+    async function getImgUrlSet(keyset) {
+      const signedURL = await Promise.all(keyset.map(async (x) => {
+        return {
+          id:x.id,
+          desc:x.desc,
+          width:800,
+          height:600,
+          src:await Storage.get(x.rgb, {
+            // validateObjectExistence: true 
+          }), 
+          rgb:await Storage.get(x.rgb, {
+            // validateObjectExistence: true 
+          }), 
+          thumb:await Storage.get(x.thumb, {
+            // validateObjectExistence: true 
+          }),  
+          ndvi:await Storage.get(x.ndvi, {
+            // validateObjectExistence: true 
+          }), 
+        }
+      }))
+      return signedURL
+    } 
+
+    
+    const fetchLabelInfo = async() => {
+
+      try {
+  
+        const myInit = {
+          method: 'GET',
+          // body: '',
+          headers: {
+            Authorization: `Bearer ${(await Auth.currentSession())
+              .getIdToken()
+              .getJwtToken()}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        };
+  
+
+          let totaldatajson = []
+
+          const urls = selected_area_desc.map((area_desc_) => BASEURL + '/label/'+selected_course +'?'+  new URLSearchParams({date: selected_capdate, 
+            area:area_desc_.area, desc:area_desc_.desc}))
+          
+          // console.log(urls)
+          const requests = urls.map((url) => fetch(url, myInit));
+
+          const responses = await Promise.all(requests);
+          const errors = responses.filter((response) => !response.ok);
+      
+          if (errors.length > 0) {
+            throw errors.map((response) => Error(response.statusText));
+          }
+      
+          const json = responses.map((response) => response.json());
+          const data = await Promise.all(json);
+          data.forEach((datum) => totaldatajson = [...totaldatajson, ...datum.body.map((x)=>x.json)]);
+          setLabelJson([ ...totaldatajson])
+
+          let data2Url = totaldatajson.filter((x) => x.dest.thumb !== '').map(item => {return {
+              id:item.id,
+              desc:item.info.desc,
+              rgb:item.dest.rgb.replace(/\\/g, '/'), 
+              ndvi:item.dest.ndvi.replace(/\\/g, '/'), 
+              thumb:item.dest.thumb.replace(/\\/g, '/')}
+            })
+        
+          getImgUrlSet(data2Url).then((result) => {console.log("URL", result); setImgURLs([...result]);})
+      }
+      catch (errors) {
+            errors.forEach((error) => console.error(error));
+      }
+
+
+
+            
+            // setLabelJson([ ...totaldatajson])
+
+            // // setLabelJson([ ...fetchData.body])
+  
+  
+
+      }
+  
+
+    fetchLabelInfo();
+
+},[selected_capdate, selected_area_desc]);
 
 
 useEffect(() => {
@@ -75,13 +152,14 @@ useEffect(() => {
 
   console.log("Selected Json @DSLabelData",selected_labeljson)
   
-  },[selected_labeljson]);
+},[selected_labeljson]);
 
 
 
   return(
 
-  <LabelContext.Provider  value={{labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, selected_singlelabel, setSSLabel, selected_capdate, setCapDate}}>
+  <LabelContext.Provider  value={{labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, 
+  selected_singlelabel, setSSLabel, selected_capdate, setCapDate,  selected_area_desc, setAreaDesc}}>
       {props.children}
   </LabelContext.Provider >
   

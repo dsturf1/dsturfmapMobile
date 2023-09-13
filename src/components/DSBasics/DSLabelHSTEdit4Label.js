@@ -36,7 +36,7 @@ numbro.registerLanguage(languages["ko-KR"]);
 export default function DSLabelHSTEdit({geojson_mode}) {
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
-  const {labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, selected_singlelabel, setSSLabel, selected_capdate, setCapDate} = useContext(LabelContext);
+  const {labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, selected_singlelabel, setSSLabel, selected_capdate, setCapDate, selected_area_desc, setAreaDesc} = useContext(LabelContext);
 
   const [newGRPlabel, setNewGRPLabels]  =useState([label_single_blank]);
   // const [localmode, setLocalMode] = useState(geojson_mode)
@@ -55,7 +55,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
     if (hotRef.current === null) return;
 
     const hot = hotRef.current.hotInstance;
-    console.log(selected_singlelabel)
+    // console.log(selected_singlelabel)
     
     if (Object.keys(selected_singlelabel).length === 0) {
       hot.loadData([label_single_blank])
@@ -90,8 +90,75 @@ export default function DSLabelHSTEdit({geojson_mode}) {
   //   hot.loadData([ JSON.parse(JSON.stringify(label_single))])
 
   // },[selected_labeljson, selected_mode]);
+  const PostLabelSingle = async function (labelJson_) 
+  {
 
+    const url_ = BASEURL + '/label/'+selected_course +'?'
+    const myInit = {
+      method: 'POST',
+      body: JSON.stringify( labelJson_),
+      headers: {
+        Authorization: `Bearer ${(await Auth.currentSession())
+          .getIdToken()
+          .getJwtToken()}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
 
+    try {
+        const fetchData = await fetch(url_, myInit).then((response) => response.json())
+        console.log('At Post', fetchData)
+        return fetchData
+        } catch (err) { 
+          console.log('LabelInfo Saving Error', err, url_); 
+          alert('저장에 실했읍니다.')
+          return err; 
+      
+      }
+ 
+  }
+
+  const PostLabelMulti =  async(labelJson_) => {
+
+    try {
+
+        const url_ = BASEURL + '/label/'+selected_course +'?'
+
+        const Inits = labelJson_.map(async (label_) => {return {
+            method: 'POST',
+            body: JSON.stringify( label_),
+            headers: {
+              Authorization: `Bearer ${(await Auth.currentSession())
+                .getIdToken()
+                .getJwtToken()}`,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            }
+          };
+        
+        })
+
+        const InitswithAuth = await Promise.all(Inits);
+        // console.log(urls)
+        const requests = InitswithAuth.map((x) => fetch(url_, x));
+
+        const responses = await Promise.all(requests);
+        const errors = responses.filter((response) => !response.ok);
+    
+        if (errors.length > 0) {
+          throw errors.map((response) => Error(response.statusText));
+        }
+    
+        const json = responses.map((response) => response.json());
+        const data = await Promise.all(json);
+        console.log (data)
+    }
+    catch (errors) {
+          errors.forEach((error) => console.error(error));
+          alert('저장에 실했읍니다.')
+    }
+    }
 
   return (
       <Fragment>
@@ -113,34 +180,6 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
             var cellMeta = {};
 
-            // if(selected_mode === 'GRPLABEL'){
-            //   cellMeta = {};
-            //   if(row < newGRPlabel.length) {// 왜 넣었을까
-
-            //     if (column ==0) {
-            //       cellMeta.type = 'dropdown';
-            //       cellMeta.source = label_Level1_info
-            //     }
-            //     if (column ==1) {
-            //       cellMeta.type = 'dropdown';    
-            //       cellMeta.source = newGRPlabel.length !== 0? 
-            //       label_Level2_info[label_Level1_info.findIndex((item) => item === newGRPlabel[row].level1)]:""
-            //       }
-            //     if (column ==2) {
-            //       cellMeta.type = 'dropdown';
-            //       cellMeta.source = newGRPlabel.length !== 0? 
-            //       label_Level2_info[label_Level1_info.findIndex((item) => item === newGRPlabel[row].level1)]:""
-            //       }
-            //     if (column ==3) {
-            //       cellMeta.type = 'dropdown';
-            //       cellMeta.source = turf_type
-            //     }
-            //   }
-            //   return cellMeta;
-            // }
-            // if(selected_mode === 'INDLABEL'){
-
-            // cellMeta = {};
             if (Object.keys(selected_singlelabel).length === 0) return cellMeta;
 
 
@@ -167,8 +206,6 @@ export default function DSLabelHSTEdit({geojson_mode}) {
             }
 
             return cellMeta;
-            // }
-            // return {};
           }
           }
 
@@ -179,7 +216,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
           afterChange={(changes, source) => {
             changes?.forEach(([row, prop, oldValue, newValue]) => {
 
-                if (Object.keys(selected_singlelabel).length === 0) return
+                // if (Object.keys(labeljson).length === 0) return
 
                 console.log("UPdated Label Single", hotRef.current.hotInstance.getSourceData())
 
@@ -192,61 +229,74 @@ export default function DSLabelHSTEdit({geojson_mode}) {
                 setSSLabel({...newLabel})
                 // console.log(newLabel.label.slice(0,-1))
                 if(newLabel.label.slice(-1)[0].level1 === '') newLabel = {...newLabel, label:[...newLabel.label.slice(0,-1)]}
-                setSLabelJson([...selected_labeljson.filter((x) => x.id !== newLabel.id), {...newLabel}])
+                setLabelJson([...labeljson.filter((x) => x.id !== newLabel.id), {...newLabel}])
 
                 // setSSLabel({...newLabel})
+                let saveJson = {
+                    id: newLabel.id,
+                    metadata:selected_course+newLabel.info.date+newLabel.info.area+newLabel.info.desc,
+                    date :newLabel.info.date,
+                    area:newLabel.info.area,
+                    desc:newLabel.info.desc,
+                    json:{...newLabel}
+                }
+
+                PostLabelSingle(saveJson)
                 return
           })
         }}          
         />
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
-          <Button variant= "contained"  sx={{ width: 1/4}} onClick={() => {
+          <Button variant= "contained"  sx={{ width: 1/3}} onClick={() => {
             if (Object.keys(selected_singlelabel).length === 0) return
 
-            let newLabel = {...selected_singlelabel, label:[label_single_blank]}
+            let newLabel = {...selected_singlelabel, label:[]}
             setSSLabel({...newLabel})
-            setSLabelJson([...selected_labeljson.filter((x) => x.id !== newLabel.id), {...newLabel}])
+            setLabelJson([...labeljson.filter((x) => x.id !== newLabel.id), {...newLabel}])
 
-          }}> 지우기 </Button>
-          <Button variant= "contained"  sx={{ width: 1/4}} onClick={() => {
-            if (Object.keys(selected_singlelabel).length === 0) return
-
-
-
-            if(window.confirm('정말로 저장?')){
-              setLabelJson([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]);
-              // Storage.put(selected_course + '/'+selected_capdate +  '/data.json', 
-              // JSON.stringify([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]) ,
-              //   { cacheControl: 'no-cache'}
-              //   ).then(async function(result) {console.log(`result : ${JSON.stringify(result)}`);})
-              Storage.copy({ key: selected_course + '/'+selected_capdate +  '/photo.json' }, { key: selected_course + '/'+selected_capdate +  '/photo'+(new Date().toJSON().slice(0,10))+'.json' })
-                .then(async function(result) {
-                  console.log(`result : ${JSON.stringify(result)}`);
-                  Storage.put(selected_course + '/'+selected_capdate +  '/photo.json', 
-                  JSON.stringify([...labeljson.map(obj => selected_labeljson.find(o => o.id === obj.id) || obj)]) ,
-                  { cacheControl: 'no-cache'})
-                    .then(async function(result) {console.log(`result : ${JSON.stringify(result)}`);})           
-            
-                })
+            let saveJson = {
+              id: newLabel.id,
+              metadata:selected_course+newLabel.info.date+newLabel.info.area+newLabel.info.desc,
+              date :newLabel.info.date,
+              area:newLabel.info.area,
+              desc:newLabel.info.desc,
+              json:{...newLabel}
             }
 
-          }}> 저장하기 </Button>
-          <Button variant= "contained"  sx={{ width: 2/4}} onClick={() => {
+            PostLabelSingle(saveJson)
+
+          }}> 지우기 </Button>
+          
+
+          <Button variant= "contained"  sx={{ width: 2/3}} disabled = {selected_labeljson.length===0} onClick={() => {
             if (Object.keys(selected_singlelabel).length === 0) return
 
-            if(window.confirm('정말로 전체 그룹사진에 덮어쓸까요?')){
+            if(window.confirm('정말로 덮어쓸까요?')){
               // let single_ = [...selected_singlelabel.label]
               // single_ = 
               let newJason_ = selected_labeljson.map((label_) => {return {...label_ , label:[...selected_singlelabel.label.filter((x)=> x.level1 !== '')]}})
               setSLabelJson([...newJason_])
+              setLabelJson([...labeljson.map(obj => newJason_ .find(o => o.id === obj.id) || obj)]);
+
+              let saveJson = newJason_.map((row_)=>{return{
+                id: row_.id,
+                metadata:selected_course+row_.info.date+row_.info.area+row_.info.desc,
+                date :row_.info.date,
+                area:row_.info.area,
+                desc:row_.info.desc,
+                json:row_
+            }})
+
+            console.log(saveJson)
+            PostLabelMulti(saveJson)
             }
 
 
-          }}> 전체 그룹사진라벨 설정</Button>
+          }}> 선택된 사진들에 라벨적용</Button>
         </ButtonGroup>
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
           <Button variant= "outlined"  sx={{ width: 1/2}} onClick={() => {
-              if (Object.keys(selected_singlelabel).length === 0) return
+            //   if (Object.keys(selected_singlelabel).length === 0) return
 
               const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name + selected_capdate +  '_label.json'
               const data = new Blob([JSON.stringify(labeljson)], { type: "text/json" });
@@ -261,7 +311,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
             }}> 라벨 Json Download</Button>
           <Button variant= "outlined" sx={{ width: 1/2}} onClick={() => {
-              if (Object.keys(selected_singlelabel).length === 0) return
+            //   if (Object.keys(selected_singlelabel).length === 0) return
 
 
               var allData = [];

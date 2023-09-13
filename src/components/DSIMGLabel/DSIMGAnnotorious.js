@@ -2,6 +2,8 @@ import React, { useRef, useEffect, useState, useContext , Fragment} from 'react'
 import { Box, Button, Stack, Avatar, Typography, Grid, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, CircularProgress} from '@mui/material';
 import { Annotorious } from '@recogito/annotorious';
 import { BaseContext, MapQContext, MapCRSQContext, LabelContext} from "../../context"
+import {BASEURL} from "../../constant/urlconstants.js";
+import { Amplify, Auth , Storage } from 'aws-amplify';
 
 import '@recogito/annotorious/dist/annotorious.min.css';
 import "./anno.css";
@@ -21,6 +23,35 @@ export default function DSIMGAnnotorious({image}) {
 
   // Current drawing tool name
   const [ tool, setTool ] = useState('rect');
+
+  const PostLabelSingle = async function (labelJson_) 
+  {
+
+    const url_ = BASEURL + '/label/'+selected_course +'?'
+    const myInit = {
+      method: 'POST',
+      body: JSON.stringify( labelJson_),
+      headers: {
+        Authorization: `Bearer ${(await Auth.currentSession())
+          .getIdToken()
+          .getJwtToken()}`,
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    try {
+        const fetchData = await fetch(url_, myInit).then((response) => response.json())
+        console.log('At Post', fetchData)
+        return fetchData
+        } catch (err) { 
+          console.log('LabelInfo Saving Error', err, url_); 
+          alert('저장에 실했읍니다.')
+          return err; 
+      
+      }
+ 
+  }
 
   // Init Annotorious when the component
   // mounts, and keep the current 'anno'
@@ -50,22 +81,48 @@ export default function DSIMGAnnotorious({image}) {
         console.log('created', annotation, selected_singlelabel);    
         let updatedJson = {...selected_singlelabel, annotation:[...selected_singlelabel.annotation,{...annotation}]}
         setSSLabel({...updatedJson})
-        setSLabelJson([...selected_labeljson.filter((x)=>x.id !== selected_singlelabel.id ), {...updatedJson}])
-
+        setLabelJson([...labeljson.filter((x)=>x.id !== selected_singlelabel.id ), {...updatedJson}])
+        let saveJson = {
+            id: updatedJson.id,
+            metadata:selected_course+updatedJson.info.date+updatedJson.info.area+updatedJson.info.desc,
+            date :updatedJson.info.date,
+            area:updatedJson.info.area,
+            desc:updatedJson.info.desc,
+            json:{...updatedJson}
+        }
+        PostLabelSingle({...saveJson})
       });
 
       annotorious.on('updateAnnotation', (annotation, previous) => {
         console.log('updated', annotation, previous);
         let updatedJson = {...selected_singlelabel, annotation:[...selected_singlelabel.annotation.filter((x)=>x.id !== annotation.id),{...annotation}]}
         setSSLabel({...updatedJson})
-        setSLabelJson([...selected_labeljson.filter((x)=>x.id !== selected_singlelabel.id ), {...updatedJson}])
+        setLabelJson([...labeljson.filter((x)=>x.id !== selected_singlelabel.id ), {...updatedJson}])
+        let saveJson = {
+            id: updatedJson.id,
+            metadata:selected_course+updatedJson.info.date+updatedJson.info.area+updatedJson.info.desc,
+            date :updatedJson.info.date,
+            area:updatedJson.info.area,
+            desc:updatedJson.info.desc,
+            json:{...updatedJson}
+        }
+        PostLabelSingle({...saveJson})
       });
 
       annotorious.on('deleteAnnotation', annotation => {
         console.log('deleted', annotation);
         let updatedJson = {...selected_singlelabel,annotation:[...selected_singlelabel.annotation.filter((x)=>x.id !== annotation.id)]}
         setSSLabel({...updatedJson})
-        setSLabelJson([...selected_labeljson.filter((x)=>x.id !== selected_singlelabel.id ), {...updatedJson}])
+        setLabelJson([...labeljson.filter((x)=>x.id !== selected_singlelabel.id ), {...updatedJson}])
+        let saveJson = {
+            id: updatedJson.id,
+            metadata:selected_course+updatedJson.info.date+updatedJson.info.area+updatedJson.info.desc,
+            date :updatedJson.info.date,
+            area:updatedJson.info.area,
+            desc:updatedJson.info.desc,
+            json:{...updatedJson}
+        }
+        PostLabelSingle({...saveJson})
       });
     }
 
@@ -118,6 +175,13 @@ export default function DSIMGAnnotorious({image}) {
 
           }}>
             Load Annotation
+        </button>
+        <button
+          onClick={()=>{
+            if (anno === null) return
+            if (Object.keys(selected_singlelabel).length===0) return
+          }}>
+            Save Annotation
         </button>
       </div>
       {image ==null? 
