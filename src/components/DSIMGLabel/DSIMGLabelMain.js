@@ -171,7 +171,8 @@ export default function DSIMGLabelMain() {
                   {captured_date_label.filter((x)=> x.id === selected_course).map((x) =>  <MenuItem key={'date'+x.capdate} value={x.capdate}>{x.capdate}</MenuItem>)}
                 </Select>
               </FormControl>
-
+              <Box component="div" height="40vh" sx={{ p: 2, border: '1px solid gray',gap: 0, 
+                borderRadius: 0 , m: 0, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto'}}> 
                 <CheckboxTree
                   nodes={awsFolderInfo}
                   checked={checked}
@@ -179,7 +180,7 @@ export default function DSIMGLabelMain() {
                   onCheck={(checked) => setChecked(checked)}
                   onExpand={(expanded) => {setExpanded(expanded)}}
                 />
-
+              </Box>
                 <Button variant= {checked.length === 0 ? "outlined":"contained"} onClick = {()=> {
                   
                 

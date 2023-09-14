@@ -36,6 +36,11 @@ export default function DSMapSettingTableHST({selected_menu}) {
         { name: 'L1', header: 'Level I',align:"center", width:150,type: 'text'},
         { name: 'L2', header: 'Level II',align:"center", width:150,type: 'text'},
       ],
+    turf_type:
+      [
+        { name: 'TypeId', header: 'ID',align:"center", width:100,type: 'numeric'},
+        { name: 'turf_type', header: '잔디종류',align:"center", width:150,type: 'text'},
+      ],
     }
 
   let columns = columns_list[selected_menu.key_id]
@@ -63,18 +68,38 @@ export default function DSMapSettingTableHST({selected_menu}) {
   return (
     <Box height="90vh" sx={{ p: 1, border: '1px solid grey',gap: 2, borderRadius: 2 , m: 1, overflow: 'hidden'}}>
       <Button variant= {"outlined"}  onClick={() => {
-
-        let newID = Math.max(...baseinfo.area_def.map((x)=> Number(x.TypeId)))+1;
-        let newZindex = Math.max(...baseinfo.area_def.map((x)=> Number(x.DSZindex))) + 1
-        setBaseInfo({...baseinfo, area_def:[...baseinfo.area_def, {
-          "TypeId": newID,
-          "name": "",
-          "color": "",
-          "display": true,
-          "DSZindex": newZindex
-        }]})
-        
-        setEdited(true);
+        if(selected_menu.key_id === 'area_def'){
+            let newID = Math.max(...baseinfo.area_def.map((x)=> Number(x.TypeId)))+1;
+            let newZindex = Math.max(...baseinfo.area_def.map((x)=> Number(x.DSZindex))) + 1
+            setBaseInfo({...baseinfo, area_def:[...baseinfo.area_def, {
+            "TypeId": newID,
+            "name": "",
+            "color": "",
+            "display": true,
+            "DSZindex": newZindex
+            }]})
+            
+            setEdited(true);
+        }
+        if(selected_menu.key_id === 'label_info'){
+            let newID = Math.max(...baseinfo.label_info.map((x)=> Number(x.TypeId)))+1;
+            setBaseInfo({...baseinfo, label_info:[...baseinfo.label_info, {
+            "TypeId": newID,
+            "L1": "",
+            "L2": ""
+            }]})
+            
+            setEdited(true);
+        }
+        if(selected_menu.key_id === 'turf_type'){
+            let newID = Math.max(...baseinfo.turf_type.map((x)=> Number(x.TypeId)))+1;
+            setBaseInfo({...baseinfo, turf_type:[...baseinfo.turf_type, {
+            "TypeId": newID,
+            "turf_type": ""
+            }]})
+            
+            setEdited(true);
+        }
         }}> 신규 생성
       </Button>
       <HotTable

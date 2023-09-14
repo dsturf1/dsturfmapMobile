@@ -11,7 +11,7 @@ import { green, pink ,indigo, amber} from '@mui/material/colors';
 import { BaseContext, MapQContext, MapCRSQContext, LabelContext} from "../../context"
 import { COURSEBLANK , GEOJSONBLANK, POLYGONBLANK} from '../../constant/urlconstants';
 // import { label_Level1_info,  label_Level2_info, turf_type , label_single} from '../../constant/urlconstants';
-import {turf_type , label_single} from '../../constant/labelconstants';
+import {label_single} from '../../constant/labelconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 
@@ -38,9 +38,10 @@ export default function DSLabelHSTEdit({geojson_mode}) {
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const {labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, selected_singlelabel, setSSLabel, selected_capdate, setCapDate, selected_area_desc, setAreaDesc} = useContext(LabelContext);
 
-  const [newGRPlabel, setNewGRPLabels]  =useState([label_single_blank]);
+
   const [label_Level1_info, setL1]  =useState([]);
   const [label_Level2_info, setL2]  =useState([]);
+  const [turf_type, setTurfType]  =useState([]);
   // const [localmode, setLocalMode] = useState(geojson_mode)
 
   const hotRef = useRef(null);
@@ -87,12 +88,15 @@ export default function DSLabelHSTEdit({geojson_mode}) {
     let L2 = []
 
     L2 = L1.map((level_) => baseinfo.label_info.filter(item => item.L1 === level_).map(x=>x.L2))
+    let turf_ = [...new Set(baseinfo.turf_type.map(item => item.turf_type))]
+
 
     setL1([...L1])
     setL2([...L2])
+    setTurfType([...turf_])
 
 
-    console.log(L1,L2)
+    console.log(L1,L2,turf_)
 
 
   },[baseinfo]);
@@ -166,6 +170,32 @@ export default function DSLabelHSTEdit({geojson_mode}) {
           errors.forEach((error) => console.error(error));
           alert('저장에 실했읍니다.')
     }
+    }
+
+    const fetchLabelInfoAll = async() => {
+
+      try {
+        const url_ = BASEURL + '/label/'+selected_course +'?'+  new URLSearchParams({date: selected_capdate})
+        const myInit = {
+          method: 'GET',
+          // body: '',
+          headers: {
+            Authorization: `Bearer ${(await Auth.currentSession())
+              .getIdToken()
+              .getJwtToken()}`,
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          }
+        };
+
+        const fetchData = await fetch(url_, myInit).then((response) => response.json())
+        return fetchData
+      }
+      catch (errors) {
+            errors.forEach((error) => console.error(error));
+      }    
+    
+  
     }
 
   return (
@@ -361,7 +391,12 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
             }}> 라벨 Excel Download</Button>
         </ButtonGroup>
+        {/* <Button variant= "outlined"  sx={{ width: 1}} onClick={() => {
+            //   if (Object.keys(selected_singlelabel).length === 0) return
 
+            fetchLabelInfoAll().then((result) => console.log(result))
+
+            }}> All 라벨 Json Download</Button> */}
 
       </Fragment>        
   )

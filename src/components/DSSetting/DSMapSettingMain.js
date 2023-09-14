@@ -14,7 +14,8 @@ import { BASEURL } from '../../constant/urlconstants.js';
 
 const menu_ = [
   {name: 'Polygon등록', key_id: 'area_def'},
-  {name: 'Label등록', key_id: 'label_info'}
+  {name: 'Label등록', key_id: 'label_info'},
+  {name: '잔디종류등록', key_id: 'turf_type'}
 ]
 
 
