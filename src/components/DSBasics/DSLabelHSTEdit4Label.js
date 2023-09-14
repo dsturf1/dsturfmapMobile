@@ -11,7 +11,7 @@ import { green, pink ,indigo, amber} from '@mui/material/colors';
 import { BaseContext, MapQContext, MapCRSQContext, LabelContext} from "../../context"
 import { COURSEBLANK , GEOJSONBLANK, POLYGONBLANK} from '../../constant/urlconstants';
 // import { label_Level1_info,  label_Level2_info, turf_type , label_single} from '../../constant/urlconstants';
-import { label_Level1_info,  label_Level2_info, turf_type , label_single} from '../../constant/labelconstants';
+import {turf_type , label_single} from '../../constant/labelconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 
@@ -39,14 +39,16 @@ export default function DSLabelHSTEdit({geojson_mode}) {
   const {labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, selected_singlelabel, setSSLabel, selected_capdate, setCapDate, selected_area_desc, setAreaDesc} = useContext(LabelContext);
 
   const [newGRPlabel, setNewGRPLabels]  =useState([label_single_blank]);
+  const [label_Level1_info, setL1]  =useState([]);
+  const [label_Level2_info, setL2]  =useState([]);
   // const [localmode, setLocalMode] = useState(geojson_mode)
 
   const hotRef = useRef(null);
 
   const columns = [
     {name:'level1', header:'L1', type:'text', readOnly:false, width:60},
-    {name:'level2', header:'L2', type:'text', readOnly:false, width:60},
-    {name:'level3', header:'L3', type:'text', readOnly:false, width:60},
+    {name:'level2', header:'L2', type:'text', readOnly:false, width:150},
+    // {name:'level3', header:'L3', type:'text', readOnly:false, width:60},
     {name:'TurfType', header:'TurfType', type:'text', readOnly:false, width:60},
   ];
   
@@ -78,18 +80,24 @@ export default function DSLabelHSTEdit({geojson_mode}) {
   },[selected_singlelabel]);
 
 
-  // useEffect(() => {
+  useEffect(() => {
+    if(Object.keys(baseinfo).length ===0) return
 
-  //   if (hotRef.current === null) return;
-  //   if (selected_mode !== 'GRPLABEL') return
+    let L1 = [...new Set(baseinfo.label_info.map(item => item.L1))]
+    let L2 = []
 
-  //   const hot = hotRef.current.hotInstance;
-  //   console.log("JSONs @GRP",selected_labeljson)
-  //   setNewGRPLabels([{...label_single_blank}])
+    L2 = L1.map((level_) => baseinfo.label_info.filter(item => item.L1 === level_).map(x=>x.L2))
 
-  //   hot.loadData([ JSON.parse(JSON.stringify(label_single))])
+    setL1([...L1])
+    setL2([...L2])
 
-  // },[selected_labeljson, selected_mode]);
+
+    console.log(L1,L2)
+
+
+  },[baseinfo]);
+
+
   const PostLabelSingle = async function (labelJson_) 
   {
 
@@ -194,12 +202,12 @@ export default function DSLabelHSTEdit({geojson_mode}) {
                 cellMeta.source = Object.keys(selected_singlelabel).length !== 0? 
                 label_Level2_info[label_Level1_info.findIndex((item) => item === selected_singlelabel.label[row].level1)]:""
                 }
+            //   if (column ==2) {
+            //     cellMeta.type = 'dropdown';
+            //     cellMeta.source = Object.keys(selected_singlelabel).length !== 0? 
+            //     label_Level2_info[label_Level1_info.findIndex((item) => item === selected_singlelabel.label[row].level1)]:""
+            //     }
               if (column ==2) {
-                cellMeta.type = 'dropdown';
-                cellMeta.source = Object.keys(selected_singlelabel).length !== 0? 
-                label_Level2_info[label_Level1_info.findIndex((item) => item === selected_singlelabel.label[row].level1)]:""
-                }
-              if (column ==3) {
                 cellMeta.type = 'dropdown';
                 cellMeta.source = turf_type
               }

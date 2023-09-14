@@ -30,6 +30,12 @@ export default function DSMapSettingTableHST({selected_menu}) {
         { name: 'area_def', header: '골프장영역정의',align:"center", width:120, type: 'dropdown',  source: [true, false] },
         { name: 'work_def', header: '관심지역',align:"center", width:120, type: 'dropdown',  source: [true, false] },
       ],
+    label_info:
+      [
+        { name: 'TypeId', header: 'ID',align:"center", width:100,type: 'numeric'},
+        { name: 'L1', header: 'Level I',align:"center", width:150,type: 'text'},
+        { name: 'L2', header: 'Level II',align:"center", width:150,type: 'text'},
+      ],
     }
 
   let columns = columns_list[selected_menu.key_id]
@@ -85,7 +91,7 @@ export default function DSMapSettingTableHST({selected_menu}) {
         manualColumnResize={true}
 
         className = {'htMiddle'}
-        height="89vh"
+        height="80vh"
         filters={true}
         dropdownMenu={true}
         minSpareRows={0}

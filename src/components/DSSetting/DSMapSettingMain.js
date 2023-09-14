@@ -13,7 +13,8 @@ import SaveIcon from '@mui/icons-material/Save';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 const menu_ = [
-  {name: 'Polygon등록', key_id: 'area_def'}
+  {name: 'Polygon등록', key_id: 'area_def'},
+  {name: 'Label등록', key_id: 'label_info'}
 ]
 
 
