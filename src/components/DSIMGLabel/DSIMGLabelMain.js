@@ -168,7 +168,7 @@ export default function DSIMGLabelMain() {
                   label="촬영일자"
                   onChange={(event) => {setCapDate(event.target.value)}}
                 >
-                  {captured_date_label.filter((x)=> x.id === selected_course).map((x) =>  <MenuItem key={'date'+x.capdate} value={x.capdate}>{x.capdate}</MenuItem>)}
+                  {captured_date_label.filter((x)=> x.id === selected_course)[0].capdate.map((x) =>  <MenuItem key={'date'+x} value={x}>{x}</MenuItem>)}
                 </Select>
               </FormControl>
               <Box component="div" height="40vh" sx={{ p: 2, border: '1px solid gray',gap: 0, 
@@ -189,15 +189,15 @@ export default function DSIMGLabelMain() {
                     return accumulator + object.file_cnt}, 0)
 
                   checked.forEach((x) =>{
-                    selectedAreaDesc_  = [...selectedAreaDesc_ , {area:x.split('/')[2] ,desc:x.split('/')[3]}]                
+                    selectedAreaDesc_  = [...selectedAreaDesc_ , {area:x.split('/')[1] ,desc:x.split('/')[2]}]                
                   })
 
 
-                  console.log('AREA&Desc',selectedAreaDesc_,total_file_cnt)
-                  if(total_file_cnt > 1000) {
-                    alert("인간적으로 1000개이상 이미지는 힘들어요")
-                    return
-                  }
+                //   console.log('AREA&Desc',selectedAreaDesc_,total_file_cnt)
+                //   if(total_file_cnt > 1000) {
+                //     alert("인간적으로 1000개이상 이미지는 힘들어요")
+                //     return
+                //   }
 
                   setAreaDesc(selectedAreaDesc_)
                   setMode('GRPLABEL')
