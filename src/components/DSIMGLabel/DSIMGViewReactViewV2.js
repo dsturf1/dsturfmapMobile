@@ -9,11 +9,13 @@ import Lightbox from "yet-another-react-lightbox";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
 import "yet-another-react-lightbox/styles.css";
 import "yet-another-react-lightbox/plugins/thumbnails.css";
+import Viewer from 'react-viewer';
 
 import DSIMGAnnotorious from './DSIMGAnnotorious';
 
 
 import InfoIcon from '@mui/icons-material/Info';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
 import { ImageList, ImageListItem, ImageListItemBar, ListSubheader, IconButton} from '@mui/material';
 import { label_Level1_info,  label_Level2_info, turf_type , label_single} from '../../constant/labelconstants';
  
@@ -27,9 +29,11 @@ export default function DSIMGView() {
 
   const [caption, setCaption] = React.useState("");
   const [index, setIndex] = React.useState(0);
-  const [multiIndex, setMultiIndex] = useState([])
-
+  const [multiIndex, setMultiIndex] = useState([]);
   const [ndviView, setNDVIView] = useState(false)
+
+  const [ visible, setVisible ] = React.useState(false);
+  const viewerRef = useRef(null);
 
  
   useEffect(() => {
@@ -111,10 +115,13 @@ export default function DSIMGView() {
 
         {selected_mode === "GRPLABEL" && Object.keys(labeljson).length !== 0? 
           (ndviView === false?
-            <ImageList sx={{ width: '100%', height: '100%' }} cols={6}>
+            <Stack direction="row" spacing={2}>
+            <Box component="div" height="80vh" width = "460px" sx={{ p: 0, border: '1px solid gray',gap: 0, 
+                borderRadius: 0 , m: 0, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}> 
+            <ImageList sx={{ width: '100%', height: '100%' }} cols={2}>
               {imgURLs.map((item, i_) => (
                 <ImageListItem key={'ds'+item.id}>
-                  <div style={multiIndex.includes(i_)? {width: 270, height: 210 ,border: '5px solid blue'}:{width: 270, height: 210}}>
+                  <div  style={multiIndex.includes(i_)? {width: 216, height: 162 ,border: '5px solid blue'}:{width: 216, height: 162}}>
                   <img
                     style={{ width: '100%', height:'100%' }}
                     src={item.thumb}
@@ -141,19 +148,55 @@ export default function DSIMGView() {
                   />
                   </div>
                   <ImageListItemBar
+                    sx={{
+                      "& .MuiImageListItemBar-title": { fontSize:'10pt'}, //styles for title
+                      "& .MuiImageListItemBar-subtitle": { color: "yellow" ,fontSize:'8pt'}, //styles for subtitle
+                      width: '100%'
+                    }}
                     title={'['+ i_ +']'+item.desc}
-                    subtitle={labeljson.filter((item_)=> item_.id === item.id).length === 0? "라밸미지정":labeljson.filter((item_)=> item_.id === item.id)[0].label.map((x)=> '['+ x.level1 +']')}
+                    // position="below"
+                    subtitle={labeljson.filter((item_)=> item_.id === item.id)[0].label.length === 0? "라밸미지정":labeljson.filter((item_)=> item_.id === item.id)[0].label.map((x)=> '['+ x.level1 +']')}
                     actionIcon={
                       <IconButton
-                        sx={{ color: 'rgba(255, 255, 255, 0.54)' }}
+                        sx={{ color: 'rgba(256, 256, 0, 0.54)' }}
                         aria-label={`info about ${item.desc}`}
+                        onClick={() => {
+                          if (index ===0) return;                      
+                          setIndex(i_);
+                          setMultiIndex([i_]);
+                          setVisible(true);
+                        }}
                       >
+                      <ZoomInIcon />
                       </IconButton>
                     }
                   />
                 </ImageListItem>
               ))}
-            </ImageList>:<DSIMGAnnotorious image = {imgURLs[index]}/>)
+            </ImageList>
+            </Box>
+            {/* <Box  component="div" height="80vh"  width = "100%" sx={{ p: 0, border: '1px solid gray',gap: 0, 
+                borderRadius: 0 , m: 0, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto'}}>  */}
+            <Lightbox
+              index={index}
+              open={selected_mode === "GRPLABEL"}
+              plugins={[Inline, Zoom]}
+              inline={{ style: { width: "100%", height:"100%" } }}
+              slides={imgURLs}
+              on={{
+                view: ({ index }) => {
+                  // imgURLs.length>0 && index>=0? setCaption('['+index+'/'+ imgURLs.length+']'+imgURLs[index].desc):setCaption("");
+                  setIndex(index)
+                  setMultiIndex([index]);
+                }
+                // view?: ({ index }: { index: number }) 
+              }}></Lightbox>
+            {/* </Box> */}
+            </Stack>
+            
+            
+            
+            :<DSIMGAnnotorious image = {imgURLs[index]}/>)
           :
           (ndviView === false?
             <Lightbox

@@ -50,12 +50,13 @@ export const LabelProvider = (props) => {
     if (selected_area_desc.length ===0) return
 
     async function getImgUrlSet(keyset) {
-      const signedURL = await Promise.all(keyset.map(async (x) => {
+      const signedURL = await Promise.all(keyset.map(async (x, index_) => {
         return {
           id:x.id,
           desc:x.desc,
           width:800,
           height:600,
+          alt: '['+index_+']'+x.desc,
           src:await Storage.get(x.rgb, {
             // validateObjectExistence: true 
           }), 

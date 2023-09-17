@@ -14,9 +14,10 @@ import DSSave from '../DSBasics/DSSave';
 import DSLabelHSTEdit from '../DSBasics/DSLabelHSTEdit4Label';
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
-import DSIMGView from './DSIMGViewYAIVwithImgList';
+import DSIMGView from './DSIMGViewReactView';
 import DSIMGAnnotorious from './DSIMGAnnotorious';
 // import DSIMGView from './DSIMGViewOpenSD';
+// import DSIMGView from './DSIMGViewYAIVwithImgList';
 // import DSIMGAnnotate from './DSIMGAnnotate.js';
 
 // import DropdownTreeSelect from 'react-dropdown-tree-select';
