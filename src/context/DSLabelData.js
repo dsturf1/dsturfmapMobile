@@ -59,15 +59,19 @@ export const LabelProvider = (props) => {
           alt: '['+index_+']'+x.desc,
           src:await Storage.get(x.rgb, {
             // validateObjectExistence: true 
+            expires:3600
           }), 
           rgb:await Storage.get(x.rgb, {
             // validateObjectExistence: true 
+            expires:3600
           }), 
           thumb:await Storage.get(x.thumb, {
             // validateObjectExistence: true 
+            expires:3600
           }),  
           ndvi:await Storage.get(x.ndvi, {
             // validateObjectExistence: true 
+            expires:3600
           }), 
         }
       }))

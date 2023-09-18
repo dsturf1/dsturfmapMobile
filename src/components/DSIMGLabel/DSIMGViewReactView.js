@@ -152,15 +152,16 @@ export default function DSIMGView() {
                     }}
                     title={'['+ i_ +']'+item.desc}
                     // position="below"
-                    subtitle={labeljson.filter((item_)=> item_.id === item.id)[0].label.length === 0? "라밸미지정":labeljson.filter((item_)=> item_.id === item.id)[0].label.map((x)=> '['+ x.level1 +']')}
+                    subtitle={labeljson.filter((item_)=> item_.id === item.id).length === 0? 
+                      "라밸미지정":labeljson.filter((item_)=> item_.id === item.id)[0].label.map((x)=> '['+ x.level1 +']')}
                     actionIcon={
                       <IconButton
                         sx={{ color: 'rgba(256, 256, 0, 0.54)' }}
                         aria-label={`info about ${item.desc}`}
                         onClick={() => {
                           if (index ===0) return;                      
-                          setIndex(i_);
-                          setMultiIndex([i_]);
+                          // setIndex(i_);
+                          // setMultiIndex([i_]);
                           setVisible(true);
                         }}
                       >
@@ -223,7 +224,7 @@ export default function DSIMGView() {
                     }}
                     title={'['+ i_ +']'+item.desc}
                     // position="below"
-                    subtitle={labeljson.filter((item_)=> item_.id === item.id)[0].label.length === 0? "라밸미지정":labeljson.filter((item_)=> item_.id === item.id)[0].label.map((x)=> '['+ x.level1 +']')}
+                    subtitle={labeljson.filter((item_)=> item_.id === item.id).length === 0?  "라밸미지정":labeljson.filter((item_)=> item_.id === item.id)[0].label.map((x)=> '['+ x.level1 +']')}
                     actionIcon={
                       <IconButton
                         sx={{ color: 'rgba(256, 256, 0, 0.54)' }}
