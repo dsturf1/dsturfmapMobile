@@ -18,8 +18,8 @@ Amplify.configure({
   },
 
   Storage: { 
-    bucket: 'ds-niaimages',
-    region: 'us-east-1',
+    bucket: 'ds-niaimageskor',
+    region: 'ap-northeast-2',
     identityPoolId: 'us-east-1:81ad79da-011a-4b19-8324-1e6528d1667e'
    }
  }
