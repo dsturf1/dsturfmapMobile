@@ -39,7 +39,7 @@ export default function DSIMGLabelMain() {
     setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, se5Gon} = useContext(BaseContext);
 
   const {labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, selected_singlelabel, setSSLabel, 
-    selected_capdate, setCapDate, selected_area_desc, setAreaDesc} = useContext(LabelContext);
+    selected_capdate, setCapDate, selected_area_desc, setAreaDesc,label_loading, setLabelLoading} = useContext(LabelContext);
 
 
 
@@ -224,7 +224,8 @@ export default function DSIMGLabelMain() {
             borderRadius: 0 , m: 1, flexDirection: 'column', display: 'flex', alignContent: 'flex-start', overflow:'auto', overflowX: "scroll"}}> 
           {/* <DSIMGView image = {imgURL}/> */}
           {/* <DSIMGAnnotorious image = {imgURL}/> */}
-          {imgURLs.length>0 && selected_mode !== 'DATAselect'? <DSIMGView DSslides={imgURLs}/>:<null/>} 
+          {imgURLs.length>0 && selected_mode !== 'DATAselect'? (label_loading === false? <DSIMGView DSslides={imgURLs}/>:<CircularProgress />):
+          (label_loading === false? <null/>:<CircularProgress />)} 
           {/* {console.log(imgURLs.length)} */}
           </Box>
         </Grid>

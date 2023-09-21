@@ -164,7 +164,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
     
         const json = responses.map((response) => response.json());
         const data = await Promise.all(json);
-        console.log (data)
+        alert('저장에 성공했습니다..')
     }
     catch (errors) {
           errors.forEach((error) => console.error(error));
@@ -260,13 +260,13 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
                 let newLabel = {...selected_singlelabel, label:hotRef.current.hotInstance.getSourceData()}
 
-                if(newLabel.label.slice(-1)[0].level1 !== '') newLabel = {...newLabel, label:[...newLabel.label, label_single]}
+                if(newLabel.label.slice(-1)[0].level1 !== '') newLabel = {...newLabel, label:[...newLabel.label, label_single], labelBy:loginuser}
 
                 // console.log(selected_singlelabel.label.slice(-1)[0].level1)
 
                 setSSLabel({...newLabel})
                 // console.log(newLabel.label.slice(0,-1))
-                if(newLabel.label.slice(-1)[0].level1 === '') newLabel = {...newLabel, label:[...newLabel.label.slice(0,-1)]}
+                if(newLabel.label.slice(-1)[0].level1 === '') newLabel = {...newLabel, label:[...newLabel.label.slice(0,-1)], labelBy:loginuser}
                 setLabelJson([...labeljson.filter((x) => x.id !== newLabel.id), {...newLabel}])
 
                 // setSSLabel({...newLabel})
@@ -288,7 +288,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
           <Button variant= "contained"  sx={{ width: 1/3}} onClick={() => {
             if (Object.keys(selected_singlelabel).length === 0) return
 
-            let newLabel = {...selected_singlelabel, label:[]}
+            let newLabel = {...selected_singlelabel, label:[], labelBy:loginuser}
             setSSLabel({...newLabel})
             setLabelJson([...labeljson.filter((x) => x.id !== newLabel.id), {...newLabel}])
 
@@ -312,7 +312,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
             if(window.confirm('정말로 덮어쓸까요?')){
               // let single_ = [...selected_singlelabel.label]
               // single_ = 
-              let newJason_ = selected_labeljson.map((label_) => {return {...label_ , label:[...selected_singlelabel.label.filter((x)=> x.level1 !== '')]}})
+              let newJason_ = selected_labeljson.map((label_) => {return {...label_ , label:[...selected_singlelabel.label.filter((x)=> x.level1 !== '')] , labelBy:loginuser}})
               setSLabelJson([...newJason_])
               setLabelJson([...labeljson.map(obj => newJason_ .find(o => o.id === obj.id) || obj)]);
 
@@ -335,8 +335,9 @@ export default function DSLabelHSTEdit({geojson_mode}) {
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
           <Button variant= "outlined"  sx={{ width: 1/2}} onClick={() => {
             //   if (Object.keys(selected_singlelabel).length === 0) return
-
-              const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name + selected_capdate +  '_label.json'
+            var currentdate = new Date(); 
+            const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name + selected_capdate +'_' + selected_area_desc.map((x, i_)=>x.area +'['+ x.desc+']').join('_') +  '_label'
+            + currentdate.toISOString().slice(5, 10).replace('-','')+'.json'
               const data = new Blob([JSON.stringify(labeljson)], { type: "text/json" });
               const jsonURL = window.URL.createObjectURL(data);
               const link = document.createElement("a");
@@ -364,6 +365,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
                 }}).reduce(function(result, current) {
                   return Object.assign(result, current);
                 }, {})
+
                 allData.push({
                   filename_org:x.originalFileJPG,
                   date:x.info.date,
@@ -371,7 +373,8 @@ export default function DSLabelHSTEdit({geojson_mode}) {
                   desc:x.info.dec,
                   course:x.info.course,
                   area:x.info.area,
-                  ...labels
+                  ...labels,
+                  labelBy:x.labelBy
                 })
               });
 
@@ -382,8 +385,9 @@ export default function DSLabelHSTEdit({geojson_mode}) {
           
               // var filename = baseinfo.course_info.filter((x)=>x.dscourseids === selected_course).length>0? 
               //   baseinfo.course_info.filter((x)=>x.dscourseids === selected_course)[0].name:"Noname"
-
+              var currentdate = new Date(); 
               const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name + selected_capdate +  '_label'
+              + currentdate.toISOString().slice(5, 10)
           
               utils.book_append_sheet(wb, ws, fileName);
               writeFileXLSX(wb, fileName + '.xlsx');

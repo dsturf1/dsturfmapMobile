@@ -16,6 +16,7 @@ export const LabelProvider = (props) => {
   const [labeljson, setLabelJson] = useState([]);
   const [selected_singlelabel, setSSLabel] = useState({})
   const [imgURLs, setImgURLs] = useState([{src:"",desc:""}]);
+  const [label_loading, setLabelLoading] = useState(false);
 
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, 
@@ -113,8 +114,16 @@ export const LabelProvider = (props) => {
       
           const json = responses.map((response) => response.json());
           const data = await Promise.all(json);
-          data.forEach((datum) => totaldatajson = [...totaldatajson, ...datum.body.map((x)=>x.json)]);
+          data.forEach((datum) => {
+            let new_ = datum.body.map((x)=> {
+              if (x.hasOwnProperty("labelBy")) return x.json
+              else return {...x.json, labelBy:loginuser}
+            })
+            totaldatajson = [...totaldatajson, ...new_]
+          });
           setLabelJson([ ...totaldatajson])
+
+          // console.log(totaldatajson, data)
 
           let data2Url = totaldatajson.filter((x) => x.dest.thumb !== '').map(item => {return {
               id:item.id,
@@ -124,7 +133,7 @@ export const LabelProvider = (props) => {
               thumb:item.dest.thumb.replace(/\\/g, '/')}
             })
         
-          getImgUrlSet(data2Url).then((result) => {console.log("URL", result); setImgURLs([...result]);})
+          getImgUrlSet(data2Url).then((result) => {console.log("URL", result); setImgURLs([...result]);setLabelLoading(false)})
       }
       catch (errors) {
             errors.forEach((error) => console.error(error));
@@ -141,7 +150,7 @@ export const LabelProvider = (props) => {
 
       }
   
-
+    setLabelLoading(true)
     fetchLabelInfo();
 
 },[selected_capdate, selected_area_desc]);
@@ -164,7 +173,7 @@ useEffect(() => {
   return(
 
   <LabelContext.Provider  value={{labeljson, setLabelJson, selected_labeljson, setSLabelJson, imgURLs, setImgURLs, 
-  selected_singlelabel, setSSLabel, selected_capdate, setCapDate,  selected_area_desc, setAreaDesc}}>
+  selected_singlelabel, setSSLabel, selected_capdate, setCapDate,  selected_area_desc, setAreaDesc,label_loading, setLabelLoading}}>
       {props.children}
   </LabelContext.Provider >
   
