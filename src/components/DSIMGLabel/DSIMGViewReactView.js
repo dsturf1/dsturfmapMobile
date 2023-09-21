@@ -190,9 +190,11 @@ export default function DSIMGView() {
             <ImageList sx={{ width: '100%', height: '100%' }} cols={2}>
               {imgURLs.map((item, i_) => (
                 <ImageListItem key={'ds'+item.id}>
-                  <div  style={multiIndex.includes(i_)? {width: 216, height: 162 ,border: '5px solid blue'}:{width: 216, height: 162}}>
-                  <img
+                  <div  style={multiIndex.includes(i_)? {width: 216, height: 162 ,border: '5px solid blue'}:{width: 216, height: 162}}  >
+                  <input
                     style={{ width: '100%', height:'100%' }}
+                    type="image"
+                    autoFocus={i_ === index? true:false}
                     src={item.thumb}
                     alt={item.desc}
                     loading="lazy"

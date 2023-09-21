@@ -38,8 +38,8 @@ const App = () => {
       {({ signOut, user }) => (
       <Fragment>
         < BaseProvider user = {user}>
-          <MapCRSQProvider>
-          <MapQProvider>
+          {/* <MapCRSQProvider>
+          <MapQProvider> */}
           <LabelProvider>
           <ThemeProvider theme={DSTheme}>
             <CssBaseline />
@@ -60,8 +60,8 @@ const App = () => {
             </Routes>
           </ThemeProvider>
           </LabelProvider>
-          </MapQProvider>
-          </MapCRSQProvider>
+          {/* </MapQProvider>
+          </MapCRSQProvider> */}
         </BaseProvider>
       </Fragment>
       )}
