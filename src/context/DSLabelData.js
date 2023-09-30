@@ -136,7 +136,8 @@ export const LabelProvider = (props) => {
           getImgUrlSet(data2Url).then((result) => {console.log("URL", result); setImgURLs([...result]);setLabelLoading(false)})
       }
       catch (errors) {
-            errors.forEach((error) => console.error(error));
+            // errors.forEach((error) => console.error(error));
+            alert('Loading이 안되네요! 다른 폴더 먼저 해보세요!!')
       }
 
 
