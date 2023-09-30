@@ -41,6 +41,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
   const [label_Level1_info, setL1]  =useState([]);
   const [label_Level2_info, setL2]  =useState([]);
+  const [label_Level3_info, setL3]  =useState([]);
   const [turf_type, setTurfType]  =useState([]);
   // const [localmode, setLocalMode] = useState(geojson_mode)
 
@@ -48,8 +49,8 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
   const columns = [
     {name:'level1', header:'L1', type:'text', readOnly:false, width:60},
-    {name:'level2', header:'L2', type:'text', readOnly:false, width:150},
-    // {name:'level3', header:'L3', type:'text', readOnly:false, width:60},
+    {name:'level2', header:'L2', type:'text', readOnly:false, width:60},
+    {name:'level3', header:'L3', type:'text', readOnly:false, width:90},
     {name:'TurfType', header:'TurfType', type:'text', readOnly:false, width:60},
   ];
   
@@ -71,7 +72,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
     selected_singlelabel.label.map((x) => rows_.push({
       level1:x.level1,
       level2:x.level2,
-      level3:x.level2,
+      level3:x.level3,
       TurfType:x.TurfType})    
     ) 
     else rows_.push(label_single_blank)       
@@ -80,23 +81,51 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
   },[selected_singlelabel]);
 
+  useEffect(() => {
+    if(Object.keys(baseinfo).length ===0) return
+
+    console.log("Label level 3 is", label_Level3_info)
+
+
+  },[label_Level3_info]);
+
+
 
   useEffect(() => {
     if(Object.keys(baseinfo).length ===0) return
 
     let L1 = [...new Set(baseinfo.label_info.map(item => item.L1))]
     let L2 = []
+    let L3 = []
+    let tmp = []
 
-    L2 = L1.map((level_) => baseinfo.label_info.filter(item => item.L1 === level_).map(x=>x.L2))
+    tmp = L1.map((level_) => baseinfo.label_info.filter(item => item.L1 === level_).map(x=>x.L2))
+
+    tmp.forEach((L2_)=>
+    {
+      // console.log(L2_,[...new Set(L2_)])
+      L2.push([...new Set(L2_)])
+    })
+
+    tmp = [...new Set(baseinfo.label_info.map(item => item.L2))]
+
+    let L3_tmp = tmp.map((level_) => baseinfo.label_info.filter(item => item.L2 === level_).map(x=>x.L3))
+
+    L3_tmp.forEach((L3_)=>
+    {
+      console.log(L3_,[...new Set(L3_)])
+      L3.push([...new Set(L3_)])
+    })
     let turf_ = [...new Set(baseinfo.turf_type.map(item => item.turf_type))]
 
 
     setL1([...L1])
     setL2([...L2])
+    setL3([...L3])
     setTurfType([...turf_])
 
 
-    console.log(L1,L2,turf_)
+    console.log("Labeliis", L1,L2,L3,turf_)
 
 
   },[baseinfo]);
@@ -232,12 +261,12 @@ export default function DSLabelHSTEdit({geojson_mode}) {
                 cellMeta.source = Object.keys(selected_singlelabel).length !== 0? 
                 label_Level2_info[label_Level1_info.findIndex((item) => item === selected_singlelabel.label[row].level1)]:""
                 }
-            //   if (column ==2) {
-            //     cellMeta.type = 'dropdown';
-            //     cellMeta.source = Object.keys(selected_singlelabel).length !== 0? 
-            //     label_Level2_info[label_Level1_info.findIndex((item) => item === selected_singlelabel.label[row].level1)]:""
-            //     }
               if (column ==2) {
+                cellMeta.type = 'dropdown';
+                cellMeta.source = Object.keys(selected_singlelabel).length !== 0? 
+                label_Level3_info[[...new Set(baseinfo.label_info.map(item => item.L2))].findIndex((item) => item === selected_singlelabel.label[row].level2)]:""
+                }
+              if (column ==3) {
                 cellMeta.type = 'dropdown';
                 cellMeta.source = turf_type
               }

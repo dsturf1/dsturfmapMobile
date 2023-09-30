@@ -11,11 +11,17 @@
   
   export const turf_type = ['한국잔디','벤트그래스',	'켄터키블루그래스',	'라이그래스',		'버뮤다그래스']
 
-  export const course_list_label = ['청도','포항','중문']
+  export const course_list_label = ['청도','포항','중문','시흥','거창','속리산','춘천']
   export const captured_date_label = [
     {id:'MGC000',capdate:[]},
-    {id:'MGC001',capdate:['20230811','20230816']},
-    {id:'MGC002',capdate:['20230823']}
+    {id:'MGC001',capdate:['20230811','20230816', '20230908']},
+    {id:'MGC002',capdate:['20230823', '20230907']},
+    {id:'MGC003',capdate:['20230909']},
+    {id:'MGC004',capdate:['20230822','20230902']},
+    {id:'MGC005',capdate:['20230906', '20230817']},
+    {id:'MGC006',capdate:['20230825']},
+    {id:'MGC007',capdate:['20230826','20230907']},
+
   ]
 
   export const label_single = {

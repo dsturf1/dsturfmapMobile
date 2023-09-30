@@ -35,6 +35,7 @@ export default function DSMapSettingTableHST({selected_menu}) {
         { name: 'TypeId', header: 'ID',align:"center", width:100,type: 'numeric'},
         { name: 'L1', header: 'Level I',align:"center", width:150,type: 'text'},
         { name: 'L2', header: 'Level II',align:"center", width:150,type: 'text'},
+        { name: 'L3', header: 'Level III',align:"center", width:150,type: 'text'},
       ],
     turf_type:
       [
@@ -86,7 +87,8 @@ export default function DSMapSettingTableHST({selected_menu}) {
             setBaseInfo({...baseinfo, label_info:[...baseinfo.label_info, {
             "TypeId": newID,
             "L1": "",
-            "L2": ""
+            "L2": "",
+            "L3": ""
             }]})
             
             setEdited(true);
