@@ -195,7 +195,7 @@ export default function DSIMGLabelMain() {
 
 
                   console.log('AREA&Desc',selectedAreaDesc_,total_file_cnt)
-                  if(total_file_cnt > 1000) {
+                  if(total_file_cnt > 1500) {
                     alert("인간적으로 1000개이상 이미지는 힘들어요")
                     return
                   }

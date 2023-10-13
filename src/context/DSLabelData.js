@@ -114,6 +114,7 @@ export const LabelProvider = (props) => {
       
           const json = responses.map((response) => response.json());
           const data = await Promise.all(json);
+
           data.forEach((datum) => {
             let new_ = datum.body.map((x)=> {
               if (x.hasOwnProperty("labelBy")) return x.json
@@ -121,7 +122,18 @@ export const LabelProvider = (props) => {
             })
             totaldatajson = [...totaldatajson, ...new_]
           });
-          setLabelJson([ ...totaldatajson])
+
+
+
+          setLabelJson([ ...totaldatajson.sort((a, b) => 
+            a.GeoTagInfo.coords[0] + a.GeoTagInfo.coords[1] - b.GeoTagInfo.coords[0] - b.GeoTagInfo.coords[1] ||
+            Number(a.id.split('_')[0]) - Number(b.id.split('_')[0]) || 
+            a.GeoTagInfo.gps_altitude - b.GeoTagInfo.gps_altitude
+            
+            )])
+
+          // setLabelJson([ ...totaldatajson])
+
 
           // console.log(totaldatajson, data)
 
@@ -137,6 +149,7 @@ export const LabelProvider = (props) => {
       }
       catch (errors) {
             // errors.forEach((error) => console.error(error));
+            console.log(errors)
             alert('Loading이 안되네요! 다른 폴더 먼저 해보세요!!')
       }
 
@@ -165,7 +178,10 @@ console.log("Loaded Json @DSLabelData",labeljson)
 
 useEffect(() => {
 
+
   console.log("Selected Json @DSLabelData",selected_labeljson)
+  if(selected_labeljson.length > 0)
+  console.log("Selected Json @DSLabelData",selected_labeljson[0].id.split('_')[0])
   
 },[selected_labeljson]);
 

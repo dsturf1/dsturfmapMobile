@@ -302,6 +302,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
                 let saveJson = {
                     id: newLabel.id,
                     metadata:selected_course+newLabel.info.date+newLabel.info.area+newLabel.info.desc,
+                    courseid:selected_course,
                     date :newLabel.info.date,
                     area:newLabel.info.area,
                     desc:newLabel.info.desc,
@@ -324,6 +325,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
             let saveJson = {
               id: newLabel.id,
               metadata:selected_course+newLabel.info.date+newLabel.info.area+newLabel.info.desc,
+              courseid:selected_course,
               date :newLabel.info.date,
               area:newLabel.info.area,
               desc:newLabel.info.desc,
@@ -348,6 +350,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
               let saveJson = newJason_.map((row_)=>{return{
                 id: row_.id,
                 metadata:selected_course+row_.info.date+row_.info.area+row_.info.desc,
+                courseid:selected_course,
                 date :row_.info.date,
                 area:row_.info.area,
                 desc:row_.info.desc,
