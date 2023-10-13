@@ -125,14 +125,14 @@ export const LabelProvider = (props) => {
 
 
 
-          setLabelJson([ ...totaldatajson.sort((a, b) => 
-            a.GeoTagInfo.coords[0] + a.GeoTagInfo.coords[1] - b.GeoTagInfo.coords[0] - b.GeoTagInfo.coords[1] ||
-            Number(a.id.split('_')[0]) - Number(b.id.split('_')[0]) || 
-            a.GeoTagInfo.gps_altitude - b.GeoTagInfo.gps_altitude
+          // setLabelJson([ ...totaldatajson.sort((a, b) => 
+          //   a.GeoTagInfo.coords[0] + a.GeoTagInfo.coords[1] - b.GeoTagInfo.coords[0] - b.GeoTagInfo.coords[1] ||
+          //   Number(a.id.split('_')[0]) - Number(b.id.split('_')[0]) || 
+          //   a.GeoTagInfo.gps_altitude - b.GeoTagInfo.gps_altitude
             
-            )])
+          //   )])
 
-          // setLabelJson([ ...totaldatajson])
+          setLabelJson([ ...totaldatajson])
 
 
           // console.log(totaldatajson, data)
