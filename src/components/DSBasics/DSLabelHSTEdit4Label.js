@@ -149,6 +149,9 @@ export default function DSLabelHSTEdit({geojson_mode}) {
 
     try {
         const fetchData = await fetch(url_, myInit).then((response) => response.json())
+
+        
+
         console.log('At Post', fetchData)
         return fetchData
         } catch (err) { 
@@ -368,8 +371,8 @@ export default function DSLabelHSTEdit({geojson_mode}) {
           <Button variant= "outlined"  sx={{ width: 1/2}} onClick={() => {
             //   if (Object.keys(selected_singlelabel).length === 0) return
             var currentdate = new Date(); 
-            const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name + selected_capdate +'_' + selected_area_desc.map((x, i_)=>x.area +'['+ x.desc+']').join('_') +  '_label'
-            + currentdate.toISOString().slice(5, 10).replace('-','')+'.json'
+            const fileName = baseinfo.course_info.filter((x) => x.id === selected_course)[0].name +'_' + selected_capdate +'_' + selected_area_desc.map((x, i_)=>x.area +'['+ x.desc+']').join('_') +  '_label'
+            +'_' +currentdate.toISOString().slice(5, 10).replace('-','')+'.json'
               const data = new Blob([JSON.stringify(labeljson)], { type: "text/json" });
               const jsonURL = window.URL.createObjectURL(data);
               const link = document.createElement("a");

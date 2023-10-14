@@ -172,7 +172,7 @@ export const LabelProvider = (props) => {
 
 useEffect(() => {
 
-console.log("Loaded Json @DSLabelData",labeljson)
+console.log("Loaded Json @DSLabelData",labeljson, labeljson.filter((x)=> x.label.length !=0))
 
 },[labeljson]);
 

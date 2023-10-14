@@ -51,6 +51,46 @@ export default function DSIMGLabelMain() {
   const [expanded, setExpanded] = useState([]);
 
 
+  useEffect(() => {
+    if(checked.length ===0) return
+
+    let datajson_ = [...flatFolderInfo] 
+    checked.forEach((checked_) => {
+      let tmpLabel = labeljson.filter((x) => x.destFolder === checked_)
+
+      datajson_ = [...datajson_.filter((x) => x.path !== checked_), 
+        {
+          'path': checked_, 'file_cnt':tmpLabel.length, 
+          'labeled_file_cnt':tmpLabel.filter((x)=> x.label.length !==0).length - tmpLabel.filter((x)=> x.label.some(e => e.level1 === 'TBD')).length,
+          'TBD_file_cnt':tmpLabel.filter((x)=> x.label.some(e => e.level1 === 'TBD')).length
+        }
+      ]
+      // console.log("@Main #Total, #Labeled, #TBD",tmpLabel.length, tmpLabel.filter((x)=> x.label.length ===0).length , 
+      // tmpLabel.filter((x)=> x.label.some(e => e.level1 === 'TBD')).length,checked_)
+    })
+    console.log("@Main #Total, #Labeled, #TBD",labeljson.length, labeljson.filter((x)=> x.label.length ===0).length , 
+      labeljson.filter((x)=> x.label.some(e => e.level1 === 'TBD')).length, checked)
+
+    // let datajson_ = []  
+    setFlatFolderInfo(datajson_)
+    setAWSFolderInfo(GetFolderList(datajson_));
+
+    saveFolderInfo( JSON.stringify(datajson_))
+
+
+    
+    },[labeljson]);
+
+  async function saveFolderInfo(file_){
+    try {
+      await Storage.put(selected_course + '/'+selected_capdate + '/filepath_'+ selected_course+'_'+selected_capdate+'.json', file_)
+    } catch (error) {
+      console.log("Error uploading file: ", error);
+    }
+
+  }
+
+
 
   function GetFolderList(fileinfo_) {
     let result = [];
@@ -110,6 +150,7 @@ export default function DSIMGLabelMain() {
     if (selected_course === "MGC000" || selected_capdate ==="") return
 
     GetFolders();
+    setChecked([])
 
   },[selected_capdate]);
 
