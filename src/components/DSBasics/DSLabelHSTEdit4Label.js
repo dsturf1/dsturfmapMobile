@@ -321,7 +321,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
           <Button variant= "contained"  sx={{ width: 1/3}} onClick={() => {
             if (Object.keys(selected_singlelabel).length === 0) return
 
-            let newLabel = {...selected_singlelabel, label:[], labelBy:loginuser}
+            let newLabel = {...selected_singlelabel, label:[...selected_singlelabel.label.slice(0, -1)], labelBy:loginuser}
             setSSLabel({...newLabel})
             setLabelJson([...labeljson.filter((x) => x.id !== newLabel.id), {...newLabel}])
 

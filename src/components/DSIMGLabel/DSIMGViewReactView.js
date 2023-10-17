@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useContext , Fragment} from 'react';
-import { Box, Button, Stack, Avatar, ButtonGroup, Typography, Grid, InputLabel, MenuItem, FormControl, Select, Divider, CircularProgress} from '@mui/material';
+import { Box, Button, Stack, Avatar, ButtonGroup, Typography, Grid, InputLabel, MenuItem, FormControl, Select, TextField, Divider, CircularProgress} from '@mui/material';
 import { BaseContext, MapQContext, MapCRSQContext, LabelContext} from "../../context"
 
 import Inline from "yet-another-react-lightbox/plugins/inline";
@@ -34,13 +34,38 @@ export default function DSIMGView() {
 
   const [ visible, setVisible ] = React.useState(false);
 
- 
+  const [filter_L1, setFilterL1] = React.useState('ALL');
+  const [filteredURL, setFilteredURL] = React.useState([...imgURLs]);
+
+  const handleChange = (event) => {
+    setFilterL1(event.target.value);
+  };
+
+  const menuNames = ['건강한잔디','물리피해','병해','충해','잡초','TBD','ALL', '미지정']
+
+  useEffect(() => {
+    let filteredURL_ = []
+
+    if (filter_L1 === 'ALL') filteredURL_ = [...imgURLs]
+    else  if (filter_L1 === '미지정') 
+      filteredURL_ = imgURLs.filter((x)=> labeljson.filter(json_ => json_.id === x.id)[0].label.filter((label_) => label_.level1 === "").length ===
+    labeljson.filter(json_ => json_.id === x.id)[0].label.length
+    )
+    else filteredURL_ = imgURLs.filter((x)=> labeljson.filter(json_ => json_.id === x.id)[0].label.filter((label_) => label_.level1 === filter_L1).length>0)
+    
+    setFilteredURL([...filteredURL_])
+    console.log("Filtered Lides",  filteredURL_)
+
+    return () => {}
+  }, [filter_L1]);
+
+  
   useEffect(() => {
 
     console.log("SLides",  imgURLs)
-
+    setFilteredURL([...imgURLs])
     return () => {}
-  }, []);
+  }, [imgURLs]);
 
 
   useEffect(() => {
@@ -48,20 +73,20 @@ export default function DSIMGView() {
     if (index <0) return
     if(Object.keys(labeljson).length === 0) return
 
-    let newJson = {...labeljson.filter((x) => x.id === imgURLs[index].id)[0]}
+    let newJson = {...labeljson.filter((x) => x.id === filteredURL[index].id)[0]}
 
     if(newJson.label.length ===0) newJson = {...newJson, label:[label_single]}
     
     setSSLabel({...newJson})
 
     // console.log("INDEX Changed", index, newJson)
-    imgURLs.length>0 && index>=0? setCaption('['+index+'/'+ imgURLs.length+']'+imgURLs[index].desc):setCaption("")
+    filteredURL.length>0 && index>=0? setCaption('['+index+'/'+ filteredURL.length+']'+filteredURL[index].desc):setCaption("")
 
 
     if (multiIndex.length>1){
         let grpJson = []
         multiIndex.forEach((i_)=>{
-            let newJson = {...labeljson.filter((x) => x.id === imgURLs[i_].id)[0]}
+            let newJson = {...labeljson.filter((x) => x.id === filteredURL[i_].id)[0]}
             setSLabelJson([...selected_labeljson, {...newJson}])
         }
         )
@@ -80,7 +105,7 @@ export default function DSIMGView() {
     if (multiIndex.length>1){
 
         multiIndex.forEach((i_)=>{
-            let newJson = {...labeljson.filter((x) => x.id === imgURLs[i_].id)[0]}
+            let newJson = {...labeljson.filter((x) => x.id === filteredURL[i_].id)[0]}
             grpJson = [...grpJson, {...newJson}]
         }
         )
@@ -95,7 +120,7 @@ export default function DSIMGView() {
   return (
     <>
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
-          <Button variant= {selected_mode === "GRPLABEL"? "outlined":"contained"}  sx={{ width: 1/5}} onClick={() => {
+          <Button variant= {selected_mode === "GRPLABEL"? "outlined":"contained"}  sx={{ width: 1/6}} onClick={() => {
             if(selected_mode === "GRPLABEL") {
               setMode("INDLABEL")
             }
@@ -106,17 +131,45 @@ export default function DSIMGView() {
           }}> 
             {selected_mode === "GRPLABEL"? "개별이미지보기":"그룹이미지보기"}       
           </Button>
-          <Button variant= 'outlined' sx={{ width: 1/5}} onClick={() => setNDVIView(!ndviView)}> 
+          <Button variant= 'outlined' sx={{ width: 1/6}} onClick={() => setNDVIView(!ndviView)}> 
                 NDVI & Annotate
           </Button>
-          <Button sx={{ width: 3/5}}>{caption}</Button>
+          <TextField select size='small'
+            sx={{ width: 1/6}}
+            labelId="demo-select-small-label"
+            id="demo-select-small"
+            value={filter_L1}
+            label="Label1"
+            onChange={handleChange}
+          
+          >
+            {menuNames.map((name) => (
+              <MenuItem key={name} value={name}>
+                {name}
+              </MenuItem>
+            ))}
+          </TextField>
+          {/* <FormControl sx={{ m: 1, minWidth: 120 }} size="small">
+            <InputLabel id="demo-select-small-label">Age</InputLabel>
+            <Select
+
+            >
+              <MenuItem value="">
+                <em>None</em>
+              </MenuItem>
+              <MenuItem value={10}>Ten</MenuItem>
+              <MenuItem value={20}>Twenty</MenuItem>
+              <MenuItem value={30}>Thirty</MenuItem>
+            </Select>
+          </FormControl> */}
+          <Button sx={{ width: 3/6}}>{caption}</Button>
         </ButtonGroup>
 
         {selected_mode === "GRPLABEL" && Object.keys(labeljson).length !== 0? 
           (ndviView === false?
             <>
             <ImageList sx={{ width: '100%', height: '100%' }} cols={7}>
-              {imgURLs.map((item, i_) => (
+              {filteredURL.map((item, i_) => (
                 <ImageListItem key={'ds'+item.id}>
                   <div  style={multiIndex.includes(i_)? {width: 216, height: 162 ,border: '5px solid blue'}:{width: 216, height: 162}}>
                   <img
@@ -175,20 +228,20 @@ export default function DSIMGView() {
             <Viewer
             visible={visible}
             onClose={() => { setVisible(false); } }
-            images={multiIndex.map((x) => imgURLs[x])}
+            images={multiIndex.map((x) => filteredURL[x])}
             />
             </>
             
             
             
-            :<DSIMGAnnotorious image = {imgURLs[index]}/>)
+            :<DSIMGAnnotorious image = {filteredURL[index]}/>)
           :
           (ndviView === false?
           <Stack direction="row" spacing={2}>
             <Box component="div" height="80vh" width = "460px" sx={{ p: 0, border: '1px solid gray',gap: 0, 
                 borderRadius: 0 , m: 0, flexDirection: 'column', display: 'flex', alignContent: 'flex-start'}}> 
             <ImageList sx={{ width: '100%', height: '100%' }} cols={2}>
-              {imgURLs.map((item, i_) => (
+              {filteredURL.map((item, i_) => (
                 <ImageListItem key={'ds'+item.id}>
                   <div  style={multiIndex.includes(i_)? {width: 216, height: 162 ,border: '5px solid blue'}:{width: 216, height: 162}}  >
                   <input
@@ -246,7 +299,7 @@ export default function DSIMGView() {
               open={selected_mode === "INDLABEL"}
               plugins={[Inline, Zoom]}
               inline={{ style: { width: "100%", height:"100%" } }}
-              slides={imgURLs}
+              slides={filteredURL}
               on={{
                 view: ({ index }) => {
                   // imgURLs.length>0 && index>=0? setCaption('['+index+'/'+ imgURLs.length+']'+imgURLs[index].desc):setCaption("");
@@ -260,7 +313,7 @@ export default function DSIMGView() {
 
 
 
-            :<DSIMGAnnotorious image = {imgURLs[index]}/>)
+            :<DSIMGAnnotorious image = {filteredURL[index]}/>)
         }
       </>
   );

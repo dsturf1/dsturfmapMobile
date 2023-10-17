@@ -71,6 +71,8 @@ export default function DSIMGLabelMain() {
     console.log("@Main #Total, #Labeled, #TBD",labeljson.length, labeljson.filter((x)=> x.label.length ===0).length , 
       labeljson.filter((x)=> x.label.some(e => e.level1 === 'TBD')).length, checked)
 
+     datajson_ = datajson_.sort((a, b) => a.path.localeCompare(b.path))
+
     // let datajson_ = []  
     setFlatFolderInfo(datajson_)
     setAWSFolderInfo(GetFolderList(datajson_));
@@ -130,7 +132,7 @@ export default function DSIMGLabelMain() {
     const result = await Storage.get(selected_course + '/'+selected_capdate + '/filepath_'+ selected_course+'_'+selected_capdate+'.json',  
         { download: true , cacheControl: 'no-cache'});
     let datajson_ = await new Response(result.Body).json();
-
+    datajson_ = datajson_.sort((a, b) => a.path.localeCompare(b.path))
     folders_ = GetFolderList(datajson_)
     setFlatFolderInfo(datajson_)
     setAWSFolderInfo(folders_);
