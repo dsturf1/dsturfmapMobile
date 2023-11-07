@@ -1,0 +1,41 @@
+{
+  "type": "FeatureCollection",
+  "crs": {
+    "type": "name",
+    "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" }
+  },
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "Name": "Contour_",
+        "Id": "",
+        "Client": "",
+        "Course": "",
+        "Hole": 0,
+        "Type": "",
+        "TypeId": 0,
+        "Desc": "",
+        "Valid": true,
+        "By": "",
+        "When": "",
+        "Labels": [
+          { "level1": "", "level2": "", "level3": "", "TurfType": "" }
+        ],
+        "LabelL1": "",
+        "LabelL2": "",
+        "TurfType": "",
+        "Start": "",
+        "End": "",
+        "radius": 0,
+        "center": []
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [ ]
+        ]
+      }
+    }
+  ]
+}

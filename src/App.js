@@ -1,6 +1,7 @@
 // import DSMainMap from "./components/DSMainMap.js";
 import DSSearchMain from "./components/DSSearch/DSSearchMain.js";
 import DSNaverMain from "./components/DSNaver/DSNaverMain.js";
+import DSKakaoMain from "./components/DSKakao/DSKakaoMain.js";
 import DSWorkMain from "./components/DSWork/DSWorkMain.js";
 import DSGeoJsonMain from "./components/DSGeoJson/DSGeoJsonMain.js";
 import DSMapSettingMain from "./components/DSSetting/DSMapSettingMain.js";
@@ -38,8 +39,8 @@ const App = () => {
       {({ signOut, user }) => (
       <Fragment>
         < BaseProvider user = {user}>
-          {/* <MapCRSQProvider>
-          <MapQProvider> */}
+          <MapCRSQProvider>
+          <MapQProvider>
           <LabelProvider>
           <ThemeProvider theme={DSTheme}>
             <CssBaseline />
@@ -47,11 +48,12 @@ const App = () => {
             <Routes>
               {/* <Route path="/" element={    <DSWorkMain geojson_mode={"JOBS"}/>}></Route> */}
               <Route path="/" lement={<DSIMGLabelMain/>}></Route>
-              {/* <Route path="dssearch" element={    <DSSearchMain/>}></Route> */}
-              {/* <Route path="dsnaver" element={<DSNaverMain />}></Route> */}
-              {/* <Route path="dsmapedit" element={<DSGeoJsonMain geojson_mode={"AREA"}/>}></Route> */}
+              <Route path="dssearch" element={    <DSSearchMain/>}></Route>
+              <Route path="dsnaver" element={<DSNaverMain />}></Route>
+              <Route path="dskakao" element={<DSKakaoMain />}></Route>
+              <Route path="dsmapedit" element={<DSGeoJsonMain geojson_mode={"AREA"}/>}></Route>
               {/* <Route path="dsjobsedit" element={<DSGeoJsonMain geojson_mode={"JOBS"}/>}></Route> */}
-              {/* <Route path="dsworkedit" element={<DSWorkMain geojson_mode={"JOBS"}/>}></Route> */}
+              <Route path="dsworkedit" element={<DSWorkMain geojson_mode={"JOBS"}/>}></Route>
               <Route path="dsimglabel" element={<DSIMGLabelMain/>}></Route>
               <Route path="dssetting" element={<DSMapSettingMain/>}></Route>
               {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>
@@ -60,8 +62,8 @@ const App = () => {
             </Routes>
           </ThemeProvider>
           </LabelProvider>
-          {/* </MapQProvider>
-          </MapCRSQProvider> */}
+          </MapQProvider>
+          </MapCRSQProvider>
         </BaseProvider>
       </Fragment>
       )}

@@ -4,24 +4,24 @@ import { ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, Paper, 
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 
-import { BaseContext, SInfoContext, MapQContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 
-export default function DSCoursePicker() {
+export default function DSAreaPicker({geojson_mode}) {
 
 
-  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+  const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
+    selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo,selected_polygon, setPolyGon} = useContext(BaseContext);
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, tpoly, setTPoly,  
+    holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
 
-  const DSList = ({ courses_ }) => {
+  const DSList = ({ polys_ }) => {
 
-    const list = courses_.sort((a, b) =>  a.id.localeCompare(b.id)).map((course_, index) => 
+    const list = polys_.sort((a,b) => a.TypeId - b.TypeId).map((poly_, index) => 
 
-      <ListItem key = {course_.id} divider={true}>
+      <ListItem key = {poly_.properties.Id} divider={true}>
         <ListItemButton selected={selectedIndex === index} onClick={() => {
-          setCourse(course_.id);
-          if(selected_mode === 'DATAselect') setMode('GRPLABEL') 
-          else setMode("MAPEdit");
-          
+          setPolyGon({...poly_})
           setSelectedIndex(index);
         }}    
           sx={{
@@ -40,8 +40,8 @@ export default function DSCoursePicker() {
           disableTypography
           primary={
             <Stack direction="row" justifyContent="space-between"  alignItems="center" >
-              <Typography variant="body2" style={{ fontWeight: 'bold' ,color: selectedIndex === index? '#ffffff':'#000000'}} > {"["+(index + 1)+"]"+ course_.name}</Typography>
-              <Typography variant="caption" style={{color: selectedIndex === index? '#ffffff':'#000000'}}> {course_.map_info.center[0].toFixed(2)}, {course_.map_info.center[1].toFixed(2)}</Typography>
+              <Typography variant="body2" style={{ fontWeight: 'bold' ,color: selectedIndex === index? '#ffffff':'#000000'}} > 
+              {"["+(index + 1)+"]"+ poly_.properties.Type+ ' ' + poly_.properties.Course +'['+poly_.properties.Hole+']'}</Typography>
             </Stack>
           }
         />
@@ -54,12 +54,14 @@ export default function DSCoursePicker() {
 
   useEffect(() => {
 
-  },[]);
+    console.log(tpoly)
+
+  },[tpoly]);
  
   return (
     <Paper style={{height: '100%', overflow: 'auto'}}>
       <List dense={true}>
-        { Object.keys(baseinfo).length >0 && baseinfo.course_info.length > 0? <DSList courses_ = {baseinfo.course_info}/>:null}
+        { tpoly.length > 0? <DSList polys_ = {tpoly}/>:null}
       </List>
     </Paper>
   );

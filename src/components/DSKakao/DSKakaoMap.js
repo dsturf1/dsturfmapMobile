@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useContext, useRef, Fragment } from 'react';
 import { Stack, Button, ButtonGroup} from '@mui/material';
 
-
+import { Map, MapMarker, ZoomControl, MapTypeControl,StaticMap, Polygon, DrawingManager, Toolbox} from 'react-kakao-maps-sdk';
 import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 
-const DSNaverMap = () => {
+const DSKakaoMap = () => {
 
   // const {searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord} = useContext(SInfoContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
@@ -104,15 +104,21 @@ const DSNaverMap = () => {
     <div>
       <Stack direction="row" spacing={1}   justifyContent="space-between"  alignItems="center" mt = {0}>
         <div ref={mapRef} style={{ width: "250px", height: "250px" }}/>
-        {Object.keys(mapinfo).length >0 && mapinfo.center.length > 0? <img src={"https://naveropenapi.apigw.ntruss.com/map-static/v2/raster-cors?w=250&h=250&center="+Number(mapinfo.center[1]) +"," + Number(mapinfo.center[0]) 
-        + "&level=" +(zoom-1).toString()+"&scale=2&X-NCP-APIGW-API-KEY-ID=f4plizrvxg"}
-        style={{ width: "250px", height: "250px" }}></img> :<null/>}
-        {Object.keys(mapinfo).length >0 && mapinfo.center.length > 0? <img src={"https://naveropenapi.apigw.ntruss.com/map-static/v2/raster-cors?w=500&h=500&center="+Number(mapinfo.center[1]) +"," + Number(mapinfo.center[0]) 
-        + "&level=" +(zoom).toString()+"&scale=2&X-NCP-APIGW-API-KEY-ID=f4plizrvxg"}
-        style={{ width: "250px", height: "250px" }}></img> :<null/>}
-        {Object.keys(mapinfo).length >0 && mapinfo.center.length > 0? <img src={"https://naveropenapi.apigw.ntruss.com/map-static/v2/raster-cors?w=2000&h=2000&center="+Number(mapinfo.center[1]) +"," + Number(mapinfo.center[0]) 
-        + "&level=" +(zoom+2).toString()+"&scale=2&X-NCP-APIGW-API-KEY-ID=f4plizrvxg"}
-        style={{ width: "250px", height: "250px" }}></img> :<null/>}
+        {Object.keys(mapinfo).length >0 && mapinfo.center.length > 0?
+          <StaticMap // 지도를 표시할 Container
+            center={{
+              // 지도의 중심좌표
+              lat: Number(mapinfo.center[1]),
+              lng: Number(mapinfo.center[0])
+            }}
+            style={{
+              // 지도의 크기
+              width: "250px",
+              height: "250px",
+            }}
+            level={5} // 지도의 확대 레벨
+          />
+          :<null/>}
       </Stack>
 
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
@@ -124,4 +130,4 @@ const DSNaverMap = () => {
   );
 }
 
-export default DSNaverMap;
+export default DSKakaoMap;

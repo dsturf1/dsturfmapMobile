@@ -29,7 +29,7 @@ export default function DSWorkUpdateMain() {
             <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="flex-start" mt = {2}>
               <DSSearchCommand/>
             </Stack>
-             {selected_mode === "CourseSearch"? <DSSearchPicker/>:<DSInfoEdit/>}
+             {selected_mode === "CourseSearch"? <DSSearchPicker/>:<DSInfoEdit geojson_mode={"AREA"}/>}
           </Box>
         </Grid>
         <Grid Grid item xs={12} md={10}>

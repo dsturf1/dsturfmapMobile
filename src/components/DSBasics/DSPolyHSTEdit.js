@@ -8,7 +8,8 @@ import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import SendIcon from '@mui/icons-material/Send';
 import { green, pink ,indigo} from '@mui/material/colors';
 
-import { BaseContext, SInfoContext, MapQContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
+import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { COURSEBLANK , GEOJSONBLANK, POLYGONBLANK} from '../../constant/urlconstants';
 import { label_Level1_info,  label_Level2_info, turf_type } from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
@@ -35,6 +36,8 @@ export default function DSPolyHSTEdit({geojson_mode}) {
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, tpoly, setTPoly,  
+    holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
 
   const hotRef = useRef(null);
 
@@ -48,7 +51,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
   
   useEffect(() => {
 
-    if (isLoading||  selected_course_info === null) return
+    if (isLoading && geojson_mode === 'JOBS'||isCRSLoading && geojson_mode === 'AREA'||  selected_course_info === null) return
 
     var rows_ = [];
 
@@ -60,10 +63,13 @@ export default function DSPolyHSTEdit({geojson_mode}) {
     rows_.push({title:'홀',name:selected_polygon === null? "":selected_polygon.properties.Hole})
     rows_.push({title:'면적',name:selected_polygon === null? "":area(selected_polygon).toFixed(1).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")})
 
-    rows_.push({title:'작성자',name:selected_polygon === null? "":selected_polygon.properties.By})
-    rows_.push({title:'작성시점',name:selected_polygon === null? "":selected_polygon.properties.When.split('T')[0]})
-    rows_.push({title:'Valid?',name:selected_polygon === null? "":selected_polygon.properties.Valid})
-    rows_.push({title:'반지름(m)',name:selected_polygon === null? 0:selected_polygon.properties.radius})
+    if(geojson_mode === 'JOBS'){
+      rows_.push({title:'작성자',name:selected_polygon === null? "":selected_polygon.properties.By})
+      rows_.push({title:'작성시점',name:selected_polygon === null? "":selected_polygon.properties.When.split('T')[0]})
+      rows_.push({title:'Valid?',name:selected_polygon === null? "":selected_polygon.properties.Valid})
+      rows_.push({title:'반지름(m)',name:selected_polygon === null? 0:selected_polygon.properties.radius})
+    }
+
     const hot = hotRef.current.hotInstance;
 
     hot.loadData(rows_)
@@ -72,7 +78,7 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
 
   return (
-    isLoading=== false?
+    (isLoading ===false && geojson_mode === 'JOBS'|| isCRSLoading ===false && geojson_mode === 'AREA')?
       <Fragment>
         <HotTable
           ref={hotRef}
@@ -105,11 +111,11 @@ export default function DSPolyHSTEdit({geojson_mode}) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,2,3,4,5,6,7,8,9]
             }
-            if (row === 6 && column ==1) {
+            if (row === 6 && column ==1 && geojson_mode === 'JOBS') {
               cellMeta.type = 'dropdown';
               cellMeta.source = [true,false]
             }
-            if (row === 7 && column ==1) {
+            if (row === 7 && column ==1 &&geojson_mode === 'JOBS') {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,1.5,2,2.5,3,3.5,4,5,7.5,10,15,20, 50]
             }
@@ -138,8 +144,8 @@ export default function DSPolyHSTEdit({geojson_mode}) {
                 // console.log(newPolygon)
               }
               if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
-              if (row === 6) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
-              if (row === 7) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}} 
+              if (row === 6 && geojson_mode === 'JOBS') newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
+              if (row === 7 && geojson_mode === 'JOBS') newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}} 
 
               setPolyGon({...newPolygon})
 
@@ -150,10 +156,24 @@ export default function DSPolyHSTEdit({geojson_mode}) {
                 newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, type:'Polygon'} }
               }  
 
+              if (geojson_mode === "JOBS"){
+                let geojsoninfo_ = {...geojsoninfo, 
+                  features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon].sort((a, b) =>  
+                  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+                  baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
+                }
+                setGeoJsonInfo({...geojsoninfo_})
+              }
+              else {
+                let geojsoninfo_ = {...CRSgeojsoninfo, 
+                  features: [...CRSgeojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon].sort((a, b) =>  
+                  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+                  baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
+                }
+                setCRSGeoJsonInfo({...geojsoninfo_})
 
-              let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}
+              }
 
-              setGeoJsonInfo({...geojsoninfo_})
 
 
               
@@ -164,11 +184,36 @@ export default function DSPolyHSTEdit({geojson_mode}) {
 
         <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
           <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> 
-          {geojson_mode === "JOBS"? 
-            (selected_mode === "MAPEdit" && selected_polygon === null? "신규관심지역 생성":(selected_mode === "MAPEdit" && selected_polygon !== null? "선택된지역수정":"신규/수정모드 종료"))
-            :
-            (selected_mode === "MAPEdit" ? "신규/수정모드":"신규/수정모드 종료")          
-          }</Button>
+            {geojson_mode === "JOBS"? 
+              (selected_mode === "MAPEdit" && selected_polygon === null? "신규관심지역 생성":(selected_mode === "MAPEdit" && selected_polygon !== null? "선택된지역수정":"신규/수정모드 종료"))
+              :
+              (selected_mode === "MAPEdit" ? (selected_polygon === null? "신규모드":"선택된 폴리건 수정"):"신규/수정모드 종료")          
+            }
+          </Button>
+        </ButtonGroup>
+
+        <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
+          <Button variant=  "outlined"
+            onClick={() => {
+              let new_polygons = {...selected_polygon,
+                properties:{ ...selected_polygon.properties,Id:uuidv4(), Type: "Undefined", TypeId:0, 
+                  Valid: true, By: loginuser, When: (new Date()).toISOString()},
+                geometry:{...selected_polygon.geometry, coordinates: [selected_polygon.geometry.coordinates[0].map((x) => {return [x[0]+0.001, x[1]+0.001]})] }
+
+              }
+              setCRSGeoJsonInfo(
+                {...CRSgeojsoninfo, 
+                  features:[...CRSgeojsoninfo.features,{...new_polygons}].sort((a, b) =>  
+                  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
+                  baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
+                }
+              )
+
+            }}
+            disabled = {selected_mode !== "MAPEdit" || selected_polygon === null}
+          >
+            선택된 영역 복사
+          </Button>
         </ButtonGroup>
         {/* </Stack> */}
       </Fragment>

@@ -4,10 +4,10 @@ import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormCont
 
 import { SInfoProvider} from "../../context/DSSearchData.js"
 
-import DSNaverMap from './DSNaverMap.js';
+import DSKakaoMap from './DSKakaoMap.js';
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
 
-export default function DSNaverMain() {
+export default function DSKakaoMain() {
 
   useEffect(() => {
 
@@ -30,7 +30,7 @@ export default function DSNaverMain() {
         </Grid>
         <Grid Grid item xs={12} md={10}>
           <Box height="90vh" sx={{ p: 1, border: '1px solid gray',gap: 2, borderRadius: 0 , m: 1,overflowX: "scroll", overflowY: "scroll"}}>
-            <DSNaverMap/>
+            <DSKakaoMap/>
           </Box>
         </Grid>
       </Grid>      
