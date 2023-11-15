@@ -5,10 +5,10 @@ import { FormControl, InputLabel, Stack, Select, MenuItem, Box, TextField, Avata
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 
-import { BaseContext, MapCRSQContext, MapQContext} from "../../context"
-import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
+import { BaseContext, MapCRSQContext, MapQContext} from "../../context/index.js"
+import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants.js';
 import { BASEURL } from '../../constant/urlconstants.js';
-import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
+import DSPolyHSTEdit from "./DSPolyHSTEdit.js"
 
 import 'handsontable/dist/handsontable.full.min.css';
 // import Handsontable from 'handsontable/base';

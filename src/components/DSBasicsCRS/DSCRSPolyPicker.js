@@ -12,10 +12,8 @@ export default function DSAreaPicker({geojson_mode}) {
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo,selected_polygon, setPolyGon} = useContext(BaseContext);
-    const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly,  
-      holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
-    
-  const {geojsoninfo, setGeoJsonInfo,tpoly, setTPoly,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly,  
+    holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [allList, setList] = React.useState([]);
 
@@ -29,9 +27,6 @@ export default function DSAreaPicker({geojson_mode}) {
         secondaryAction={
           <IconButton edge="end" aria-label="delete" disabled={selectedIndex !== index}
           onClick={() => {
-
-
-
           }}>
             <DeleteIcon fontSize= 'small'/>
           </IconButton>
@@ -74,25 +69,17 @@ export default function DSAreaPicker({geojson_mode}) {
     return list
   }
 
-  useEffect(() => {
+  // useEffect(() => {
 
-    console.log(CRStpoly)
-    console.log('Toply @ Area Picker',tpoly)
-
-  },[CRStpoly, tpoly]);
+  //   console.log(CRStpoly)
+  // },[CRStpoly]);
 
   useEffect(() => {
 
   if (selected_polygon === null) {setSelectedIndex(-1) ;return}
-
-  if(geojson_mode === 'JOBS')
-    tpoly.forEach(function (poly_, i) {
-      if (poly_.properties.Id === selected_polygon.properties.Id) setSelectedIndex(i)
-    });
-  if(geojson_mode === 'AREA')
-    CRStpoly.forEach(function (poly_, i) {
-      if (poly_.properties.Id === selected_polygon.properties.Id) setSelectedIndex(i)
-    });
+  CRStpoly.forEach(function (poly_, i) {
+    if (poly_.properties.Id === selected_polygon.properties.Id) setSelectedIndex(i)
+  })
     
   }, [selected_polygon])
 
@@ -100,8 +87,7 @@ export default function DSAreaPicker({geojson_mode}) {
   return (
     <Paper style={{height: '100%', overflow: 'auto'}}>
       <List dense={true}>
-        { geojson_mode === 'AREA' && CRStpoly.length > 0? <DSList polys_ = {CRStpoly}/>:null}
-        { geojson_mode === 'JOBS' && tpoly.length > 0? <DSList polys_ = {tpoly}/>:null}
+        {CRStpoly.length > 0? <DSList polys_ = {CRStpoly}/>:null}
       </List>
     </Paper>
   );

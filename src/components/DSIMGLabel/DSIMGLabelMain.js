@@ -7,9 +7,9 @@ import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormCont
 import { BaseContext, MapQContext, MapCRSQContext, LabelContext} from "../../context"
 import { course_list_label, captured_date_label } from '../../constant/labelconstants';
 
-import DSInfoEdit from "../DSBasics/DSInfoHSTEdit.js"
-import DSPolySelect from "../DSBasics/DSPolySelect"
-import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
+import DSInfoEdit from "../DSBasicsCRS/DSInfoHSTEdit.js"
+import DSPolySelect from "../DSBasicsCRS/DSPolySelect.js"
+import DSPolyHSTEdit from "../DSBasicsCRS/DSPolyHSTEdit.js"
 import DSSave from '../DSBasics/DSSave';
 import DSLabelHSTEdit from '../DSBasics/DSLabelHSTEdit4Label';
 

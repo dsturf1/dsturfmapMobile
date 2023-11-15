@@ -6,7 +6,7 @@ import { SInfoProvider} from "../../context/DSSearchData.js"
 import { BaseContext} from "../../context"
 import DSSearchCommand from "./DSSearchCommand.js"
 import DSSearchPicker from './DSSearchPicker.js';
-import DSInfoEdit from "../DSBasics/DSInfoHSTEdit.js"
+import DSInfoEdit from "../DSBasicsCRS/DSInfoHSTEdit.js"
 
 import DSSearchMap from './DSSearchMap.js';
 

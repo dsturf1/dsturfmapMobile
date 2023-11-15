@@ -7,8 +7,8 @@ import { FormGroup, FormControlLabel, InputLabel, Stack, Select, MenuItem, Box, 
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 
-import { BaseContext, SInfoContext, MapQContext} from "../../context"
-import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
+import { BaseContext, SInfoContext, MapQContext} from "../../context/index.js"
+import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants.js';
 import { BASEURL } from '../../constant/urlconstants.js';
 
 

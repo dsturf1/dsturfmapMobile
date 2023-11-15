@@ -3,13 +3,13 @@ import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
 import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormControl, Select , CircularProgress, Paper } from '@mui/material';
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
 
-import DSInfoEdit from "../DSBasics/DSInfoHSTEdit.js"
-import DSPolySelect from "../DSBasics/DSPolySelect"
-import DSPolyHSTEdit from "../DSBasics/DSPolyHSTEdit"
+import DSInfoEdit from "../DSBasicsCRS/DSInfoHSTEdit.js"
+import DSPolySelect from "../DSBasicsCRS/DSPolySelect.js"
+import DSPolyHSTEdit from "../DSBasicsCRS/DSPolyHSTEdit.js"
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
 import DSGeoJsonMap from './DSGeoJsonMap.js';
-import DSAreaPicker from '../DSBasics/DSAreaPicker.js';
+import DSAreaPicker from '../DSBasicsCRS/DSCRSPolyPicker.js';
 
 export default function DSGeoJsonMain({geojson_mode}) {
   
