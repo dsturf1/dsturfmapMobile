@@ -34,7 +34,8 @@ export const SInfoProvider = (props) => {
 
     return(
 
-    <SInfoContext.Provider  value={{searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord, addToDB, setAddToDB, zoomlevel, setZoomLevel}}>
+    <SInfoContext.Provider  value={{searchinfo, setSearchInfo,selected_info, setSelectedInfo, search_word, setSearchWord, addToDB, 
+    setAddToDB, zoomlevel, setZoomLevel}}>
         {props.children}
     </SInfoContext.Provider >
     

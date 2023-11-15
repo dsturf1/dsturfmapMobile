@@ -5,6 +5,28 @@ import {createGeoJSONCircle} from "../components/DSBasics/DSCordUtils.js";
 import { GEOJSONBLANK , POLYGONBLANK, MAPBOXINI, INTERESTED_POINT, INTERESTED_POLYGONBLANK  } from '../constant/urlconstants';
 import { Auth } from 'aws-amplify';
 
+/*
+  Download All course Geojson data from REST API by course ID
+  Divide the data into key area thru context API.
+  Turf.Js : GeoJson Type Feature collection or Feature
+  MAPBOX : {
+      'type': 'geojson',
+      'data': { Feature or FeatureCollections (?)}
+  }
+  Leaflet: Turf JS Same
+  KAKAO: custom def (Weird)
+
+  isCRSLoading
+  CRSgeojsoninfo: Feacture collections
+  greenpoly: MAPBOX Type
+  holepoly: MAPBOX Type
+  coursepoly: MAPBOX Type
+  selectedBoxpoly: MAPBOX Type
+  CRStpoly : CRSpolygons that are selected by DSPolySelect MenuBAR
+
+
+*/
+
 const geojsoninfo_blank = JSON.parse(JSON.stringify(GEOJSONBLANK));
 const mapboxini_poly = JSON.parse(JSON.stringify(MAPBOXINI));
 
@@ -14,9 +36,9 @@ export const MapCRSQProvider = (props) => {
 
   const[CRSgeojsoninfo, setCRSGeoJsonInfo] = useState([geojsoninfo_blank]);
   const[isCRSLoading, setIsCRSLoading] = useState(true);
-  const[tpoly, setTPoly] = useState([])
+  const[CRStpoly, setCRSTPoly] = useState([])
 
-
+  const[greenpoly, setGreenPoly] = useState([])
   const[holepoly, setHolePoly] = useState([])
   const[coursepoly, setCoursePoly] = useState([])
   const[selectedBoxpoly, setBoxPoly] = useState({...mapboxini_poly})
@@ -28,6 +50,7 @@ export const MapCRSQProvider = (props) => {
       // 처음 데이터를 읽어서 성공하면 State를 Update
 
     if(selected_course === "MGC000"){
+      setGreenPoly([])
       setHolePoly([])
       setCoursePoly([])
       setBoxPoly({...mapboxini_poly})
@@ -63,6 +86,16 @@ export const MapCRSQProvider = (props) => {
 
 
           let tpoly_ = [];          
+
+          tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 4).map((geojson_)=> {
+            return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
+          })
+          setGreenPoly({
+            'type': 'geojson',
+            'data': {
+              ...fetchData.body, features:[...tpoly_]
+            }              
+          })
 
           tpoly_ = fetchData.body['features'].filter((poly_)=>poly_['properties'].TypeId === 3).map((geojson_)=> {
             return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
@@ -103,11 +136,16 @@ export const MapCRSQProvider = (props) => {
 
   },[selected_course]);
 
+  useEffect(() => {
 
+    console.log(CRSgeojsoninfo, selectedBoxpoly, holepoly, greenpoly)
+  },[CRSgeojsoninfo, selectedBoxpoly, holepoly]);
 
   return(
 
-  <MapCRSQContext.Provider  value={{CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, tpoly, setTPoly,  holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly}}>
+  <MapCRSQContext.Provider  value={{CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly, 
+    greenpoly, setGreenPoly, holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly}}>
+      
       {props.children}
   </MapCRSQContext.Provider >
   

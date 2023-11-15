@@ -6,6 +6,7 @@ import {createGeoJSONCircle} from "../DSBasics/DSCordUtils.js";
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
+import * as turf from "@turf/turf";
 
 import './Map.css';
 
@@ -29,18 +30,17 @@ export default function DSWorkMap(props) {
   const [selected_hole, setHole] = useState(0);
   const [selected_CRS, setCRS] = useState('전코스');
 
-  const {geojsoninfo, setGeoJsonInfo,targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
-  const {isCRSLoading, setIsCRSLoading,  holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
+  const [mapbearing, setMapBearing] = useState(0);
+
+  const {geojsoninfo, setGeoJsonInfo,tpoly, setTPoly,
+    targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
+  const {isCRSLoading, setIsCRSLoading, greenpoly, setGreenPoly, 
+    holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
-    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
-
-
-
+    loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, 
+    selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
  
   useEffect(() => {
-
-
-
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: 'mapbox://styles/mapbox/satellite-v9',
@@ -55,26 +55,39 @@ export default function DSWorkMap(props) {
 
       map.addSource('Target-Area', {
         'type': 'geojson',
-        'data': {
-          ...geojsoninfo_blank, features:[polgygon_ini]
-        }              
+        'data': {},
+        // 'generateId':true              
+        'promoteId':'Id'
       });    
       map.addLayer({
         'id': 'Target_Area',
         'type': 'fill',
         'source': 'Target-Area',
         'paint': {
-        'fill-color': "#d90429",
-        'fill-opacity': 0.2
+        'fill-color': "#B42222",
+        'fill-opacity': [
+          'case',
+          ['boolean', ['feature-state', 'click'], false],
+          1,
+          0.2
+          ]
         },
         'filter': ['==', '$type', 'Polygon']
         });
+      map.addLayer({
+        'id': 'Target_Area_borders',
+        'type': 'line',
+        'source': 'Target-Area',
+        'layout': {},
+        'paint': {
+            'line-color': '#B42222',
+            'line-width': 2
+        }
+      });
 
         map.addSource('Target-Point', {
           'type': 'geojson',
-          'data': {
-            ...geojsoninfo_blank, features:[point_ini]
-          }              
+          'data': { }              
         });    
         map.addLayer({
           'id': 'Target_Point',
@@ -95,9 +108,7 @@ export default function DSWorkMap(props) {
       map.addSource('BoxArea', 
       {
         'type': 'geojson',
-        'data': {
-          ...geojsoninfo_blank
-        }  
+        'data': { }  
       });        
       map.addLayer({
         'id': 'Box_Area',
@@ -114,11 +125,10 @@ export default function DSWorkMap(props) {
         },        
         'filter': ['==', '$type', 'Polygon']
       }, 'Target_Area');
+
       map.addSource('selected-course-hole',       {
         'type': 'geojson',
-        'data': {
-          ...geojsoninfo_blank
-        }  
+        'data': { }  
       });   
       map.addLayer({
         'id': 'selected-course-hole',
@@ -142,9 +152,7 @@ export default function DSWorkMap(props) {
 
         map.addSource('selected-course-CRS',       {
           'type': 'geojson',
-          'data': {
-            ...geojsoninfo_blank
-          }  
+          'data': {}  
         });   
         map.addLayer({
           'id': 'selected-course-CRS',
@@ -161,18 +169,17 @@ export default function DSWorkMap(props) {
 
             ],
             'text-font': ['Open Sans Semibold', 'Arial Unicode MS Bold']
-            
             }
           });
 
     });
+
     setMap(map);
     setMode('MAPSelect');
     setCourse('MGC000');
     setEdited(false)
 
-
-    return () => {setMode('MAPSelect');setCourse('MGC000');map.remove();}
+    return () => {setMode('MAPSelect');setCourse('MGC000');map.remove();setMap(null)}
   }, []);
 
   useEffect(() => {
@@ -188,10 +195,25 @@ export default function DSWorkMap(props) {
 
 
   useEffect(() => {
+    // console.log("BOXPoly CHanged", selectedBoxpoly)
+    // BOXpoly가 변할때마다, MAP의 Boundary를 BOX 폴리에 맞게 변경 
+
+    if (map !== null){
+      let bbox_ =turfbbox(selectedBoxpoly.data);
+      // map.rotateTo(30);
+      map.fitBounds(bbox_, {bearing:mapbearing, padding: 5});
+
+        if (map.getSource('BoxArea') !== null && selected_course !== "MGC000") map.getSource('BoxArea').setData({...selectedBoxpoly.data});
+    }
+
+  },[selectedBoxpoly]);
+
+
+  useEffect(() => {
     if (selected_course === "MGC000")  return
     if (map === null) return
 
-    console.log('HolePoly is ready', holepoly)
+    // console.log('HolePoly is ready', holepoly)
 
     if (typeof(map.getSource('selected-course-hole')) !== undefined && selected_course !== "MGC000") map.getSource('selected-course-hole').setData({...holepoly.data});
   },[holepoly]);
@@ -200,15 +222,50 @@ export default function DSWorkMap(props) {
     if (selected_course === "MGC000")  return
     if (map === null) return
 
-    console.log('CoursePoly is ready', {...coursepoly.data.features.filter((x)=>x.properties.TypeId === 2)})
+    // console.log('CoursePoly is ready', {...coursepoly.data.features.filter((x)=>x.properties.TypeId === 2)})
 
     if (typeof(map.getSource('selected-course-CRS')) !== undefined && selected_course !== "MGC000") 
       map.getSource('selected-course-CRS').setData({...coursepoly.data, features:coursepoly.data.features.filter((x)=>x.properties.TypeId === 2)});
   },[coursepoly]);
 
+
+
   useEffect(() => {
 
+    if(map === null) return;
+
+    if( targetpolygons.data !== undefined)     
+      targetpolygons.data.features.forEach((x)=>
+        map.setFeatureState({
+          source: 'Target-Area',
+          id: x.id, 
+        }, {
+          click: false
+        })
+      )
+
     if (selected_polygon === null ) return
+
+    // All color of target polygons is set back to normal and change selected polygon to highlighted
+
+    targetpolygons.data.features.forEach((x)=>
+      map.setFeatureState({
+        source: 'Target-Area',
+        id: x.id, 
+      }, {
+        click: false
+      })
+    )
+
+    map.setFeatureState({
+      source: 'Target-Area',
+      id: selected_polygon.id, 
+    }, {
+      click: true
+    });
+
+
+
 
     if(selected_polygon.properties.TypeId === 11){
 
@@ -266,18 +323,7 @@ export default function DSWorkMap(props) {
 
   },[selected_polygon]);
 
-  useEffect(() => {
-    console.log("BOXPoly CHanged", selectedBoxpoly)
 
-    if (map !== null){
-
-      let bbox_ =turfbbox(selectedBoxpoly.data);
-      map.fitBounds(bbox_, {padding: 20});
-
-        if (map.getSource('BoxArea') != null && selected_course !== "MGC000") map.getSource('BoxArea').setData({...selectedBoxpoly.data});
-    }
-
-  },[selectedBoxpoly]);
 
   const handle_editpolygonChange = () =>{
 
@@ -285,9 +331,6 @@ export default function DSWorkMap(props) {
     // draw.changeMode("direct_select")
     
     if (draw.getSelected().features.length>0) setPolyGon( {...draw.getSelected().features[0]}  );
-
-
-
 
     console.log('Selected:',draw.getSelected())
   }
@@ -368,7 +411,9 @@ export default function DSWorkMap(props) {
         },
         // Set mapbox-gl-draw to draw by default.
         // The user does not have to click the polygon control button first.
-        defaultMode: 'simple_select'
+        defaultMode: 'simple_select',
+// 
+        // defaultMode: 'draw_polygon'
         });        
         setDraw(draw_)
     }
@@ -384,6 +429,7 @@ export default function DSWorkMap(props) {
 
       map.setLayoutProperty('Target_Area', 'visibility', 'none');
       map.setLayoutProperty('Target_Point', 'visibility', 'none');
+      map.setLayoutProperty('Target_Area_borders', 'visibility', 'none');
       draw.deleteAll()
       draw.add({...targetpolygons.data})
       // draw.add({...targetpoints.data})
@@ -436,6 +482,7 @@ export default function DSWorkMap(props) {
 
       map.setLayoutProperty('Target_Area', 'visibility', 'visible');
       map.setLayoutProperty('Target_Point', 'visibility', 'visible');
+      map.setLayoutProperty('Target_Area_borders', 'visibility',  'visible');
       setEdited(false)
 
 
@@ -448,32 +495,39 @@ export default function DSWorkMap(props) {
     //따라서 각 폴리건의 초기화 즉 클릭하면 실향되는 evemt Function으로 초기화
     if (map !== null){
 
-        if (map.getSource('Target-Area') != null && selected_course !== "MGC000") map.getSource('Target-Area').setData({...targetpolygons.data});
-        map.on('click','Target_Area',  (e) => {
-          const coordinates = e.features[0].geometry.coordinates[0][0];
-          const description = '<strong>'+e.features[0].properties.Course+' '+ e.features[0].properties.Hole+
-          '홀</strong><p>'+e.features[0].properties.Desc+'</p>'
-          
-          ;
-          console.log('At Click',e.features[0].properties)
+      if (map.getSource('Target-Area') != null && selected_course !== "MGC000") map.getSource('Target-Area').setData({...targetpolygons.data});
+      // console.log('targetpolygons', JSON.stringify(targetpolygons.data))
+      // MAPBOX Event Function called when any polgons is selected. Set selected_polgon as the clicked ploygons
+      let polygonID = null;
 
-            setPolyGon(            {
-              "type": "Feature",
-              "properties":{...e.features[0].properties,center:JSON.parse(e.features[0].properties.center), Labels:JSON.parse(e.features[0].properties.Labels)},
-              "geometry": {
-                "type": "Polygon",
-                "coordinates": e.features[0].geometry.coordinates
-              }
-            })         
+      map.on('click', (e) => {
 
-          new mapboxgl.Popup()
-          .setLngLat(coordinates)
-          .setHTML(description)
-          .addTo(map);
+        let pt = turfpoint([e.lngLat.lng, e.lngLat.lat])
+        if (tpoly.filter((x)=> booleanPointInPolygon(pt, x)).length === 0) setPolyGon(null)
+        });
 
-          });
+      map.on('click','Target_Area',  (e) => {
+        const coordinates = e.features[0].geometry.coordinates[0][0];
+        const description = '<strong>'+e.features[0].properties.Course+' '+ e.features[0].properties.Hole+
+        '홀</strong><p>'+e.features[0].properties.Desc+'</p>' 
+
+        // new mapboxgl.Popup()
+        // .setLngLat(coordinates)
+        // .setHTML(description)
+        // .addTo(map);
 
 
+        setPolyGon(            {
+          "type": "Feature",
+          "id":e.features[0].properties.Id,
+          "properties":{...e.features[0].properties,center:JSON.parse(e.features[0].properties.center), Labels:JSON.parse(e.features[0].properties.Labels)},
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": e.features[0].geometry.coordinates
+          }
+        })        
+
+      });
     }
 
   },[targetpolygons]);
@@ -482,70 +536,68 @@ export default function DSWorkMap(props) {
     // DSMAPDATA에서 geojson 이 최종적으로 로드가 완료되면 실행되는 함수,
     //따라서 각 폴리건의 초기화 즉 클릭하면 실향되는 evemt Function으로 초기화
     if (map !== null){
-      console.log("Points Updated", targetpoints)
       if (map.getSource('Target-Point') != null && selected_course !== "MGC000") map.getSource('Target-Point').setData({...targetpoints.data});
-      
-      // map.on('click','Target_Point',  (e) => {
-      //   const coordinates = e.features[0].geometry.coordinates;
-      //   const description = '<strong>'+e.features[0].properties.Course+' '+ e.features[0].properties.Hole+
-      //   '홀</strong><p>'+e.features[0].properties.Desc+'</p>'
-        
-      //   ;
-        
-      //   // setPolyGon({
-      //   //   "type": "Feature",
-      //   //   "properties": e.features[0].properties,
-      //   //   "geometry": {
-      //   //     "type": "Point",
-      //   //     "coordinates": e.features[0].geometry.coordinates
-      //   //   }
-      //   // })         
-
-      //   new mapboxgl.Popup()
-      //   .setLngLat(coordinates)
-      //   .setHTML(description)
-      //   .addTo(map);
-
-      //   });
-
-
     }
 
   },[targetpoints]);
 
 
   useEffect(() => {
+    // User가 코스와 홀을 변경할떄마다 불려지는 함수.
+    // 코스가 전코스 일때는, Box폴리와 tpoly를 전체로다...
     
     if (Object.keys(coursepoly).length === 0 || Object.keys(holepoly).length ===0 || map === null) return
 
-    let selected_boxpoly_ = {}
+    let selected_boxpoly_ = {};
+    let selected_greenpoly_ = null;
+    let tpoly_ = [];
+    let bearing_ =0;
 
     if (selected_CRS === '전코스'){
       selected_boxpoly_ = coursepoly.data.features.filter((x) => x.properties.Course === selected_CRS)[0]
 
+      // console.log(targetpolygons)
+
+      if(isLoading === false && targetpolygons['data']['features'].length > 0)
+        targetpolygons['data']['features'].map((geojson_)=>{
+          tpoly_.push(geojson_)      
+        })
+
     }
 
     else{
-      selected_boxpoly_ = selected_hole === 0? coursepoly.data.features.filter((x) => x.properties.Course === selected_CRS)[0]:
-      holepoly.data.features.filter((x) => x.properties.Hole === selected_hole && x.properties.Course === selected_CRS )[0]
+      selected_boxpoly_ = selected_hole === 0? 
+        coursepoly.data.features.filter((x) => x.properties.Course === selected_CRS)[0]:
+        holepoly.data.features.filter((x) => x.properties.Hole === selected_hole && x.properties.Course === selected_CRS )[0]
+      selected_greenpoly_ = selected_hole === 0? 
+        null:
+        greenpoly.data.features.filter((x) => x.properties.Hole === selected_hole && x.properties.Course === selected_CRS )[0]
+
+      // tpoly에 work polygons 중 해당되는 것만 ....
+
+      if(isLoading === false && targetpolygons['data']['features'].length > 0)
+        // work polygons 중에서 해당 
+        targetpolygons['data']['features'].filter((polyg_)=> Number(polyg_['properties'].Hole) === Number(selected_hole) 
+          && polyg_['properties'].Course === selected_CRS)
+          .map((geojson_)=>{
+        // tpoly_.push(turfpolygon(geojson_['geometry']['coordinates']))
+          tpoly_.push(geojson_)
+        
+        })
+  
+      //  console.log(geojson_mode)
+
     }
 
-
-
-    // console.log(selected_boxpoly_, holepoly)
-
-    // let bbox_ =turfbbox(selected_boxpoly_);
-    // map.fitBounds(bbox_, {padding: 20});
-
-    // if (Object.keys(selected_boxpoly_ ).length!== 0 && map !== null){
-    //   if (map.getSource('BoxArea') != null) map.getSource('BoxArea').setData({...selected_boxpoly_});
-
-    // }
     setBoxPoly({
       'type': 'geojson',
       'data': {...selected_boxpoly_} 
     })
-    console.log("Boxpoly @ CRS Holw", selected_boxpoly_)
+    setTPoly([...tpoly_])
+
+    if (selected_greenpoly_ !== null && selected_greenpoly_ !== undefined)
+      bearing_ = turf.bearing(turf.centerOfMass(selected_boxpoly_),turf.centerOfMass(selected_greenpoly_))
+    setMapBearing(bearing_)
 
   },[selected_CRS, selected_hole]);
 
@@ -553,7 +605,7 @@ export default function DSWorkMap(props) {
  
   return (
     <Fragment>
-      <div ref={mapContainer} className="map-container" />
+
       <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="center" mt = {2}> 
         <FormControl sx={{ width: 1/2}}size="small">
           <InputLabel id="ds-crs-select-label">코스명</InputLabel>
@@ -588,6 +640,7 @@ export default function DSWorkMap(props) {
           </Select>
         </FormControl>
       </Stack>
+      <div ref={mapContainer} className="map-container" />
     </Fragment>
 
   );

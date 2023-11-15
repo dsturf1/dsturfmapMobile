@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, Fragment } from 'react';
 import { Map, MapMarker, ZoomControl, MapTypeControl,StaticMap, Polygon, DrawingManager, Toolbox} from 'react-kakao-maps-sdk';
 import { Box, ListItemButton, ListItemText, ListItemAvatar, Avatar, Paper, List, ButtonGroup ,Button} from '@mui/material';
-import html2canvas from "html2canvas";
 
 import Fab from '@mui/material/Fab';
 import AddIcon from '@mui/icons-material/Add';
@@ -19,7 +18,7 @@ import * as turf from "@turf/turf";
 
 const DSGeoJsonMap = ({geojson_mode}) => {
 
-  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, tpoly, setTPoly,  
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly,  
     holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo,selected_polygon, setPolyGon} = useContext(BaseContext);
@@ -55,7 +54,7 @@ const DSGeoJsonMap = ({geojson_mode}) => {
             // Mouse Click 이 아무 폴리건도 선택되지 않은 경우에는 선택된 폴리건 을 Null
             // 다만, GEOJSONEDIT 모드에서는 폴리건 선택 해제를 못하게...
           let pt = turfpoint([mouseEvent.latLng.getLng(), mouseEvent.latLng.getLat()])
-          if (tpoly.filter((x)=> booleanPointInPolygon(pt, x)).length === 0 && selected_mode !== 'MAPGEOJSONEDIT') setPolyGon(null)
+          if (CRStpoly.filter((x)=> booleanPointInPolygon(pt, x)).length === 0 && selected_mode !== 'MAPGEOJSONEDIT') setPolyGon(null)
 
           }}
           onBoundsChanged={(map) => setMapInfo({center: [map.getCenter().getLng(),map.getCenter().getLat()],level:map.getLevel(),
@@ -79,7 +78,7 @@ export default DSGeoJsonMap;
 function DSPolyGons({geojson_mode}){
 
 
-  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, tpoly, setTPoly,  
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly,  
     holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser,
@@ -98,8 +97,8 @@ function DSPolyGons({geojson_mode}){
       
       })
 
-    //  console.log(geojson_mode)
-     setTPoly([...tpoly_])
+     console.log(CRSgeojsoninfo)
+     setCRSTPoly([...tpoly_])
 
   }, [baseinfo.area_def, CRSgeojsoninfo])
   
@@ -125,7 +124,7 @@ function DSPolyGons({geojson_mode}){
 
 function DSPolyGon({geojson_path,geojson_color, geojson}){
 
-  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, tpoly, setTPoly,  
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly,  
     holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
   const [isMouseOver, setIsMouseOver] = useState(false)
@@ -155,7 +154,7 @@ function DSPolyGon({geojson_path,geojson_color, geojson}){
 
 function DSPolyEdit(){
 
-  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, tpoly, setTPoly,  
+  const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly,  
     holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
     loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_polygon, setPolyGon,selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);

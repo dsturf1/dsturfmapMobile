@@ -20,7 +20,20 @@ import '@aws-amplify/ui-react/styles.css';
 import { MapCRSQProvider } from "./context/DSCRSData.js";
 import DSIMGLabelMain from "./components/DSIMGLabel/DSIMGLabelMain.js";
 
+
+
 const DSTheme = createTheme({
+  typography: {
+    subtitle1: {
+      fontSize: 12,
+    },
+    body1: {
+      fontWeight: 500,
+    },
+    button: {
+      fontStyle: 'italic',
+    },
+  },
   palette: {
     mode: 'light',
     primary: {
@@ -41,27 +54,27 @@ const App = () => {
         < BaseProvider user = {user}>
           <MapCRSQProvider>
           <MapQProvider>
-          <LabelProvider>
+          {/* <LabelProvider> */}
           <ThemeProvider theme={DSTheme}>
             <CssBaseline />
             <ResponsiveAppBar signOut = {signOut} user = {user.username}/>
             <Routes>
-              {/* <Route path="/" element={    <DSWorkMain geojson_mode={"JOBS"}/>}></Route> */}
-              <Route path="/" lement={<DSIMGLabelMain/>}></Route>
-              <Route path="dssearch" element={    <DSSearchMain/>}></Route>
-              <Route path="dsnaver" element={<DSNaverMain />}></Route>
-              <Route path="dskakao" element={<DSKakaoMain />}></Route>
+              <Route path="/" element={    <DSWorkMain geojson_mode={"JOBS"}/>}></Route>
+              {/* <Route path="/" lement={<DSIMGLabelMain/>}></Route> */}
+              {/* <Route path="dssearch" element={    <DSSearchMain/>}></Route> */}
+              {/* <Route path="dsnaver" element={<DSNaverMain />}></Route> */}
+              {/* <Route path="dskakao" element={<DSKakaoMain />}></Route> */}
               <Route path="dsmapedit" element={<DSGeoJsonMain geojson_mode={"AREA"}/>}></Route>
               {/* <Route path="dsjobsedit" element={<DSGeoJsonMain geojson_mode={"JOBS"}/>}></Route> */}
               <Route path="dsworkedit" element={<DSWorkMain geojson_mode={"JOBS"}/>}></Route>
-              <Route path="dsimglabel" element={<DSIMGLabelMain/>}></Route>
+              {/* <Route path="dsimglabel" element={<DSIMGLabelMain/>}></Route> */}
               <Route path="dssetting" element={<DSMapSettingMain/>}></Route>
               {/* <Route path="dscourses" element={<DSBaseCourseMain />}></Route>
               <Route path="dshuman" element={<DSBaseHumanMain />}></Route>
               <Route path="dsother" element={<DSBaseOtherMain />}></Route> */}
             </Routes>
           </ThemeProvider>
-          </LabelProvider>
+          {/* </LabelProvider> */}
           </MapQProvider>
           </MapCRSQProvider>
         </BaseProvider>
