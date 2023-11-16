@@ -12,7 +12,6 @@ import { MuiFileInput } from 'mui-file-input'
 import exifr from 'exifr'
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
-import loadImage from 'blueimp-load-image';
 
 export default function DSPhotoUpload({geojson_mode}) {
 
@@ -23,7 +22,6 @@ export default function DSPhotoUpload({geojson_mode}) {
     holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);    
   const {geojsoninfo, setGeoJsonInfo,tpoly, setTPoly,targetpolygons, setTargetPolygons, 
     targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
-
   const [imgFiles, setImgFiles] = React.useState([])
   const [imgFileInfos, setImgFileInfos] = React.useState([])
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
@@ -138,8 +136,6 @@ export default function DSPhotoUpload({geojson_mode}) {
   useEffect(() => {
     console.log('Files',imgFiles)
 
-
-
     const getFileInfoGPS = async(file_) =>{
 
       let date_ = null;
@@ -168,7 +164,7 @@ export default function DSPhotoUpload({geojson_mode}) {
       return await Promise.all(files_.map((x)=> getFileInfoGPS(x)))
     }
 
-    getAllInfos(imgFiles).then((results_) => {setImgFileInfos(results_); console.log(results_)}).catch((err)=> alert(err))
+    getAllInfos(imgFiles).then((results_) => {setImgFileInfos(results_); console.log(results_)})
 
     setChecked([...Array(imgFiles.length).keys()]);
 
