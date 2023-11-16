@@ -58,14 +58,14 @@ export const MapQProvider = (props) => {
         let geojsondata_ = fetchData.body['features'].sort((a, b) =>  baseinfo.area_def.filter((x)=>x.name ===a['properties'].Type)[0].DSZindex - 
         baseinfo.area_def.filter((x)=>x.name ===b['properties'].Type)[0].DSZindex)
 
-        geojsondata_ = geojsondata_.map((geo_) => {return {...geo_, id: geo_.properties.Id}})//모든 폴리건 id를 생성된 당시의 Id로 변환
+        geojsondata_ = geojsondata_.map((geo_) => {return {...geo_, id: geo_.properties.Id, 
+          properties:{...geo_.properties, alllabelsL1: geo_.properties.Labels.map((x) => x.level1).filter((x) => x!=='').join(', ')} 
+          }})//모든 폴리건 id를 생성된 당시의 Id로 변환
 
         console.log('Map Data is :',selected_course, geojsondata_, isLoading)
 
 
-        setGeoJsonInfo({...fetchData.body, 'features':[...geojsondata_]})
-
-
+        setGeoJsonInfo({...fetchData.body, 'features':[...geojsondata_]})    
         setIsLoading(false)
         } catch (err) { console.log('Workinfo Fetching Error', err) }
     }
@@ -89,13 +89,13 @@ export const MapQProvider = (props) => {
 
   let tpoly_ = [];
 
-  tpoly_ = geojsondata_.filter((poly_)=>poly_['properties'].TypeId == 10).map((geojson_)=> {
-    // return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates: [[...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]]}}
+  tpoly_ = geojsondata_.filter((poly_)=>poly_['properties'].TypeId === 10 && poly_['properties'].Valid !== false).map((geojson_)=> {
     return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon'}}
   })
   
-  let tcircle_poly_ = geojsondata_.filter((poly_)=>poly_['properties'].TypeId == 11).map((geojson_)=> {
-    return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates:createGeoJSONCircle(geojson_.geometry.coordinates, geojson_.properties.radius/1000.)}}
+  let tcircle_poly_ = geojsondata_.filter((poly_)=>poly_['properties'].TypeId === 11&& poly_['properties'].Valid !== false).map((geojson_)=> {
+    return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', 
+    coordinates:createGeoJSONCircle(geojson_.geometry.coordinates, geojson_.properties.radius/1000.)}}
   })
 
   tpoly_ = [...tpoly_, ...tcircle_poly_]
@@ -108,19 +108,7 @@ export const MapQProvider = (props) => {
     }              
   })
 
-  if (tpoly.length >0){
-    let tpolyTemp = [];
-    tpoly.forEach((x)=>{
-      let searched = tpoly_.filter((p)=> p.id === x.id)
-      if(searched.length>0) tpolyTemp.push(searched[0])
-    })
-    setTPoly([...tpolyTemp])
-  }
-
-
-
-  tpoly_ = geojsondata_.filter((poly_)=>poly_['properties'].TypeId == 11).map((geojson_)=> {
-    // return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Polygon', coordinates: [[...geojson_['geometry']['coordinates'][0], geojson_['geometry']['coordinates'][0][0]]]}}
+  tpoly_ = geojsondata_.filter((poly_)=>poly_['properties'].TypeId === 11&& poly_['properties'].Valid !== false).map((geojson_)=> {
     return {...geojson_, geometry: {...geojson_['geometry'], 'type': 'Point'}}
   })
   

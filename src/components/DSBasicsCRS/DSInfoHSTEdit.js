@@ -110,7 +110,7 @@ export default function DSInfoEdit({geojson_mode}) {
 
     let new_area_def = [...baseinfo.area_def]
 
-    PostBaseInfo({area_def:new_area_def, course_info:new_course_info}).then(setBaseInfo({...baseinfo, course_info:new_course_info}));
+    PostBaseInfo({...baseinfo, area_def:new_area_def, course_info:new_course_info}).then(setBaseInfo({...baseinfo, area_def:new_area_def, course_info:new_course_info}));
 
     let geojsoninfo_ = {};
 

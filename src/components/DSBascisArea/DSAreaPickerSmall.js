@@ -59,7 +59,7 @@ export default function DSAreaPicker() {
               primary={
               <Stack direction="column" justifyContent="space-between" >
                 <Typography variant="subtitle1" style={{ fontWeight: 'bold', color: selectedIndex === index? '#ffffff':'#000000'}} > 
-                  {(index + 1)+"."+ poly_.properties.Course +'['+poly_.properties.Hole+']' +(poly_.properties.LabelL1)}
+                  {(index + 1)+"."+ poly_.properties.Course +'['+poly_.properties.Hole+']' +(poly_.properties.alllabelsL1)}
                 </Typography>
               </Stack>
               } 

@@ -143,8 +143,12 @@ export default function DSPhotoUpload({geojson_mode}) {
 
       let thumb_ = await exifr.thumbnailUrl(file_)
       let exifs = await exifr.parse(file_)
-      if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
-      if ('GPSAltitude' in exifs) altitude_ = exifs.GPSAltitude
+
+      if (typeof exifs !== 'undefined'){
+        if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
+        if ('GPSAltitude' in exifs) altitude_ = exifs.GPSAltitude
+      }
+
       let gps_ = await exifr.gps(file_)    
 
       let pt = gps_ === undefined? turfpoint([0,0]) : turfpoint([gps_.longitude, gps_.latitude])

@@ -25,7 +25,7 @@ export default function DSWorkMain({geojson_mode}) {
       <Grid container spacing={0}>
 
         <Grid Grid item xs={12} md={6}>
-          <Box height="100%" sx={{ p: 0, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 0}}>
+          <Box height="100%" sx={{ p: 0, border: '1px solid gray',gap: 1, borderRadius: 0 , m: 0}}>
             {/* <DSPolySelect geojson_mode={geojson_mode}/> */}
             <DSWorkMap/>
           </Box>

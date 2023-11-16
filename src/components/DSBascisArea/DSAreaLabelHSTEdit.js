@@ -7,6 +7,7 @@ import { FormGroup, FormControlLabel, InputLabel, Stack, Select, MenuItem, Box, 
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import SendIcon from '@mui/icons-material/Send';
 import { green, pink ,indigo, amber} from '@mui/material/colors';
+import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
 
 import { BaseContext, MapQContext, MapCRSQContext, LabelContext} from "../../context/index.js"
 import { COURSEBLANK , GEOJSONBLANK, POLYGONBLANK} from '../../constant/urlconstants.js';
@@ -60,7 +61,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
   useEffect(() => {
     if(Object.keys(baseinfo).length ===0) return
 
-    let L1 = [...new Set(baseinfo.label_info.map(item => item.L1))]
+    let L1 = [...new Set(baseinfo.area_label_info.map(item => item.L1))]
     let L2 = []
     // let L3 = []
     let tmp = []
@@ -176,6 +177,8 @@ export default function DSLabelHSTEdit({geojson_mode}) {
         afterChange={(changes, source) => {
           changes?.forEach(([row, prop, oldValue, newValue]) => {
 
+            console.log("Changes!")
+
             if (selected_polygon === null) return
 
             let newPolygon = {...selected_polygon, 
@@ -184,11 +187,13 @@ export default function DSLabelHSTEdit({geojson_mode}) {
             if(newPolygon.properties.Labels.slice(-1)[0].level1 !== '') newPolygon = {...selected_polygon, 
               properties: {...selected_polygon.properties, Labels:[...newPolygon.properties.Labels,label_single]}};
 
-
+            newPolygon = {...newPolygon, 
+              properties: {...newPolygon.properties, alllabelsL1: newPolygon.properties.Labels.map((x) => x.level1).filter((x) => x!=='').join(', ')}};
+              
             setPolyGon({...newPolygon})
 
             if(newPolygon.properties.TypeId === 11){
-              newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, coordinates:newPolygon.properties.center, type:'Point'} }
+              newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, coordinates:turfcentroid(newPolygon).geometry.coordinates, type:'Point'} }
             }   
             else{
               newPolygon = {...newPolygon,geometry: {...newPolygon.geometry, type:'Polygon'} }
@@ -198,12 +203,6 @@ export default function DSLabelHSTEdit({geojson_mode}) {
             let geojsoninfo_ = {...geojsoninfo, features: [...geojsoninfo.features.filter((x)=> x.properties.Id !== newPolygon.properties.Id), newPolygon]}
 
             setGeoJsonInfo({...geojsoninfo_})
-
-
-
-
-
-
             
           });
         }
