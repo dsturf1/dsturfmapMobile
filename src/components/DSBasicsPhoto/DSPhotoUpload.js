@@ -156,7 +156,8 @@ export default function DSPhotoUpload({geojson_mode}) {
       let gps_ = await exifr.gps(file_)    
 
       let pt = gps_ === undefined? turfpoint([0,0]) : turfpoint([gps_.longitude, gps_.latitude])
-      let info_ = check_CRSandHole(pt)
+      // let info_ = check_CRSandHole(pt)
+      let info_ = ''
 
       if(gps_=== undefined) gps_ = {longitude:128.110 , latitude: 36.520}
       
