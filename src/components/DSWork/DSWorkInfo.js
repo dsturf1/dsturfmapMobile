@@ -3,16 +3,12 @@ import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
 import { Box, TextField, Stack, Grid, InputLabel, IconButton, MenuItem, FormControl, Select , CircularProgress, Paper } from '@mui/material';
 import { BaseContext, MapQContext, MapCRSQContext} from "../../context/index.js"
 
-import DSInfoEdit from "../DSBasicsCRS/DSInfoHSTEdit.js"
-import DSPolySelect from "../DSBasicsCRS/DSPolySelect.js"
 
-import DSSave from '../DSBasics/DSSave.js';
-import DSLabelHSTEdit from '../DSBascisArea/DSAreaLabelHSTEdit.js';
+
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
-import DSWorkMap from './DSWorkMap.js';
+
 import DSAreaPicker from '../DSBascisArea/DSAreaPickerSmall.js';
-import DSAreaPolyHSTEdit from "../DSBascisArea/DSAreaPolyHSTEdit.js"
 import DSPhotoUpload from '../DSBasicsPhoto/DSPhotoUpload.js';
 
 

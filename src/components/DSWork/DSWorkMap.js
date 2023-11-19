@@ -54,12 +54,14 @@ export default function DSWorkMap(props) {
 
     initMAP(map);
     setMap(map);
-    setMode('MAPSelect');
-    setCourse('MGC000');
+    setMode('MAPReview');
+    // setCourse('MGC000');
+    setCRS('전코스')
+    setHole(0)
     setEdited(false)
     setMapBearing(0)
 
-    return () => {setMode('MAPSelect');setCourse('MGC000');map.remove();setMap(null)}
+    return () => {setMode('MAPSelect');map.remove();setMap(null)}
   }, []);
 
   useEffect(() => {
@@ -76,12 +78,12 @@ export default function DSWorkMap(props) {
     // console.log("BOXPoly CHanged", selectedBoxpoly)
     // BOXpoly가 변할때마다, MAP의 Boundary를 BOX 폴리에 맞게 변경 
 
-    if (map !== null && map !== undefined){
+    if (map !== null && typeof map !== 'undefined' ){
       let bbox_ =turfbbox(selectedBoxpoly.data);
       // map.rotateTo(30);
       map.fitBounds(bbox_, {bearing:mapbearing, padding: 5});
 
-        if (map.getSource('BoxArea') !== null && selected_course !== "MGC000") 
+        if (map.getSource('BoxArea') !== null && selected_course !== "MGC000" && typeof map.getSource('BoxArea') !== 'undefined') 
             map.getSource('BoxArea').setData({...selectedBoxpoly.data});
     }
 
@@ -94,7 +96,7 @@ export default function DSWorkMap(props) {
 
     // console.log('HolePoly is ready', holepoly)
 
-    if (typeof(map.getSource('selected-course-hole')) !== undefined && selected_course !== "MGC000") 
+    if (typeof(map.getSource('selected-course-hole')) !== 'undefined' && selected_course !== "MGC000") 
       map.getSource('selected-course-hole').setData({...holepoly.data});
   },[holepoly]);
 
@@ -104,7 +106,7 @@ export default function DSWorkMap(props) {
 
     // console.log('CoursePoly is ready', {...coursepoly.data.features.filter((x)=>x.properties.TypeId === 2)})
 
-    if (typeof(map.getSource('selected-course-CRS')) !== undefined && selected_course !== "MGC000") 
+    if (typeof(map.getSource('selected-course-CRS')) !== 'undefined' && selected_course !== "MGC000") 
       map.getSource('selected-course-CRS').setData({...coursepoly.data, features:coursepoly.data.features.filter((x)=>x.properties.TypeId === 2)});
   },[coursepoly]);
 
@@ -125,17 +127,6 @@ export default function DSWorkMap(props) {
       )
 
     if (selected_polygon === null ) return
-
-    // All color of target polygons is set back to normal and change selected polygon to highlighted
-
-    // targetpolygons.data.features.forEach((x)=>
-    //   map.setFeatureState({
-    //     source: 'Target-Area',
-    //     id: x.id, 
-    //   }, {
-    //     click: false
-    //   })
-    // )
 
     map.setFeatureState({
       source: 'Target-Area',
@@ -228,6 +219,8 @@ export default function DSWorkMap(props) {
     }
 
     if (selected_mode === "MAPSelect") setBoxPoly({...mapboxini_poly})
+
+    if (selected_mode === "MAPReview") setBoxPoly({...selectedBoxpoly})
 
     if (selected_mode === "MAPGEOJSONEDIT") {
       
@@ -346,6 +339,8 @@ export default function DSWorkMap(props) {
 
     //따라서 각 폴리건의 초기화 즉 클릭하면 실향되는 evemt Function으로 초기화
     if (map !== null){
+
+      console.log('Target Polygon Updated')
 
       if (map.getSource('Target-Area') != null && selected_course !== "MGC000") map.getSource('Target-Area').setData({...targetpolygons.data});
       // console.log('targetpolygons', JSON.stringify(targetpolygons.data))

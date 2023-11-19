@@ -138,8 +138,8 @@ export const MapCRSQProvider = (props) => {
 
   useEffect(() => {
 
-    console.log(CRSgeojsoninfo, selectedBoxpoly, holepoly, greenpoly)
-  },[CRSgeojsoninfo, selectedBoxpoly, holepoly]);
+    console.log(CRSgeojsoninfo, selectedBoxpoly, holepoly, greenpoly, coursepoly)
+  },[CRSgeojsoninfo]);
 
   return(
 

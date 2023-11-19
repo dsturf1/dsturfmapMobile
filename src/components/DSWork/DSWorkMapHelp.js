@@ -26,7 +26,7 @@ export const initMAP  = (map) => {
 
       map.addSource('Target-Area', {
         'type': 'geojson',
-        'data': {},
+        'data': {...geojsoninfo_blank},
         // 'generateId':true              
         'promoteId':'Id'
       });    
@@ -58,7 +58,7 @@ export const initMAP  = (map) => {
 
         map.addSource('Target-Point', {
           'type': 'geojson',
-          'data': { }              
+          'data': {...geojsoninfo_blank }              
         });    
         map.addLayer({
           'id': 'Target_Point',
@@ -79,7 +79,7 @@ export const initMAP  = (map) => {
       map.addSource('BoxArea', 
       {
         'type': 'geojson',
-        'data': { }  
+        'data': {...geojsoninfo_blank }      
       });        
       map.addLayer({
         'id': 'Box_Area',
@@ -99,7 +99,7 @@ export const initMAP  = (map) => {
 
       map.addSource('selected-course-hole',       {
         'type': 'geojson',
-        'data': { }  
+        'data': {...geojsoninfo_blank }      
       });   
       map.addLayer({
         'id': 'selected-course-hole',
@@ -123,7 +123,7 @@ export const initMAP  = (map) => {
 
         map.addSource('selected-course-CRS',       {
           'type': 'geojson',
-          'data': {}  
+          'data': {...geojsoninfo_blank }      
         });   
         map.addLayer({
           'id': 'selected-course-CRS',

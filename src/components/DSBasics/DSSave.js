@@ -8,7 +8,6 @@ import { green, pink ,indigo} from '@mui/material/colors';
 import { BaseContext, SInfoContext, MapQContext} from "../../context"
 import { COURSEBLANK , GEOJSONBLANK} from '../../constant/urlconstants';
 import { BASEURL } from '../../constant/urlconstants.js';
-import DSPolyHSTEdit from "../DSBasicsCRS/DSPolyHSTEdit.js"
 
 
 
