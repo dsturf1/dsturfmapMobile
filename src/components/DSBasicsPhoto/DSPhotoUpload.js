@@ -92,8 +92,11 @@ export default function DSPhotoUpload({geojson_mode}) {
                 {/* <Typography variant="subtitle1" style={{ fontWeight: 'bold' , color: selectedIndex === index? '#ffffff':'#000000'}} > 
                   {(index + 1)+"."+ photo_.info.Course +'[' + photo_.info.Hole+']'}
                 </Typography> */}
+                <Typography variant="subtitle1" style={{ fontWeight: 'bold' , color: selectedIndex === index? '#ffffff':'#000000'}} > 
+                  {(index + 1)+"."+ photo_.date +'[' + photo_.info+']'}
+                </Typography>
                 <Typography variant="caption" style={{ color: selectedIndex === index? '#ffffff':'#000000'}} > 
-                  {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':(photo_.gps.longitude.toFixed(5) + ',' + photo_.gps.latitude.toFixed(5))}
+                  {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':(photo_.gps.longitude + ',' + photo_.gps.latitude)}
                 </Typography>
               </Stack>
             } />
@@ -156,8 +159,8 @@ export default function DSPhotoUpload({geojson_mode}) {
 
       let gps_ = {longitude:'TBD', latitude: 'TBD'}
 
-      if('GPSLatitude' in tags) gps_.latitude = tags['GPSLatitude'].description
-      if('GPSLongitude' in tags) gps_.longitude = tags['GPSLongitude'].description
+      if('GPSLatitude' in tags) gps_.latitude = tags['GPSLatitude'].value[0]
+      if('GPSLongitude' in tags) gps_.longitude = tags['GPSLongitude'].value[0]
       
       
       return {thumbUrl: thumb_, gps : gps_, date:date_ , by:loginuser}
