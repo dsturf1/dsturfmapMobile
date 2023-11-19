@@ -133,6 +133,7 @@ export default function DSPhotoUpload({geojson_mode}) {
   const handleChange = (newValue) => {
     setImgFiles(newValue);
     setSelectedIndex(-1);
+    console.log(newValue.target.value)
   }
 
   useEffect(() => {
@@ -187,7 +188,8 @@ export default function DSPhotoUpload({geojson_mode}) {
     <div>
 
       <Box sx={{ height: '85vh', width: '100%' }}>
-      <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} inputProps={{ accept: 'image/*' }}/>
+      <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} />
+      {/* <input multiple="multiple" type="file" name="files[]" onChange={handleChange} /> */}
         <Box sx={{height: '40%', 
                   display: 'block',
                   // p: 1,
