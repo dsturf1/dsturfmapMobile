@@ -13,6 +13,7 @@ import exifr from 'exifr'
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
 import loadImage from 'blueimp-load-image';
+import ExifReader from 'exifreader';
 
 export default function DSPhotoUpload({geojson_mode}) {
 
@@ -88,11 +89,11 @@ export default function DSPhotoUpload({geojson_mode}) {
             <ListItemText id={'DSphotoUploadText' + index} primary={
               // <Stack direction="column" justifyContent="space-between"  alignItems="center" >
               <Stack direction="column" justifyContent="space-between" >
-                <Typography variant="subtitle1" style={{ fontWeight: 'bold' , color: selectedIndex === index? '#ffffff':'#000000'}} > 
+                {/* <Typography variant="subtitle1" style={{ fontWeight: 'bold' , color: selectedIndex === index? '#ffffff':'#000000'}} > 
                   {(index + 1)+"."+ photo_.info.Course +'[' + photo_.info.Hole+']'}
-                </Typography>
+                </Typography> */}
                 <Typography variant="caption" style={{ color: selectedIndex === index? '#ffffff':'#000000'}} > 
-                  {photo_.gps === undefined || photo_.gps=== null? 'No GPS info':(photo_.gps.longitude.toFixed(5) + ',' + photo_.gps.latitude.toFixed(5))}
+                  {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':(photo_.gps.longitude.toFixed(5) + ',' + photo_.gps.latitude.toFixed(5))}
                 </Typography>
               </Stack>
             } />
@@ -133,7 +134,6 @@ export default function DSPhotoUpload({geojson_mode}) {
   const handleChange = (newValue) => {
     setImgFiles(newValue);
     setSelectedIndex(-1);
-    console.log(newValue.target.value)
   }
 
   useEffect(() => {
@@ -145,27 +145,25 @@ export default function DSPhotoUpload({geojson_mode}) {
 
       let date_ = null;
       let altitude_ = null;
+      let thumb_ = null;
 
-      let thumb_ = await exifr.thumbnailUrl(file_)
-      let exifs = await exifr.parse(file_)
+      let tags = await ExifReader.load(file_)
 
-      if (typeof exifs !== 'undefined'){
-        if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
-        if ('GPSAltitude' in exifs) altitude_ = exifs.GPSAltitude
-      }
+      console.log(tags)
 
-      let gps_ = await exifr.gps(file_)    
+      if('DateTimeOriginal' in tags) date_= tags['DateTimeOriginal'].description
+      if('Thumbnail' in tags) thumb_ = 'data:image/jpg;base64,' + tags['Thumbnail'].base64;
 
-      let pt = gps_ === undefined? turfpoint([0,0]) : turfpoint([gps_.longitude, gps_.latitude])
-      // let info_ = check_CRSandHole(pt)
-      let info_ = ''
+      let gps_ = {longitude:'TBD', latitude: 'TBD'}
 
-      if(gps_=== undefined) gps_ = {longitude:128.110 , latitude: 36.520}
+      if('GPSLatitude' in tags) gps_.latitude = tags['GPSLatitude'].description
+      if('GPSLongitude' in tags) gps_.longitude = tags['GPSLongitude'].description
       
       
-      return {thumbUrl: thumb_, gps : gps_, altitude:altitude_, date:date_ , info:info_, by:loginuser}
+      return {thumbUrl: thumb_, gps : gps_, date:date_ , by:loginuser}
       // return {thumbUrl: thumb_, gps : gps_, altitude:altitude_, date:date_ }
     }
+
     const getAllInfos = async(files_) =>{
       return await Promise.all(files_.map((x)=> getFileInfoGPS(x)))
     }
