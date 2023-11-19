@@ -1,4 +1,5 @@
 import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
+import { Amplify, Auth , Storage } from 'aws-amplify';
 
 import { ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, List, 
   Typography, Button,ButtonGroup, Stack, IconButton, Box, Checkbox} from '@mui/material';
@@ -193,6 +194,18 @@ export default function DSPhotoUpload({geojson_mode}) {
     setImgFileInfos(newArray)
   }
  
+  async function saveFile_to_S3(file_){
+    try {
+      await Storage.put('rgb/'+uuidv4()+'.jpg', file_)
+    } catch (error) {
+      console.log("Error uploading file: ", error);
+    }
+
+  }
+
+  const saveAllfiles = async() =>{
+    return await Promise.all(imgFiles.map((x)=> saveFile_to_S3(x)))
+  }
   return (
     <div>
 
@@ -235,7 +248,7 @@ export default function DSPhotoUpload({geojson_mode}) {
       </Box>
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
         <Button variant="outlined"  disabled = {selected_mode === "MAPGEOJSONEDIT"}
-          onClick={() => {console.log(checked)}}> Save</Button>
+          onClick={() => {console.log(checked);saveAllfiles()}}> Save</Button>
         <Button variant="outlined"  onClick={() => {}}> Cancel/Back</Button>
       </ButtonGroup>
 
