@@ -30,6 +30,8 @@ export default function DSPhotoUpload({geojson_mode}) {
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [checked, setChecked] = React.useState([]);
 
+  const inputRef = React.useRef();
+
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
     const newChecked = [...checked];
@@ -139,6 +141,12 @@ export default function DSPhotoUpload({geojson_mode}) {
     setSelectedIndex(-1);
   }
 
+  const handleChangeinput = (newValue) => {
+    setImgFiles(Object.values(inputRef.current.files));
+    setSelectedIndex(-1);
+    console.log(inputRef.current.files)
+  }
+
   useEffect(() => {
     console.log('Files',imgFiles)
 
@@ -190,7 +198,8 @@ export default function DSPhotoUpload({geojson_mode}) {
 
       <Box sx={{ height: '85vh', width: '100%' }}>
       <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} />
-      {/* <input multiple="multiple" type="file" name="files[]" onChange={handleChange} /> */}
+      {/* <input multiple="multiple" type="file" name="files[]" onChange={handleChangeinput} /> */}
+      <input ref={inputRef} type="file" name="files" onChange={handleChangeinput} multiple />;
         <Box sx={{height: '40%', 
                   display: 'block',
                   // p: 1,
