@@ -96,7 +96,7 @@ export default function DSPhotoUpload({geojson_mode}) {
                   {(index + 1)+"."+ photo_.info.Course +'[' + photo_.info.Hole+']'}
                 </Typography> */}
                 <Typography variant="subtitle1" style={{ fontWeight: 'bold' , color: selectedIndex === index? '#ffffff':'#000000'}} > 
-                  {(index + 1)+"."+ photo_.date +'[' + photo_.info+']'}
+                  {(index + 1)+"."+ photo_.date +'[' + JSON.stringify(photo_.info)+']'}
                 </Typography>
                 <Typography variant="caption" style={{ color: selectedIndex === index? '#ffffff':'#000000'}} > 
                   {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':(photo_.gps.longitude + ',' + photo_.gps.latitude)}
@@ -172,7 +172,7 @@ export default function DSPhotoUpload({geojson_mode}) {
       if('GPSLongitude' in tags) gps_.longitude = tags['GPSLongitude'].value[0]
       
       
-      return {thumbUrl: thumb_, gps : gps_, date:date_ , by:loginuser}
+      return {thumbUrl: thumb_, gps : gps_, date:date_ , by:loginuser, info:tags}
       // return {thumbUrl: thumb_, gps : gps_, altitude:altitude_, date:date_ }
     }
 
