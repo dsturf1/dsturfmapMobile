@@ -212,7 +212,7 @@ export default function DSPhotoUpload({geojson_mode}) {
       <Box sx={{ height: '85vh', width: '100%' }}>
       <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} />
       {/* <input multiple="multiple" type="file" name="files[]" onChange={handleChangeinput} /> */}
-      <input ref={inputRef} type="file" name="files" onChange={handleChangeinput} multiple />;
+      <input ref={inputRef} type="file" name="files-upload" onChange={handleChangeinput} multiple />;
         <Box sx={{height: '40%', 
                   display: 'block',
                   // p: 1,
