@@ -217,7 +217,10 @@ export default function DSPhotoUpload({geojson_mode}) {
       console.log(res); 
       alert(res.gps.longitude)
       saveCaptuedImgtoS3(res, capImgFile)
-    })
+    }).catch((error) => {
+      console.log(error);
+      alert(error)
+    });
 
     
     
