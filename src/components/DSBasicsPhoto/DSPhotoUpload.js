@@ -174,55 +174,45 @@ export default function DSPhotoUpload({geojson_mode}) {
     const getFileInfoGPS = async(file_) =>{
 
       let date_ = null;
-      let altitude_ = null;
       let thumb_ = null;
 
-      let tags = await ExifReader.load(file_)
       let exifs = await exifr.parse(file_)
       let thumbfromExifr = await exifr.thumbnailUrl(file_)
       let gpsfromExifr = await exifr.gps(file_) 
-
-      // console.log(tags, exifs)
+      
       if(typeof exifs !== 'undefined') {
         if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
-      }
-      
+      }      
       if(date_ === null) date_ = file_.lastModifiedDate.toISOString().slice(0,19).replace('T',' ')
 
-
-      // if('Thumbnail' in tags) thumb_ = 'data:image/jpg;base64,' + tags['Thumbnail'].base64;
-      // else 
       thumb_ = thumbfromExifr
-
       if(typeof thumb_ === 'undefined' || thumb_=== null) thumb_ = await GenerateThumbUrl(file_)
 
 
 
-      let gps_ = {longitude:'TBD', latitude: 'TBD', altitude:0}
-
-
+      let gps_ = {longitude:'TBD', latitude: 'TBD', altitude:'TBD'}
       if(typeof gpsfromExifr !=='undefined') {
         gps_.longitude = gpsfromExifr.longitude
         gps_.latitude = gpsfromExifr.latitude
       }
-
       if(gps_.longitude === 'TBD' || gps_.latitude ==='TBD') {
         gps_.longitude = location[0]
         gps_.latitude = location[1]
-
       }
 
-
-      
+      if(typeof exifs !== 'undefined') {
+        if ('GPSAltitude' in exifs) gps_.altitude = exifs.GPSAltitude
+      }
+      if(gps_.altitude === 'TBD') gps_.altitude = location[2]
       
       return {thumbUrl: thumb_, gps : gps_, date:date_.replace(/[^a-zA-Z0-9 ]/g, ""), by:loginuser}
-      // return {thumbUrl: thumb_, gps : gps_, altitude:altitude_, date:date_ }
     }
 
 
 
     getFileInfoGPS(capImgFile).then((res)=>{
       console.log(res); 
+      alert(res.gps.longitude)
       saveCaptuedImgtoS3(res, capImgFile)
     })
 
@@ -288,33 +278,6 @@ function resize(base64){
     }
 
   }
-
-  const dataURItoBlob = (dataURI)=> {
-    let byteString = atob(dataURI.split(',')[1]);
-
-    // separate out the mime component
-    let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
-
-    let ab = new ArrayBuffer(byteString.length);
-    let ia = new Uint8Array(ab);
-    for (let i = 0; i < byteString.length; i++) {
-      ia[i] = byteString.charCodeAt(i);
-    }
-    let blob = new Blob([ab], {type: mimeString});
-    return blob;
-  }
-
-  // async function Upload (filename) {
-  //   try {
-  //     await Storage.put(selected_course+'/'+ filename, dataURItoBlob(imgSrc), {
-  //       level: "public",
-  //       contentType: "image/png", // contentType is optional
-  //       // customPrefix: {public: selected_course + "/"}
-  //     });
-  //   } catch (error) {
-  //     console.log("Error uploading file: ", error);
-  //   }
-  // } 
 
   useEffect(() => {
     console.log('Files',imgFiles)
