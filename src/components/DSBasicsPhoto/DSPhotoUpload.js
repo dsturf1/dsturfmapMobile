@@ -6,7 +6,10 @@ import { ListItem, ListItemButton, ListItemText, ListItemAvatar, Avatar, List,
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import { green, pink ,indigo} from '@mui/material/colors';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import useWatchLocation from '../DSBasics/useWatchLocation.js'
 import DSPhotoHSTEdit from "./DSPhotoHSTEdit"
+import { useObjectUrls } from '../DSBasics/useObjectUrls';
 
 import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 import { MuiFileInput } from 'mui-file-input'
@@ -31,7 +34,24 @@ export default function DSPhotoUpload({geojson_mode}) {
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [checked, setChecked] = React.useState([]);
 
+  const [capImgFile, setCapImgFile] = React.useState(null);
+  
+  
+  const geolocationOptions = {
+    enableHighAccuracy: true,
+    timeout: 1000 * 60 * 1, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
+    maximumAge: 5000 // 24 hour
+  }
+  
+  const { location, cancelLocationWatch, error ,accuracy} = useWatchLocation(geolocationOptions);
+
   const inputRef = React.useRef();
+
+  useEffect(() => {
+
+    console.log("GPS",location)
+    return () => {cancelLocationWatch();}
+  },[location]);
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -99,7 +119,7 @@ export default function DSPhotoUpload({geojson_mode}) {
                   {(index + 1)+"."+ photo_.date +'[' + JSON.stringify(photo_.info)+']'}
                 </Typography>
                 <Typography variant="caption" style={{ color: selectedIndex === index? '#ffffff':'#000000'}} > 
-                  {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':(photo_.gps.longitude + ',' + photo_.gps.latitude)}
+                  {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':(photo_.gps.longitude.toFixed(5) + ',' + photo_.gps.latitude.toFixed(5))}
                 </Typography>
               </Stack>
             } />
@@ -143,10 +163,158 @@ export default function DSPhotoUpload({geojson_mode}) {
   }
 
   const handleChangeinput = (newValue) => {
-    setImgFiles(Object.values(inputRef.current.files));
-    setSelectedIndex(-1);
     console.log(inputRef.current.files)
+    setCapImgFile(Object.values(inputRef.current.files)[0]);
   }
+
+  useEffect(() => {
+
+    if( capImgFile === null) return
+
+    const getFileInfoGPS = async(file_) =>{
+
+      let date_ = null;
+      let altitude_ = null;
+      let thumb_ = null;
+
+      let tags = await ExifReader.load(file_)
+      let exifs = await exifr.parse(file_)
+      let thumbfromExifr = await exifr.thumbnailUrl(file_)
+      let gpsfromExifr = await exifr.gps(file_) 
+
+      // console.log(tags, exifs)
+      if(typeof exifs !== 'undefined') {
+        if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
+      }
+      
+      if(date_ === null) date_ = file_.lastModifiedDate.toISOString().slice(0,19).replace('T',' ')
+
+
+      // if('Thumbnail' in tags) thumb_ = 'data:image/jpg;base64,' + tags['Thumbnail'].base64;
+      // else 
+      thumb_ = thumbfromExifr
+
+      if(typeof thumb_ === 'undefined' || thumb_=== null) thumb_ = await GenerateThumbUrl(file_)
+
+
+
+      let gps_ = {longitude:'TBD', latitude: 'TBD', altitude:0}
+
+
+      if(typeof gpsfromExifr !=='undefined') {
+        gps_.longitude = gpsfromExifr.longitude
+        gps_.latitude = gpsfromExifr.latitude
+      }
+
+      if(gps_.longitude === 'TBD' || gps_.latitude ==='TBD') {
+        gps_.longitude = location[0]
+        gps_.latitude = location[1]
+
+      }
+
+
+      
+      
+      return {thumbUrl: thumb_, gps : gps_, date:date_.replace(/[^a-zA-Z0-9 ]/g, ""), by:loginuser}
+      // return {thumbUrl: thumb_, gps : gps_, altitude:altitude_, date:date_ }
+    }
+
+
+
+    getFileInfoGPS(capImgFile).then((res)=>{
+      console.log(res); 
+      saveCaptuedImgtoS3(res, capImgFile)
+    })
+
+    
+    
+
+    // getAllInfos(imgFiles).then((results_) => {setImgFileInfos(results_); console.log(results_)}).catch((err)=> alert(err))
+
+  },[capImgFile]);
+
+  const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+});
+
+function resize(base64){
+  return new Promise((resolve, reject) => {
+    let img = new Image()
+    img.onload = function(){
+
+      var width = 160; 
+      var height = 120; 
+
+      var canvas = document.createElement('canvas');  // Dynamically Create a Canvas Element
+      canvas.width  = width;  // Set the width of the Canvas
+      canvas.height = height;  // Set the height of the Canvas
+      var ctx = canvas.getContext("2d");  // Get the "context" of the canvas 
+      ctx.drawImage(img,0,0,width,height);  // Draw your image to the canvas
+      
+      console.log("thum", canvas.toDataURL("image/jpeg"))
+      return resolve(canvas.toDataURL("image/jpeg")  )
+    }
+    img.onerror = reject
+    img.src = base64
+  })
+}
+
+  async function GenerateThumbUrl(file_){
+
+    let imgBase64 =  await toBase64(file_);
+    let thumnailURL_ = await resize(imgBase64);
+
+    return thumnailURL_    
+    
+
+  }
+
+  async function saveCaptuedImgtoS3(info_, file_){
+    try {
+      await Storage.put(loginuser+'/rgb/'+ info_.date+file_.name.replace(/\.[^/.]+$/, "")+'.jpg', file_)
+
+      if(info_.thumbUrl !== null){
+        
+        let imgtemp = await fetch(info_.thumbUrl).then(r => r.blob()).then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/jpeg" }))
+        await Storage.put(loginuser+'/thumb/'+ info_.date+file_.name.replace(/\.[^/.]+$/, "")+'.jpg', imgtemp)
+
+      }
+
+    } catch (error) {
+      console.log("Error uploading file: ", error);
+    }
+
+  }
+
+  const dataURItoBlob = (dataURI)=> {
+    let byteString = atob(dataURI.split(',')[1]);
+
+    // separate out the mime component
+    let mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+    let ab = new ArrayBuffer(byteString.length);
+    let ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+      ia[i] = byteString.charCodeAt(i);
+    }
+    let blob = new Blob([ab], {type: mimeString});
+    return blob;
+  }
+
+  // async function Upload (filename) {
+  //   try {
+  //     await Storage.put(selected_course+'/'+ filename, dataURItoBlob(imgSrc), {
+  //       level: "public",
+  //       contentType: "image/png", // contentType is optional
+  //       // customPrefix: {public: selected_course + "/"}
+  //     });
+  //   } catch (error) {
+  //     console.log("Error uploading file: ", error);
+  //   }
+  // } 
 
   useEffect(() => {
     console.log('Files',imgFiles)
@@ -160,19 +328,29 @@ export default function DSPhotoUpload({geojson_mode}) {
       let thumb_ = null;
 
       let tags = await ExifReader.load(file_)
+      let exifs = await exifr.parse(file_)
+      let thumbfromExifr = await exifr.thumbnailUrl(file_)
+      let gpsfromExifr = await exifr.gps(file_) 
 
-      console.log(tags)
+      console.log(tags, exifs)
 
       if('DateTimeOriginal' in tags) date_= tags['DateTimeOriginal'].description
+      else if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
+      else date_ = file_.lastModifiedDate.toISOString().slice(0,19).replace('T',' ')
+
+
       if('Thumbnail' in tags) thumb_ = 'data:image/jpg;base64,' + tags['Thumbnail'].base64;
+      else thumb_ = thumbfromExifr
 
       let gps_ = {longitude:'TBD', latitude: 'TBD'}
 
-      if('GPSLatitude' in tags) gps_.latitude = tags['GPSLatitude'].value[0]
-      if('GPSLongitude' in tags) gps_.longitude = tags['GPSLongitude'].value[0]
+      if('GPSLatitude' in tags) gps_.latitude = tags['GPSLatitude'].description
+      else if(gpsfromExifr.latitude !== null || typeof gpsfromExifr.latitude !=='undefined') gps_.latitude = gpsfromExifr.latitude
+      if('GPSLongitude' in tags) gps_.longitude = tags['GPSLongitude'].description
+      else if(gpsfromExifr.longitude !== null || typeof gpsfromExifr.longitude !=='undefined')gps_.longitude = gpsfromExifr.longitude
       
       
-      return {thumbUrl: thumb_, gps : gps_, date:date_ , by:loginuser, info:tags}
+      return {thumbUrl: thumb_, gps : gps_, date:date_ , by:loginuser}
       // return {thumbUrl: thumb_, gps : gps_, altitude:altitude_, date:date_ }
     }
 
@@ -210,9 +388,14 @@ export default function DSPhotoUpload({geojson_mode}) {
     <div>
 
       <Box sx={{ height: '85vh', width: '100%' }}>
-      <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} />
+      {/* <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} /> */}
       {/* <input multiple="multiple" type="file" name="files[]" onChange={handleChangeinput} /> */}
-      <input ref={inputRef} type="file" name="files-upload" onChange={handleChangeinput} multiple />;
+      {/* <input ref={inputRef} type="file" name="files-upload" onChange={handleChangeinput} multiple />; */}
+      <Button variant="contained" component="label" startIcon={<CameraAltIcon />}>
+        Camera
+        <input ref={inputRef} type="file" hidden name="file" accept="image/*"  capture="camera" onChange={handleChangeinput} />
+      </Button>
+
         <Box sx={{height: '40%', 
                   display: 'block',
                   // p: 1,
