@@ -188,7 +188,14 @@ export default function DSPhotoUpload({geojson_mode}) {
       if(typeof exifs !== 'undefined') {
         if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
       }      
-      if(date_ === null) date_ = file_.lastModifiedDate.toISOString().slice(0,19).replace('T',' ')
+      if(date_ === null) {
+        if (file_.hasOwnProperty('lastModifiedDate'))
+          date_ = file_.lastModifiedDate.toISOString().slice(0,19).replace('T',' ')
+        else {
+          let datT = new Date();
+          date_ = datT.toISOString().slice(0,19).replace('T',' ')
+        }
+      }
 
       thumb_ = thumbfromExifr
       if(typeof thumb_ === 'undefined' || thumb_=== null) thumb_ = await GenerateThumbUrl(file_)
