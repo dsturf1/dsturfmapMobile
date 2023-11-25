@@ -18,6 +18,7 @@ import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
 import loadImage from 'blueimp-load-image';
 import ExifReader from 'exifreader';
+import './Input4IOS.css';
 
 export default function DSPhotoUpload({geojson_mode}) {
 
@@ -171,10 +172,10 @@ export default function DSPhotoUpload({geojson_mode}) {
 
   useEffect(() => {
 
-    alert(capImgFile.name)
+
 
     if( capImgFile === null) return
-
+    alert(capImgFile.name)
     const getFileInfoGPS = async(file_) =>{
 
       let date_ = null;
@@ -364,8 +365,9 @@ function resize(base64){
       {/* <input ref={inputRef} type="file" name="files-upload" onChange={handleChangeinput} multiple />; */}
       <Button variant="contained" component="label" startIcon={<CameraAltIcon />}>
         Camera
-        <input ref={inputRef} type="file" hidden name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
+        <input ref={inputRef} id="inputpic" type="file" name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
       </Button>
+        <input ref={inputRef} type="file" name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
 
         {/* <Box sx={{height: '40%', 
                   display: 'block',
