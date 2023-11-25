@@ -151,6 +151,7 @@ export default function DSPhotoUpload({geojson_mode}) {
   }
   else{
     course_ = '?';
+
     hole_ =  0;
   }
 
@@ -366,7 +367,7 @@ function resize(base64){
         <input ref={inputRef} type="file" hidden name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
       </Button>
 
-        <Box sx={{height: '40%', 
+        {/* <Box sx={{height: '40%', 
                   display: 'block',
                   // p: 1,
                   // mx: 1,
@@ -375,7 +376,7 @@ function resize(base64){
           <List dense={true}>
             { imgFileInfos.length > 0? <DSList photos_ = {imgFileInfos}/>:null}
           </List>      
-        </Box>
+        </Box> */}
         <Box sx={{height: '30%'}}
         display="flex"
                 alignItems="center"
