@@ -370,11 +370,14 @@ function resize(base64){
       {/* <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} /> */}
       {/* <input multiple="multiple" type="file" name="files[]" onChange={handleChangeinput} /> */}
       {/* <input ref={inputRef} type="file" name="files-upload" onChange={handleChangeinput} multiple />; */}
-      <Button variant="contained" component="label" startIcon={<CameraAltIcon />}>
-        Camera
+      <div>
+        <Button variant="contained" component="label" startIcon={<CameraAltIcon /> } onClick = {() => inputRef.current.click()}>
+          Camera
+          {/* <input ref={inputRef} id="inputpic" type="file" name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} /> */}
+        </Button>
         <input ref={inputRef} id="inputpic" type="file" name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
-      </Button>
-        <input ref={inputRef} type="file" name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
+
+      </div>
 
         {/* <Box sx={{height: '40%', 
                   display: 'block',
