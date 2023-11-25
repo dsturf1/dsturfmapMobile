@@ -164,11 +164,13 @@ export default function DSPhotoUpload({geojson_mode}) {
 
   const handleChangeinput = (newValue) => {
     console.log(inputRef.current.files)
-    alert(Object.values(inputRef.current.files)[0].name)
+    // alert(Object.values(inputRef.current.files)[0].name)
     setCapImgFile(Object.values(inputRef.current.files)[0]);
   }
 
   useEffect(() => {
+
+    alert(capImgFile.name)
 
     if( capImgFile === null) return
 
@@ -358,7 +360,7 @@ function resize(base64){
       {/* <input ref={inputRef} type="file" name="files-upload" onChange={handleChangeinput} multiple />; */}
       <Button variant="contained" component="label" startIcon={<CameraAltIcon />}>
         Camera
-        <input ref={inputRef} type="file" name="file" accept="image/*"  capture="camera" onChange={handleChangeinput} />
+        <input ref={inputRef} type="file" hidden name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
       </Button>
 
         <Box sx={{height: '40%', 
