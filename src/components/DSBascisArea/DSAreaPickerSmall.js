@@ -84,25 +84,9 @@ export default function DSAreaPicker() {
 
  
   return (
-    <Paper style={{height: '100%'}}>
-      <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={0}   justifyContent="center"  alignItems="center" sx={{ mt: 0 , height: '5vh'}}>
-        <Button variant= {selected_mode === "MAPEdit"? "outlined":"contained"}  onClick={() => {
-          selected_mode === "MAPEdit"? setMode("MAPGEOJSONEDIT"):setMode("MAPEdit")}}> 
-            {(selected_mode === "MAPEdit"? "신규/수정모드":"신규/수정모드 종료")}
-        </Button>
-      </ButtonGroup>
-      <Box sx={{ height: '85vh', width: '100%' }}>
-        <Box sx={{height: '30vh', 
-                  display: 'block',
-                  p: 1,
-                  // mx: 1,
-                  overflow: 'auto',
-                  border: 0
-                }}>
-          <List dense={true}>
-            {tpoly.length > 0? <DSList polys_ = {tpoly}/>:null}
-          </List>      
-        </Box>
+    <div>
+      <Stack direction="column" spacing={0}   justifyContent="center"  alignItems="center" mt = {1}> 
+
         <Box  sx={{height: '25vh',                   border: 0 }}
               display='block'
               alignItems="center"
@@ -111,17 +95,30 @@ export default function DSAreaPicker() {
                 <DSAreaPolyHSTEdit />
 
         </Box>
-        <Box sx={{height: '25vh',                   border: 0 }}
+        <Box sx={{height: '8vh',                   border: 0 }}
                       display='block'
                       alignItems="center"
                       justifyContent="center"
                 >
           <DSAreaLabelHSTEdit/>
-
         </Box>
+        <Box sx={{height: '5vh',                   border: 0 }}
+                      display='block'
+                      alignItems="center"
+                      justifyContent="center"
+                >
+                  <Stack direction="row" spacing={0}   justifyContent="space-between" alignItems="center" mt = {1}> 
+
         <DSSave/>
-      </Box>
-    </Paper>
+        <Button variant= {selected_mode === "MAPReview"? "outlined":"contained"}  onClick={() => {
+          selected_mode === "MAPReview"? setMode("MAPGEOJSONEDIT"):setMode("MAPReview")}}> 
+            {(selected_mode === "MAPReview"? "신규/수정모드":"신규/수정모드 종료")}
+        </Button>
+        </Stack>
+        </Box>
+
+      </Stack>
+    </div>
   );
 }
 

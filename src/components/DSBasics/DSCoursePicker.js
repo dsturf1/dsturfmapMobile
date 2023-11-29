@@ -19,9 +19,7 @@ export default function DSCoursePicker() {
       <ListItem key = {course_.id} divider={true}>
         <ListItemButton selected={selectedIndex === index} onClick={() => {
           setCourse(course_.id);
-          if(selected_mode === 'DATAselect') setMode('GRPLABEL') 
-          else setMode("MAPEdit");
-          
+          setMode("MAPReview");          
           setSelectedIndex(index);
         }}    
           sx={{

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "",
+    "name": "",
+    "imgsrc": "",
+    "thumbsrc": "",
+    "ndvisrc": "",
+    "gps": {
+      "longitude": 0,
+      "latitude": 0,
+      "altitude": 0
+    },
+    "date": "",
+    "info": {
+      "type": "TBD",
+      "typeId": 0,
+      "label": { "level1": "", "level2": "", "level3": "", "TurfType": "" },
+      "desc": "",
+      "value": 0,
+      "ndvi_avg": 0,
+      "temp_avg": 0
+    },
+    "location": {
+      "Client": "",
+      "Course":"",
+      "Hole":0
+    },
+    "by": ""
+  }
+]

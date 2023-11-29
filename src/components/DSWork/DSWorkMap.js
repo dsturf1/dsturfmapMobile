@@ -14,6 +14,7 @@ import './Map.css';
 import { BASEURL,  MAPBLANK, MAPINFO_INI, COURSEBLANK,POLYGONBLANK,  GEOJSONBLANK, MAPBOXINI, INTERESTED_POLYGONBLANK, INTERESTED_POINT } from '../../constant/urlconstants';
 import { ContactPageSharp } from '@mui/icons-material';
 import { initMAP, check_CRSandHole} from './DSWorkMapHelp.js';
+import DSAreaPicker from '../DSBascisArea/DSAreaPickerSmall.js';
 
 
 const polgygon_ini = JSON.parse(JSON.stringify(INTERESTED_POLYGONBLANK));
@@ -42,27 +43,42 @@ export default function DSWorkMap(props) {
     selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
  
   useEffect(() => {
-    const map = new mapboxgl.Map({
-      container: mapContainer.current,
-      style: 'mapbox://styles/mapbox/satellite-v9',
-      // style: 'mapbox://styles/mapbox/streets-v12',
-      center:mapinfo.center ,
-      zoom: 14
-    });
 
-    map.addControl(new mapboxgl.NavigationControl());
+    if (map === null && isCRSLoading === false && isLoading === false){
+      const map = new mapboxgl.Map({
+        container: mapContainer.current,
+        style: 'mapbox://styles/mapbox/satellite-v9',
+        // style: 'mapbox://styles/mapbox/streets-v12',
+        center:mapinfo.center ,
+        zoom: 14
+      });
+  
+      map.addControl(new mapboxgl.NavigationControl());
+  
+      initMAP(map, targetpolygons, targetpoints, selectedBoxpoly,coursepoly,  holepoly);
 
-    initMAP(map);
-    setMap(map);
-    setMode('MAPReview');
-    // setCourse('MGC000');
-    setCRS('전코스')
-    setHole(0)
-    setEdited(false)
-    setMapBearing(0)
+      console.log("MAP INIT Done!!")
+      setMap(map);
+      setMode('MAPReview');
+      // setCourse('MGC000');
+      // setCRS('전코스')
+      // setHole(0)
+      setEdited(false)
+      // setMapBearing(0)
+    }
 
-    return () => {setMode('MAPSelect');map.remove();setMap(null)}
-  }, []);
+
+
+
+
+    return () => {
+      if(map !== null) map.remove();
+      setMap(null)
+      setDraw(null)
+      setMode('MenuSelect')
+      console.log("Map Close Function Called", map)
+    }
+  }, [isCRSLoading, isLoading]);
 
   useEffect(() => {
     if (selected_course === "MGC000"){
@@ -82,9 +98,12 @@ export default function DSWorkMap(props) {
       let bbox_ =turfbbox(selectedBoxpoly.data);
       // map.rotateTo(30);
       map.fitBounds(bbox_, {bearing:mapbearing, padding: 5});
+      console.log("BOXpoly Set", map.getSource('BoxArea'))
 
         if (map.getSource('BoxArea') !== null && selected_course !== "MGC000" && typeof map.getSource('BoxArea') !== 'undefined') 
-            map.getSource('BoxArea').setData({...selectedBoxpoly.data});
+            {
+              map.getSource('BoxArea').setData({...selectedBoxpoly.data});
+            }
     }
 
   },[selectedBoxpoly]);
@@ -199,9 +218,16 @@ export default function DSWorkMap(props) {
 
   useEffect(() => {
 
+    console.log( ' Redrawing Called')
+
+    if (selected_mode === 'MenuSelect') setBoxPoly({...mapboxini_poly})
+
+    if (selected_mode === "MAPReview")  setBoxPoly({...selectedBoxpoly})
+
     if(map === null) return;
+    let draw_= null;
     if(draw === null){
-      const draw_ = new MapboxDraw({
+      draw_ = new MapboxDraw({
         displayControlsDefault: false,
         // Select which mapbox-gl-draw control buttons to add to the map.
         controls: {
@@ -216,13 +242,13 @@ export default function DSWorkMap(props) {
         // defaultMode: 'draw_polygon'
         });        
         setDraw(draw_)
+
+        console.log('Draw Init')
     }
 
-    if (selected_mode === "MAPSelect") setBoxPoly({...mapboxini_poly})
 
-    if (selected_mode === "MAPReview") setBoxPoly({...selectedBoxpoly})
 
-    if (selected_mode === "MAPGEOJSONEDIT") {
+    if (selected_mode === "MAPGEOJSONEDIT" && draw !== null) {
       
       map.addControl(draw);
       map.on('draw.selectionchange',handle_editpolygonChange);
@@ -239,7 +265,7 @@ export default function DSWorkMap(props) {
       setEdited(true)
     
     }
-    if (selected_mode === "MAPEdit"&& draw !== null && draw !== undefined && edited === true) {
+    if (selected_mode === "MAPReview"&& draw !== null && draw !== undefined && edited === true) {
       console.log("ALL Data:", draw.getAll())
 
       let dataFromDraw = draw.getAll();
@@ -340,7 +366,7 @@ export default function DSWorkMap(props) {
     //따라서 각 폴리건의 초기화 즉 클릭하면 실향되는 evemt Function으로 초기화
     if (map !== null){
 
-      console.log('Target Polygon Updated')
+      console.log('Target Polygon Updated',targetpolygons)
 
       if (map.getSource('Target-Area') != null && selected_course !== "MGC000") map.getSource('Target-Area').setData({...targetpolygons.data});
       // console.log('targetpolygons', JSON.stringify(targetpolygons.data))
@@ -371,7 +397,7 @@ export default function DSWorkMap(props) {
       });
     }
 
-  },[targetpolygons]);
+  },[targetpolygons, map]);
 
   useEffect(() => {
   /* 
@@ -487,9 +513,10 @@ export default function DSWorkMap(props) {
           </Select>
         </FormControl>
       </Stack>
-      {/* <Box height="90vh" sx={{ p: 0, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 1}}> */}
+      <Box height="40vh" sx={{ p: 0, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 1}}>
         <div ref={mapContainer} className="map-container" />
-      {/* </Box> */}
+      </Box>
+      <DSAreaPicker/>
     </Fragment>
 
   );

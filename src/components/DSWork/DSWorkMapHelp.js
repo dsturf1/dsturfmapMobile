@@ -20,16 +20,11 @@ const point_ini = JSON.parse(JSON.stringify(INTERESTED_POINT));
 const mapboxini_poly = JSON.parse(JSON.stringify(MAPBOXINI));
 const geojsoninfo_blank = JSON.parse(JSON.stringify(GEOJSONBLANK));
  
-export const initMAP  = (map) => {
+export const initMAP  = (map, targetpolygons, targetpoints, selectedBoxpoly,coursepoly,  holepoly) => {
 
     map.on('load', function () {
 
-      map.addSource('Target-Area', {
-        'type': 'geojson',
-        'data': {...geojsoninfo_blank},
-        // 'generateId':true              
-        'promoteId':'Id'
-      });    
+      map.addSource('Target-Area', {...targetpolygons, 'promoteId':'Id'})
       map.addLayer({
         'id': 'Target_Area',
         'type': 'fill',
@@ -56,10 +51,7 @@ export const initMAP  = (map) => {
         }
       });
 
-        map.addSource('Target-Point', {
-          'type': 'geojson',
-          'data': {...geojsoninfo_blank }              
-        });    
+        map.addSource('Target-Point', {...targetpoints});    
         map.addLayer({
           'id': 'Target_Point',
           'type': 'circle',
@@ -76,11 +68,7 @@ export const initMAP  = (map) => {
 
 
 
-      map.addSource('BoxArea', 
-      {
-        'type': 'geojson',
-        'data': {...geojsoninfo_blank }      
-      });        
+      map.addSource('BoxArea', { ...selectedBoxpoly});        
       map.addLayer({
         'id': 'Box_Area',
         'type': 'line',
@@ -97,10 +85,7 @@ export const initMAP  = (map) => {
         'filter': ['==', '$type', 'Polygon']
       }, 'Target_Area');
 
-      map.addSource('selected-course-hole',       {
-        'type': 'geojson',
-        'data': {...geojsoninfo_blank }      
-      });   
+      map.addSource('selected-course-hole', {...holepoly})
       map.addLayer({
         'id': 'selected-course-hole',
         'type': 'symbol',
@@ -121,10 +106,7 @@ export const initMAP  = (map) => {
           }
         });
 
-        map.addSource('selected-course-CRS',       {
-          'type': 'geojson',
-          'data': {...geojsoninfo_blank }      
-        });   
+        map.addSource('selected-course-CRS',       {...coursepoly});   
         map.addLayer({
           'id': 'selected-course-CRS',
           'type': 'symbol',

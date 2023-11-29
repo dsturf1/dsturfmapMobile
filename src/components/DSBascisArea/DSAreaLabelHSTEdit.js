@@ -133,7 +133,7 @@ export default function DSLabelHSTEdit({geojson_mode}) {
         ref={hotRef}
         // rowHeaders={true}
         rowHeights={25}
-        startRows = {3}
+        startRows = {2}
         startCols = {4}
 
         colHeaders={columns.map((x)=>x.header)}

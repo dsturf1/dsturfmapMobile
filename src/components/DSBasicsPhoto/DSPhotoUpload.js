@@ -11,11 +11,12 @@ import useWatchLocation from '../DSBasics/useWatchLocation.js'
 import DSPhotoHSTEdit from "./DSPhotoHSTEdit"
 import { useObjectUrls } from '../DSBasics/useObjectUrls';
 
-import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext, PhotoContext} from "../../context"
 import { MuiFileInput } from 'mui-file-input'
 import exifr from 'exifr'
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, bbox as turfbbox ,centroid as turfcentroid} from "@turf/turf";
+import { label_single} from '../../constant/labelconstants';
 import loadImage from 'blueimp-load-image';
 import ExifReader from 'exifreader';
 import './Input4IOS.css';
@@ -24,18 +25,21 @@ export default function DSPhotoUpload({geojson_mode}) {
 
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
-    selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo,selected_polygon, setPolyGon} = useContext(BaseContext);
+    selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo,selected_polygon, setPolyGon, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
+  const {pr_photojson, setPrPhotoJson, ds_photojson, setDSPhotoJson, selected_photojson, setSPhotoJson, 
+    pr_imgURLs, setPrImgURLs, ds_imgURLs, setDSImgURLs,  photo_loading, setPhotoLoading}  = useContext(PhotoContext);
+
   const {CRSgeojsoninfo, setCRSGeoJsonInfo, isCRSLoading, setIsCRSLoading, CRStpoly, setCRSTPoly,  
     holepoly, setHolePoly, coursepoly, setCoursePoly,selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);    
   const {geojsoninfo, setGeoJsonInfo,tpoly, setTPoly,targetpolygons, setTargetPolygons, 
     targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
 
-  const [imgFiles, setImgFiles] = React.useState([])
-  const [imgFileInfos, setImgFileInfos] = React.useState([])
+
   const [selectedIndex, setSelectedIndex] = React.useState(-1);
   const [checked, setChecked] = React.useState([]);
 
   const [capImgFile, setCapImgFile] = React.useState(null);
+
   
   
   const geolocationOptions = {
@@ -43,16 +47,26 @@ export default function DSPhotoUpload({geojson_mode}) {
     timeout: 1000 * 60 * 1, // 1 min (1000 ms * 60 sec * 1 minute = 60 000ms)
     maximumAge: 5000 // 24 hour
   }
-  
+  const label_ini = JSON.parse(JSON.stringify(label_single));
   const { location, cancelLocationWatch, error ,accuracy} = useWatchLocation(geolocationOptions);
 
   const inputRef = React.useRef();
 
   useEffect(() => {
 
+
     console.log("GPS",location)
     return () => {cancelLocationWatch();}
   },[location]);
+
+  useEffect(() => {
+
+    setMode("DSphotoUpload")
+
+
+  },[]);
+
+
 
   const handleToggle = (value) => () => {
     const currentIndex = checked.indexOf(value);
@@ -63,6 +77,7 @@ export default function DSPhotoUpload({geojson_mode}) {
     } else {
       newChecked.splice(currentIndex, 1);
     }
+    console.log(newChecked)
 
     setChecked(newChecked);
   };
@@ -91,6 +106,7 @@ export default function DSPhotoUpload({geojson_mode}) {
             selected={selectedIndex === index}
             onClick={() => {          
               setSelectedIndex(index);
+              setSPhotoJson({...pr_photojson[index]})
             }}    
             sx={{
               "&.Mui-selected": {
@@ -107,7 +123,7 @@ export default function DSPhotoUpload({geojson_mode}) {
             <ListItemAvatar>
               <Avatar
                 alt={`thumb Not avaiable`}
-                src={photo_.thumbUrl}
+                src={photo_.thumb}
               />
             </ListItemAvatar>
             <ListItemText id={'DSphotoUploadText' + index} primary={
@@ -117,10 +133,16 @@ export default function DSPhotoUpload({geojson_mode}) {
                   {(index + 1)+"."+ photo_.info.Course +'[' + photo_.info.Hole+']'}
                 </Typography> */}
                 <Typography variant="subtitle1" style={{ fontWeight: 'bold' , color: selectedIndex === index? '#ffffff':'#000000'}} > 
-                  {(index + 1)+"."+ photo_.date +'[' + JSON.stringify(photo_.info)+']'}
+                  {(index + 1)+"."+ photo_.date.slice(0, 8) +'[' + JSON.stringify(photo_.type)+']'}
                 </Typography>
-                <Typography variant="caption" style={{ color: selectedIndex === index? '#ffffff':'#000000'}} > 
+                {/* <Typography variant="caption" style={{ color: selectedIndex === index? '#ffffff':'#000000'}} > 
                   {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':(photo_.gps.longitude.toFixed(5) + ',' + photo_.gps.latitude.toFixed(5))}
+                </Typography> */}
+                <Typography variant="caption" style={{ color: selectedIndex === index? '#ffffff':'#000000'}} > 
+                  {photo_.gps.longitude === 'TBD' || photo_.gps.latitude === 'TBD'? 'No GPS info':
+                    (photo_.hasOwnProperty('location') && typeof photo_.location !== 'undefined'? (photo_.location.Course + ',' + photo_.location.Hole)
+                    :(photo_.gps.longitude.toFixed(5) + ',' + photo_.gps.latitude.toFixed(5))
+                    )}
                 </Typography>
               </Stack>
             } />
@@ -156,13 +178,10 @@ export default function DSPhotoUpload({geojson_mode}) {
     hole_ =  0;
   }
 
-  return {Course:course_, Hole:hole_}
+  return {Client:selected_course_info.name, Course:course_, Hole:hole_}
 }
 
-  const handleChange = (newValue) => {
-    setImgFiles(newValue);
-    setSelectedIndex(-1);
-  }
+
 
   const handleChangeinput = (newValue) => {
     console.log(inputRef.current.files)
@@ -208,33 +227,43 @@ export default function DSPhotoUpload({geojson_mode}) {
         gps_.latitude = gpsfromExifr.latitude
       }
       if(gps_.longitude === 'TBD' || gps_.latitude ==='TBD') {
-        gps_.longitude = location[0]
-        gps_.latitude = location[1]
+        gps_.longitude = (location[0] === null? 0:location[0])
+        gps_.latitude = (location[1] === null? 0:location[1])
       }
 
       if(typeof exifs !== 'undefined') {
         if ('GPSAltitude' in exifs) gps_.altitude = exifs.GPSAltitude
       }
-      if(gps_.altitude === 'TBD') gps_.altitude = location[2]
+
+      let location_info = {
+        Client:selected_course_info.name,
+        Course:"?",
+        Hole:0,
+      }
+
+      if(gps_.altitude === 'TBD') {
+        gps_.altitude = (location[2] === null? 0:location[2])        
+      }
+      else{
+        let pt = turfpoint([gps_.longitude, gps_.latitude])
+        location_info = check_CRSandHole(pt)
+      }
+
+      console.log(location_info)
       
-      return {thumbUrl: thumb_, gps : gps_, date:date_.replace(/[^a-zA-Z0-9 ]/g, ""), by:loginuser}
+      return {thumbUrl: thumb_, gps : gps_, date:date_.replace(/[^a-zA-Z0-9 ]/g, ""), by:loginuser, location: location_info}
     }
 
 
 
     getFileInfoGPS(capImgFile).then((res)=>{
       console.log(res); 
-      alert(res.gps.longitude)
+      // alert(res.gps.longitude)
       saveCaptuedImgtoS3(res, capImgFile)
     }).catch((error) => {
       console.log(error);
       alert(error)
     });
-
-    
-    
-
-    // getAllInfos(imgFiles).then((results_) => {setImgFileInfos(results_); console.log(results_)}).catch((err)=> alert(err))
 
   },[capImgFile]);
 
@@ -250,8 +279,8 @@ function resize(base64){
     let img = new Image()
     img.onload = function(){
 
-      var width = 160; 
-      var height = 120; 
+      var width = 480; 
+      var height = 360; 
 
       var canvas = document.createElement('canvas');  // Dynamically Create a Canvas Element
       canvas.width  = width;  // Set the width of the Canvas
@@ -276,17 +305,54 @@ function resize(base64){
     
 
   }
-
+  
   async function saveCaptuedImgtoS3(info_, file_){
     try {
-      await Storage.put(loginuser+'/rgb/'+ info_.date+file_.name.replace(/\.[^/.]+$/, "")+'.jpg', file_)
+
+      let idS3 = info_.date.replace(" ","") + info_.gps.longitude.toFixed(10).replace(".","") 
+            + info_.gps.latitude.toFixed(10).replace(".","")+ info_.gps.altitude.toFixed(10).replace(".","")
+      let filenameS3 = idS3 +'.jpg'
+
+      let fileObj = {
+        id: idS3,
+        name:filenameS3,
+        imgsrc:loginuser+'/rgb/'+ filenameS3,
+        thumbsrc:loginuser+'/thumb/'+ filenameS3,
+        ndvisrc:loginuser+'/ndvi'+ filenameS3,
+        gps:{...info_.gps},
+        date:info_.date,
+        info:{
+          type:"TBD",// TBD, 잔디 현황, 작업 사진, 방제 일보, 계측기 결과, NDVI, Thermal
+          typeId:0,
+          label:label_ini,
+          desc:"",
+          value:0.0,
+          ndvi_avg:0.0,
+          temp_avg:0.0
+        },
+        location:info_.location,
+        by:info_.by
+      }
+      
+
+      await Storage.put(fileObj.imgsrc, file_)
 
       if(info_.thumbUrl !== null){
         
         let imgtemp = await fetch(info_.thumbUrl).then(r => r.blob()).then(blobFile => new File([blobFile], "fileNameGoesHere", { type: "image/jpeg" }))
-        await Storage.put(loginuser+'/thumb/'+ info_.date+file_.name.replace(/\.[^/.]+$/, "")+'.jpg', imgtemp)
+        await Storage.put(fileObj.thumbsrc, imgtemp)
 
       }
+
+      let datajson_ = [...pr_photojson.filter((x)=> x.id !== fileObj.id),{...fileObj}].sort((a, b) => a.id.localeCompare(b.id))
+
+      await Storage.put(loginuser+'/photo.json', JSON.stringify(datajson_))
+      let newUrl_ = await getImgUrl(fileObj)
+      let newUrls_ = [...pr_imgURLs.filter((x)=> x.id !== fileObj.id), {...newUrl_}].sort((a, b) => a.id.localeCompare(b.id))
+      console.log('New DB', datajson_,newUrls_)
+      setPrPhotoJson([ ...datajson_])
+      setPrImgURLs([ ...newUrls_])
+
 
     } catch (error) {
       console.log("Error uploading file: ", error);
@@ -295,109 +361,129 @@ function resize(base64){
 
   }
 
-  useEffect(() => {
-    console.log('Files',imgFiles)
+  async function Upload2DB(){
+    let selected_photos_ = pr_photojson.filter((x,i) => checked.includes(i))
+    let selected_Urls_ = pr_imgURLs.filter((x,i) => checked.includes(i))
+    let remained_photos_ = pr_photojson.filter((x,i) => !checked.includes(i))
+    let remained_Urls = pr_imgURLs.filter((x,i) => !checked.includes(i))
 
-
-
-    const getFileInfoGPS = async(file_) =>{
-
-      let date_ = null;
-      let altitude_ = null;
-      let thumb_ = null;
-
-      let tags = await ExifReader.load(file_)
-      let exifs = await exifr.parse(file_)
-      let thumbfromExifr = await exifr.thumbnailUrl(file_)
-      let gpsfromExifr = await exifr.gps(file_) 
-
-      console.log(tags, exifs)
-
-      if('DateTimeOriginal' in tags) date_= tags['DateTimeOriginal'].description
-      else if ('DateTimeOriginal' in exifs) date_ = exifs.DateTimeOriginal.toISOString().slice(0,19).replace('T',' ')
-      else date_ = file_.lastModifiedDate.toISOString().slice(0,19).replace('T',' ')
-
-
-      if('Thumbnail' in tags) thumb_ = 'data:image/jpg;base64,' + tags['Thumbnail'].base64;
-      else thumb_ = thumbfromExifr
-
-      let gps_ = {longitude:'TBD', latitude: 'TBD'}
-
-      if('GPSLatitude' in tags) gps_.latitude = tags['GPSLatitude'].description
-      else if(gpsfromExifr.latitude !== null || typeof gpsfromExifr.latitude !=='undefined') gps_.latitude = gpsfromExifr.latitude
-      if('GPSLongitude' in tags) gps_.longitude = tags['GPSLongitude'].description
-      else if(gpsfromExifr.longitude !== null || typeof gpsfromExifr.longitude !=='undefined')gps_.longitude = gpsfromExifr.longitude
-      
-      
-      return {thumbUrl: thumb_, gps : gps_, date:date_ , by:loginuser}
-      // return {thumbUrl: thumb_, gps : gps_, altitude:altitude_, date:date_ }
-    }
-
-    const getAllInfos = async(files_) =>{
-      return await Promise.all(files_.map((x)=> getFileInfoGPS(x)))
-    }
-
-    getAllInfos(imgFiles).then((results_) => {setImgFileInfos(results_); console.log(results_)}).catch((err)=> alert(err))
-
-    setChecked([...Array(imgFiles.length).keys()]);
-
-    
-
-  },[imgFiles]);
-
-  const updatenewInfo = (val) =>{
-    const newArray = [...imgFileInfos]
-    newArray[selectedIndex] = val
-    setImgFileInfos(newArray)
-  }
- 
-  async function saveFile_to_S3(file_){
     try {
-      await Storage.put('rgb/'+uuidv4()+'.jpg', file_)
-    } catch (error) {
-      console.log("Error uploading file: ", error);
+      let requests = selected_photos_.map((obj_) => 
+      {
+        return Storage.copy({ key: obj_.imgsrc}, { key: obj_.imgsrc.replace(loginuser,selected_course)})
+      })
+      let responses = await Promise.all(requests);
+      console.log(responses)
+
+      requests = selected_photos_.map((obj_) => 
+      {
+        return Storage.copy({ key: obj_.thumbsrc}, { key: obj_.thumbsrc.replace(loginuser,selected_course)})
+      })
+      responses = await Promise.all(requests);
+      console.log(responses)
+
+      requests = selected_photos_.map((obj_) => 
+      {
+        console.log(obj_.imgsrc)
+        return Storage.remove({ key:'public/'+ obj_.imgsrc}, { level: "public", contentType: "image/jpeg", });
+      })
+      responses = await Promise.all(requests);
+      console.log(responses)
+
+      requests = selected_photos_.map((obj_) => 
+      {
+        console.log(obj_.thumbsrc)
+        return Storage.remove({ key: obj_.thumbsrc});
+      })
+      responses = await Promise.all(requests);
+      console.log(responses)
+
+      await Storage.put(loginuser+'/photo.json', JSON.stringify(remained_photos_))
+      setPrPhotoJson([ ...remained_photos_])
+      setPrImgURLs([ ...remained_Urls])
+      setSelectedIndex(-1)
+
+      let DSBD_photojson = [...ds_photojson,... selected_photos_]
+      let DSBD_photoUrl = [...ds_imgURLs, ...selected_Urls_]
+
+      console.log(DSBD_photojson)
+
+      await Storage.put(selected_course +'/photo.json', JSON.stringify(DSBD_photojson))
+      setDSPhotoJson([...DSBD_photojson])
+      setDSImgURLs([ ...DSBD_photoUrl])
+
+    }
+
+    catch (errors) {
+      // errors.forEach((error) => console.error(error));
+      console.log(errors)
+      alert('Loading이 안되네요! 다른 폴더 먼저 해보세요!!')
     }
 
   }
 
-  const saveAllfiles = async() =>{
-    return await Promise.all(imgFiles.map((x)=> saveFile_to_S3(x)))
-  }
+  async function getImgUrl(x) {
+      return {
+        id:x.id,
+        desc:x.type,
+        type:x.type,
+        date:x.date,
+        gps:x.gps,
+        location:x.location,
+        width:800,
+        height:600,
+        alt: '[]'+x.type,
+        src:await Storage.get(x.imgsrc, {
+          // validateObjectExistence: true 
+          expires:3600
+        }), 
+        rgb:await Storage.get(x.imgsrc, {
+          // validateObjectExistence: true 
+          expires:3600
+        }), 
+        thumb:await Storage.get(x.thumbsrc, {
+          // validateObjectExistence: true 
+          expires:3600
+        }),  
+        ndvi:await Storage.get(x.ndvisrc, {
+          // validateObjectExistence: true 
+          expires:3600
+        }), 
+      }
+    }
+
+
   return (
     <div>
 
       <Box sx={{ height: '85vh', width: '100%' }}>
       {/* <MuiFileInput multiple fullWidth value={imgFiles} onChange={handleChange} /> */}
-      {/* <input multiple="multiple" type="file" name="files[]" onChange={handleChangeinput} /> */}
-      {/* <input ref={inputRef} type="file" name="files-upload" onChange={handleChangeinput} multiple />; */}
       <div>
         <Button variant="contained" component="label" startIcon={<CameraAltIcon /> } onClick = {() => inputRef.current.click()}>
           Camera
-          {/* <input ref={inputRef} id="inputpic" type="file" name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} /> */}
         </Button>
         <input ref={inputRef} id="inputpic" type="file" name="file" accept="image/jpeg"  capture="camera" onChange={handleChangeinput} />
-
       </div>
 
-        {/* <Box sx={{height: '40%', 
+        <Box sx={{height: '40%', 
                   display: 'block',
                   // p: 1,
                   // mx: 1,
                   overflow: 'auto'
                 }}>
           <List dense={true}>
-            { imgFileInfos.length > 0? <DSList photos_ = {imgFileInfos}/>:null}
+            { pr_imgURLs.length > 0? <DSList photos_ = {pr_imgURLs}/>:null}
           </List>      
-        </Box> */}
+        </Box>
         <Box sx={{height: '30%'}}
         display="flex"
                 alignItems="center"
                 justifyContent="center"
                 >
-          {imgFileInfos.length > 0 && selectedIndex >=0?
+          {pr_photojson.length > 0 && selectedIndex >=0?
             <img src={"https://naveropenapi.apigw.ntruss.com/map-static/v2/raster-cors?w=200&h=200"+
-            "&markers=type:d|size:tiny|pos:"+Number(imgFileInfos[selectedIndex].gps.longitude)+"%20"+  + Number(imgFileInfos[selectedIndex].gps.latitude) +
-            "&center="+Number(imgFileInfos[selectedIndex].gps.longitude) +"," + Number(imgFileInfos[selectedIndex].gps.latitude) +
+            "&markers=type:d|size:tiny|pos:"+Number(selected_photojson.gps.longitude)+"%20"+  + Number(selected_photojson.gps.latitude) +
+            "&center="+Number(selected_photojson.gps.longitude) +"," + Number(selected_photojson.gps.latitude) +
             "&level=14" +"&scale=2&X-NCP-APIGW-API-KEY-ID=f4plizrvxg"}
             style={{ width: "200px", height: "200px" }}></img>
           :
@@ -405,16 +491,17 @@ function resize(base64){
           }
         </Box>
         <Box sx={{height: '30%'}}>
-          {imgFileInfos.length > 0 && selectedIndex >=0?
-            <DSPhotoHSTEdit photoInfo = {imgFileInfos[selectedIndex]} update = {updatenewInfo}/>  
+          {pr_photojson.length > 0 && selectedIndex >=0?
+            // <DSPhotoHSTEdit photoInfo = {pr_photojson[selectedIndex]} update = {updatenewInfo}/>
+            <DSPhotoHSTEdit/>  
             :
             null
           } 
         </Box>
       </Box>
       <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
-        <Button variant="outlined"  disabled = {selected_mode === "MAPGEOJSONEDIT"}
-          onClick={() => {console.log(checked);saveAllfiles()}}> Save</Button>
+        <Button variant="outlined"  disabled = {checked.length===0}
+          onClick={() => {Upload2DB(); }}> Upload</Button>
         <Button variant="outlined"  onClick={() => {}}> Cancel/Back</Button>
       </ButtonGroup>
 

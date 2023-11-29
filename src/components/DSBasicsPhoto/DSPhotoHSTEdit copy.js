@@ -8,7 +8,7 @@ import GolfCourseIcon from '@mui/icons-material/GolfCourse';
 import SendIcon from '@mui/icons-material/Send';
 import { green, pink ,indigo} from '@mui/material/colors';
 
-import { BaseContext, MapQContext, MapCRSQContext, PhotoContext} from "../../context/index.js"
+import { BaseContext, MapQContext, MapCRSQContext} from "../../context/index.js"
 import { v4 as uuidv4, v5 as uuidv5 } from 'uuid';
 import { COURSEBLANK , GEOJSONBLANK, POLYGONBLANK} from '../../constant/urlconstants.js';
 import { label_Level1_info,  label_Level2_info, turf_type } from '../../constant/urlconstants.js';
@@ -30,11 +30,9 @@ import { point as turfpoint, polygon as turfpolygon, booleanPointInPolygon, area
 registerAllModules();
 numbro.registerLanguage(languages["ko-KR"]);
 
-const TypeList = ['TBD', '잔디현황', '작업사진', '방제일보', '계측기', 'NDVI', 'Thermal']
 
 
-
-export default function DSPhotoHSTEdit() {
+export default function DSPhotoHSTEdit({photoInfo, update}) {
 
   const hotRef = useRef(null);
 
@@ -46,26 +44,22 @@ export default function DSPhotoHSTEdit() {
 
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, loginuser, setLoginUser, 
     selected_mode, setMode, maxid, setMaxId,mapinfo, setMapInfo, selected_course_info, setSelectedCourseInfo} = useContext(BaseContext);
-
-  const {pr_photojson, setPrPhotoJson, ds_photojson, setDSPhotoJson, selected_photojson, setSPhotoJson, 
-    pr_imgURLs, setPrImgURLs, ds_imgURLs, setDSImgURLs,  photo_loading, setPhotoLoading}  = useContext(PhotoContext);
   
   useEffect(() => {
 
-    if (selected_photojson === null) return
+    if (photoInfo === null|| photoInfo === undefined) return
 
     var rows_ = [];
 
-    rows_.push({title:'코스명',name:selected_photojson.location.Course})    
-    rows_.push({title:'홀',name:selected_photojson.location.Hole})
-    rows_.push({title:'사진타입',name:selected_photojson.info.type})
-    rows_.push({title:'작성자',name:selected_photojson.by})
-    rows_.push({title:'작성시점',name:selected_photojson.date})
+    rows_.push({title:'코스명',name:photoInfo.location.Course})    
+    rows_.push({title:'홀',name:photoInfo.location.Hole})
+    rows_.push({title:'작성자',name:photoInfo.by})
+    rows_.push({title:'작성시점',name:photoInfo.date})
 
     const hot = hotRef.current.hotInstance;
 
     hot.loadData(rows_)
-  },[selected_photojson]);
+  },[photoInfo]);
 
 
 
@@ -95,11 +89,7 @@ export default function DSPhotoHSTEdit() {
               if (row === 1 && column ==1) {
                 cellMeta.type = 'dropdown';
                 cellMeta.source = [1,2,3,4,5,6,7,8,9]
-              }
-              if (row === 2 && column ==1) {
-                cellMeta.type = 'dropdown';
-                cellMeta.source = TypeList
-              }                        
+              }            
 
             return cellMeta;
           }
@@ -113,21 +103,12 @@ export default function DSPhotoHSTEdit() {
           afterChange={(changes, source) => {
             changes?.forEach(([row, prop, oldValue, newValue]) => {
 
-              let newInfo = {...selected_photojson}
+              let newInfo = {...photoInfo}
 
-                if (row === 0) newInfo = {...newInfo, location: {...newInfo.location, Course:newValue}}  
-                if (row === 1) newInfo = {...newInfo, location: {...newInfo.location, Hole:newValue}}   
-                if (row === 2) newInfo = {...newInfo, info: {...newInfo.info, type:newValue, typeId: TypeList.findIndex((x)=> x === newValue)}}   
-                // update(newInfo)
-                setSPhotoJson({...newInfo})
-              let newDB_ = [...pr_photojson.filter((x)=> x.id !== selected_photojson.id),{...newInfo}].sort((a, b) => a.id.localeCompare(b.id))
-                setPrPhotoJson([...newDB_])
+                if (row === 0) newInfo = {...newInfo, info: {...newInfo.info, Course:newValue}}  
+                if (row === 1) newInfo = {...newInfo, info: {...newInfo.info, Hole:newValue}}   
 
-
-              let newInfoUrls = {...pr_imgURLs.filter((x)=> x.id === selected_photojson.id)[0], location:newInfo.location, type:newInfo.info.type}
-
-              let newDBUrls_ = [...pr_imgURLs.filter((x)=> x.id !== selected_photojson.id),{...newInfoUrls}].sort((a, b) => a.id.localeCompare(b.id))
-                setPrImgURLs([...newDBUrls_])
+                update(newInfo)
                 // if (row === 5) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
                 // if (row === 6) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}} 
             });

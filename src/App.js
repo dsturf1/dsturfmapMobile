@@ -10,6 +10,7 @@ import { LabelProvider} from "./context/DSLabelData.js"
 import { Authenticator } from '@aws-amplify/ui-react';
 import '@aws-amplify/ui-react/styles.css';
 import { MapCRSQProvider } from "./context/DSCRSData.js";
+import { PhotoProvider } from "./context/DSPhotoData.js";
 
 
 const DSTheme = createTheme({
@@ -43,12 +44,14 @@ const App = () => {
       <Fragment>
         < BaseProvider user = {user}>
           <MapCRSQProvider>
-          <MapQProvider>
+          <MapQProvider> 
           {/* <LabelProvider> */}
-          <ThemeProvider theme={DSTheme}>
-            <CssBaseline />
-            <DSWorkMain signOut = {signOut}/>
-          </ThemeProvider>
+          <PhotoProvider>
+            <ThemeProvider theme={DSTheme}>
+              <CssBaseline />
+              <DSWorkMain signOut = {signOut}/>
+            </ThemeProvider>
+          </PhotoProvider>
           {/* </LabelProvider> */}
           </MapQProvider>
           </MapCRSQProvider>

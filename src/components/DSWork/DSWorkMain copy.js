@@ -3,36 +3,29 @@ import React, { useState,useRef, useEffect, useContext, Fragment } from 'react';
 import { Box, Button, Stack, Avatar, Typography, Grid, InputLabel, MenuItem, FormControl, Select, Divider, IconButton, CircularProgress} from '@mui/material';
 import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined';
 import GolfCourseIcon from '@mui/icons-material/GolfCourse';
-import MapIcon from '@mui/icons-material/Map';
-import PermMediaIcon from '@mui/icons-material/PermMedia';
-import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 
-import { BaseContext, MapQContext, MapCRSQContext, PhotoContext} from "../../context"
+import { BaseContext, MapQContext, MapCRSQContext} from "../../context"
 import DSWorkMap from './DSWorkMap.js';
+import DSWorkInfo from './DSWorkInfo.js';
 
 import DSicon1 from '../DSicon1.js';
 
 import DSCoursePicker from '../DSBasics/DSCoursePicker.js';
 import DSPhotoUpload from '../DSBasicsPhoto/DSPhotoUpload.js';
-import DSPhotoView from '../DSBasicsPhoto/DSPhotoView.js';
 
 
 export default function DSWorkMain(props) {
   
-  // const {geojsoninfo, setGeoJsonInfo,tpoly, setTPoly,
-  //   targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
-  // const {isCRSLoading, setIsCRSLoading, greenpoly, setGreenPoly, 
-  //   holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
+  const {geojsoninfo, setGeoJsonInfo,tpoly, setTPoly,
+    targetpolygons, setTargetPolygons, targetpoints, setTargetPoints, isLoading, setIsLoading} = useContext(MapQContext);
+  const {isCRSLoading, setIsCRSLoading, greenpoly, setGreenPoly, 
+    holepoly, setHolePoly, coursepoly, setCoursePoly, selectedBoxpoly, setBoxPoly} = useContext(MapCRSQContext);
   const {baseinfo, setBaseInfo, selected_course, setCourse, edited, setEdited, 
     loginuser, setLoginUser, selected_mode, setMode, maxid, setMaxId, mapinfo, setMapInfo, 
     selected_course_info, setSelectedCourseInfo, selected_polygon, setPolyGon} = useContext(BaseContext);
-  const {pr_photojson, setPrPhotoJson, ds_photojson, setDSPhotoJson, selected_photojson, setSPhotoJson, 
-    pr_imgURLs, setPrImgURLs, ds_imgURLs, setDSImgURLs,  photo_loading, setPhotoLoading}  = useContext(PhotoContext);
 
 
     useEffect(() => {
-
-      if (selected_course === 'MGC000') setMode('MenuSelect')
 
       const onBackButtonEvent = (e) => {
         e.preventDefault();
@@ -46,12 +39,6 @@ export default function DSWorkMain(props) {
       };
       
     }, [selected_course]);
-
-    useEffect(() => {
-
-      setMode('MenuSelect')
-      
-    }, []);
   
     // useEffect(() => {
   
@@ -128,18 +115,12 @@ export default function DSWorkMain(props) {
               </Typography>
               <Typography variant="subtitle1" gutterBottom color="primary"sx={{ fontSize: 12, fontWeight: 'medium' }}>작성자:{loginuser}</Typography>
             </Stack>
-            <Stack direction="row" spacing={0}   justifyContent="center"  alignItems="center" m = {1} color = "primary" >
+            <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="center" m = {1} color = "primary" >
               <Button variant="contained" size="small" endIcon={<GolfCourseIcon />} 
-                  sx={{fontSize: 12}} onClick={()=>setCourse('MGC000')}> 골프장 </Button>
-              <Button variant="outlined" size="small" endIcon={<MapIcon />} 
-                  sx={{fontSize: 12}} onClick={()=>setMode('MAPReview')}> 지도 </Button>
-              <Button variant="outlined" size="small" endIcon={<PermMediaIcon />} 
-                  sx={{fontSize: 12}} onClick={()=>{setMode('DSphotoView');setSPhotoJson(null)}}> 사진함 </Button>
-              <Button variant="outlined" size="small" endIcon={<AddAPhotoIcon/>} 
-                  sx={{fontSize: 12}} onClick={()=>{setMode('DSphotoUpload');setSPhotoJson(null)}}> 업로드 </Button>
+                  sx={{fontSize: 12}} onClick={()=>setCourse('MGC000')}> 골프장선택 </Button>
               <Button variant="contained" size="small" endIcon={<ExitToAppOutlinedIcon />} 
                   sx={{fontSize: 12}} onClick={props.signOut}> 나가기 </Button>
-              {/* {Object.keys(baseinfo).length !== 0 && isLoading === false &&
+              {Object.keys(baseinfo).length !== 0 && isLoading === false &&
                 <Button variant="outlined" size="small"  
                   sx={{fontSize: 12}} > 
                   {selectedBoxpoly.data.properties.Hole === 0? 
@@ -147,7 +128,7 @@ export default function DSWorkMain(props) {
                     targetpolygons.data.features.filter((x)=>x.properties.Course===selectedBoxpoly.data.properties.Course && x.properties.Hole===selectedBoxpoly.data.properties.Hole).length} / 
                   {targetpolygons.data.features.length}
                   
-                  </Button>} */}
+                  </Button>}
             </Stack>
   
           </Box>
@@ -168,11 +149,7 @@ export default function DSWorkMain(props) {
               </div>
               // :(selected_course === "MGC000" ? <DSCoursePicker/>:(isLoading === true || isCRSLoading === true? null:<DSWorkMap/>))
               // :(selected_course === "MGC000" ? <DSCoursePicker/>:<DSWorkMap/>)
-              :(selected_course === "MGC000" ? <DSCoursePicker/>:
-                (selected_mode === "DSphotoView"? <DSPhotoView/>:(
-                  selected_mode === "DSphotoUpload"?<DSPhotoUpload/>:<DSWorkMap/>
-                ))              
-              )
+              :<DSPhotoUpload/>
           }
           </Box>
         </Grid>
