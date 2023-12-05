@@ -59,9 +59,6 @@ export default function DSAreaPolyHSTEdit({geojson_mode}) {
 
     rows_.push({title:'코스명',name:selected_polygon === null? "":selected_polygon.properties.Course})    
     rows_.push({title:'홀',name:selected_polygon === null? "":selected_polygon.properties.Hole})
-    rows_.push({title:'면적',name:selected_polygon === null? "":area(selected_polygon).toFixed(1).toString().replace(/\B(?<!\.\d*)(?=(\d{3})+(?!\d))/g, ",")})
-    rows_.push({title:'작성자',name:selected_polygon === null? "":selected_polygon.properties.By})
-    rows_.push({title:'작성시점',name:selected_polygon === null? "":selected_polygon.properties.When.split('T')[0]})
     rows_.push({title:'Valid?',name:selected_polygon === null? "":selected_polygon.properties.Valid})
     rows_.push({title:'반지름(m)',name:selected_polygon === null? 0:selected_polygon.properties.radius})
 
@@ -99,11 +96,11 @@ export default function DSAreaPolyHSTEdit({geojson_mode}) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,2,3,4,5,6,7,8,9]
             }
-            if (row === 5 && column ==1) {
+            if (row === 2 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [true,false]
             }
-            if (row === 6 && column ==1) {
+            if (row === 3 && column ==1) {
               cellMeta.type = 'dropdown';
               cellMeta.source = [1,1.5,2,2.5,3,3.5,4,5,7.5,10,15,20, 50]
               }           
@@ -123,8 +120,8 @@ export default function DSAreaPolyHSTEdit({geojson_mode}) {
 
               if (row === 0) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Course:newValue}}  
               if (row === 1) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Hole:newValue}}  
-              if (row === 5) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
-              if (row === 6) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}}
+              if (row === 2) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, Valid:newValue}}  
+              if (row === 3) newPolygon = {...selected_polygon, properties: {...selected_polygon.properties, radius:Number(newValue)}}
 
               setPolyGon({...newPolygon})
 

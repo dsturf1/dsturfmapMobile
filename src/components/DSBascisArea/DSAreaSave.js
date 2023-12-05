@@ -55,13 +55,15 @@ export default function DSSave() {
   return (
     <>
       {selected_course === "MGC000"? null:
-        <Stack direction="column" spacing={0}   justifyContent="space-between"  alignItems="center" mt = {0}>
-          <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth spacing={2}   justifyContent="center"  alignItems="center" sx={{ mt: 1 }}>
-            <Button variant="outlined"  disabled = {selected_mode === "MAPGEOJSONEDIT"}
-            onClick={() => {handleAdd();setMode("MAPEdit")}}> Save</Button>
-            <Button variant="outlined"  onClick={() => {setMode("MAPSelect");setCourse("MGC000")}}> Cancel/Back</Button>
+          <ButtonGroup variant="outlined" aria-label="outlined button group" fullWidth= {true}  >
+            <Button variant="outlined"  sx={{fontSize: 14, width:1/3}} disabled = {selected_mode === "MAPGEOJSONEDIT"}
+            onClick={() => {handleAdd();setMode("MAPReview")}}> Save</Button>
+            <Button variant="outlined"  sx={{fontSize: 14, width:1/3}} onClick={() => {setMode("MAPReview")}}> Cancel</Button>
+            <Button variant= {selected_mode === "MAPReview"? "outlined":"contained"}  sx={{fontSize: 14, width:1/3}} onClick={() => {
+              selected_mode === "MAPReview"? setMode("MAPGEOJSONEDIT"):setMode("MAPReview")}}> 
+                {(selected_mode === "MAPReview"? "Edit":"Review")}
+            </Button>
           </ButtonGroup>
-        </Stack>
       }
     </>
   );

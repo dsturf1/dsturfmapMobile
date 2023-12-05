@@ -274,7 +274,7 @@ export default function DSWorkMap(props) {
         return {...circleASpolygon, geometry: {...circleASpolygon.geometry, coordinates:turfcentroid(circleASpolygon).geometry.coordinates, type:'Point'}}
       })
 
-      // console.log(PointObjects)
+      console.log(dataFromDraw)
       setGeoJsonInfo(
         {...geojsoninfo, 
           features:[...dataFromDraw.features.filter((x)=>  x.properties.TypeId ===10), 
@@ -479,7 +479,7 @@ export default function DSWorkMap(props) {
   return (
     <Fragment>
 
-      <Stack direction="row" spacing={2}   justifyContent="center"  alignItems="center" mt = {2}> 
+      <Stack direction="row" spacing={0}   justifyContent="center"  alignItems="center" mt = {1}> 
         <FormControl sx={{ width: 1/2}}size="small">
           <InputLabel id="ds-crs-select-label">코스명</InputLabel>
           <Select
@@ -513,7 +513,7 @@ export default function DSWorkMap(props) {
           </Select>
         </FormControl>
       </Stack>
-      <Box height="40vh" sx={{ p: 0, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 1}}>
+      <Box height="60vh" sx={{ p: 0, border: '1px solid gray',gap: 0, borderRadius: 0 , m: 1}}>
         <div ref={mapContainer} className="map-container" />
       </Box>
       <DSAreaPicker/>

@@ -382,29 +382,37 @@ function resize(base64){
       responses = await Promise.all(requests);
       console.log(responses)
 
-      requests = selected_photos_.map((obj_) => 
-      {
-        console.log(obj_.imgsrc)
-        return Storage.remove({ key:'public/'+ obj_.imgsrc}, { level: "public", contentType: "image/jpeg", });
-      })
-      responses = await Promise.all(requests);
-      console.log(responses)
+      // requests = selected_photos_.map((obj_) => 
+      // {
+      //   console.log(obj_.imgsrc)
+      //   return Storage.remove({ key:'public/'+ obj_.imgsrc}, { level: "public", contentType: "image/jpeg", });
+      // })
+      // responses = await Promise.all(requests);
+      // console.log(responses)
 
-      requests = selected_photos_.map((obj_) => 
-      {
-        console.log(obj_.thumbsrc)
-        return Storage.remove({ key: obj_.thumbsrc});
-      })
-      responses = await Promise.all(requests);
-      console.log(responses)
+      // requests = selected_photos_.map((obj_) => 
+      // {
+      //   console.log(obj_.thumbsrc)
+      //   return Storage.remove({ key: obj_.thumbsrc});
+      // })
+      // responses = await Promise.all(requests);
+      // console.log(responses)
 
       await Storage.put(loginuser+'/photo.json', JSON.stringify(remained_photos_))
       setPrPhotoJson([ ...remained_photos_])
       setPrImgURLs([ ...remained_Urls])
       setSelectedIndex(-1)
 
-      let DSBD_photojson = [...ds_photojson,... selected_photos_]
-      let DSBD_photoUrl = [...ds_imgURLs, ...selected_Urls_]
+      let add_ds_photojson = selected_photos_.map((x) => 
+      {return {...x, thumbsrc: x.thumbsrc.replace(loginuser,selected_course), imgsrc:x.imgsrc.replace(loginuser,selected_course)}}      
+      )
+
+      let add_ds_Urls_= selected_Urls_.map((x) => 
+      {return {...x, src:x.src.replace(loginuser,selected_course), thumb: x.thumb.replace(loginuser,selected_course), rgb:x.rgb.replace(loginuser,selected_course)}}      
+      )
+
+      let DSBD_photojson = [...ds_photojson,... add_ds_photojson]
+      let DSBD_photoUrl = [...ds_imgURLs, ...add_ds_Urls_]
 
       console.log(DSBD_photojson)
 
